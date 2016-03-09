@@ -9,16 +9,29 @@ import client.ClientConnector;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import shared.ClientType;
 
 /**
  *
  * @author Igor
  */
-public class ProducerClient {
+public class ProducerClient extends Application {
 
     private static final Logger LOG = Logger.getLogger(ProducerClient.class.getName());
-    private static client.photographer.PhotographerClientRunnable clientRunnable;
+    private static ProducerClientRunnable clientRunnable;
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("ProducerClientFXMLDocument.fxml"));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     /**
      * @param args the command line arguments
@@ -26,10 +39,10 @@ public class ProducerClient {
      * @throws java.lang.ClassNotFoundException
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        // TODO code application logic here
+        launch(args);
         try {
             ClientConnector clientConnector = new ClientConnector(ClientType.producer);
-            clientRunnable = new client.photographer.PhotographerClientRunnable(clientConnector.getSocket());
+            clientRunnable = new ProducerClientRunnable(clientConnector.getSocket());
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }

@@ -9,16 +9,29 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import client.ClientConnector;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import shared.ClientType;
 
 /**
  *
  * @author Igor
  */
-public class PhotographerClient {
+public class PhotographerClient extends Application {
 
     private static final Logger LOG = Logger.getLogger(PhotographerClient.class.getName());
     private static PhotographerClientRunnable clientRunnable;
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("PhotographerClientFXMLDocument.fxml"));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     /**
      * @param args the command line arguments
@@ -26,7 +39,7 @@ public class PhotographerClient {
      * @throws java.lang.ClassNotFoundException
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        // TODO code application logic here
+        launch(args);
         try {
             ClientConnector clientConnector = new ClientConnector(ClientType.photographer);
             clientRunnable = new PhotographerClientRunnable(clientConnector.getSocket());
