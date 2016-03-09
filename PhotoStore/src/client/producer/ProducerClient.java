@@ -3,10 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package user;
+package client.producer;
 
 import client.ClientConnector;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.ClientType;
@@ -15,10 +18,10 @@ import shared.ClientType;
  *
  * @author Igor
  */
-public class UserClient {
+public class ProducerClient {
 
-    private static final Logger LOG = Logger.getLogger(UserClient.class.getName());
-    private static photographer.PhotographerClientRunnable clientRunnable;
+    private static final Logger LOG = Logger.getLogger(ProducerClient.class.getName());
+    private static client.photographer.PhotographerClientRunnable clientRunnable;
 
 
     /**
@@ -29,8 +32,8 @@ public class UserClient {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         // TODO code application logic here
         try {
-            ClientConnector clientConnector = new ClientConnector(ClientType.user);
-            clientRunnable = new photographer.PhotographerClientRunnable(clientConnector.getSocket());
+            ClientConnector clientConnector = new ClientConnector(ClientType.producer);
+            clientRunnable = new client.photographer.PhotographerClientRunnable(clientConnector.getSocket());
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }  

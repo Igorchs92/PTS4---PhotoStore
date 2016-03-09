@@ -3,28 +3,32 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package producer;
+package client.photographer;
 
+import client.photographer.PhotographerClient;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import shared.ClientType;
 
 /**
  *
  * @author Igor
  */
-public class ProducerClientRunnable {
+public class PhotographerClientRunnable {
 
-    private final Logger LOG = Logger.getLogger(ProducerClient.class.getName());
+    private final Logger LOG = Logger.getLogger(PhotographerClient.class.getName());
     private final Socket socket;
     private ObjectOutputStream out = null;
     private ObjectInputStream in = null;
 
-    public ProducerClientRunnable(Socket socket) {
+    public PhotographerClientRunnable(Socket socket) throws IOException {
         this.socket = socket;
+        newOutputStream();
+        out.writeObject(ClientType.photographer);
     }
          
     private void newInputStream() throws IOException{
