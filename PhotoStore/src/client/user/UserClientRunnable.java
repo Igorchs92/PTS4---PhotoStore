@@ -23,18 +23,19 @@ public class UserClientRunnable {
     private ObjectOutputStream out = null;
     private ObjectInputStream in = null;
 
-    public UserClientRunnable(Socket socket) {
+    public UserClientRunnable(Socket socket) throws IOException, ClassNotFoundException {
         this.socket = socket;
+        testConnection();
     }
-         
-    private void newInputStream() throws IOException{
+
+    private void newInputStream() throws IOException {
         in = new ObjectInputStream(socket.getInputStream());
     }
-    
-    private void newOutputStream() throws IOException{
+
+    private void newOutputStream() throws IOException {
         out = new ObjectOutputStream(socket.getOutputStream());
-    }    
-    
+    }
+
     public void testConnection() throws IOException, ClassNotFoundException {
         boolean send = false;
         newOutputStream();

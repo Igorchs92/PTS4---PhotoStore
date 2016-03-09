@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Igor Chernomorets
+ * @author Igor
  */
 public class PhotographerServerRunnable implements Observer, Runnable {
 
@@ -58,8 +58,10 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                 out.writeObject(send);
                 LOG.log(Level.INFO, "Message sent: {0}", send);
             }
-        } catch (ClassNotFoundException | IOException ex) {
+        } catch (ClassNotFoundException ex) {
             LOG.log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            LOG.log(Level.INFO, "Photographer client disconnected: {0}", socket.getInetAddress());
         }
     }
 }

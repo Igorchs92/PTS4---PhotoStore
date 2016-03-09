@@ -23,26 +23,26 @@ public class ClientConnector {
     private Socket socket;
     private ObjectOutputStream out = null;
     private ObjectInputStream in = null;
-    
-    public ClientConnector(ClientType client) throws IOException{
+
+    public ClientConnector(ClientType client) throws IOException {
         try {
-        socket = new Socket("localhost", 8189);
-        newOutputStream();
-        out.writeObject(client);
+            socket = new Socket("localhost", 8189);
+            newOutputStream();
+            out.writeObject(client);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
-        } 
+        }
     }
-    
-    private void newInputStream() throws IOException{
+
+    private void newInputStream() throws IOException {
         in = new ObjectInputStream(socket.getInputStream());
     }
-    
-    private void newOutputStream() throws IOException{
+
+    private void newOutputStream() throws IOException {
         out = new ObjectOutputStream(socket.getOutputStream());
-    }    
-    
-    public Socket getSocket(){
+    }
+
+    public Socket getSocket() {
         return socket;
     }
 }

@@ -23,18 +23,19 @@ public class ProducerClientRunnable {
     private ObjectOutputStream out = null;
     private ObjectInputStream in = null;
 
-    public ProducerClientRunnable(Socket socket) {
+    public ProducerClientRunnable(Socket socket) throws IOException, ClassNotFoundException {
         this.socket = socket;
+        testConnection();
     }
-         
-    private void newInputStream() throws IOException{
+
+    private void newInputStream() throws IOException {
         in = new ObjectInputStream(socket.getInputStream());
     }
-    
-    private void newOutputStream() throws IOException{
+
+    private void newOutputStream() throws IOException {
         out = new ObjectOutputStream(socket.getOutputStream());
-    }    
-    
+    }
+
     public void testConnection() throws IOException, ClassNotFoundException {
         boolean send = false;
         newOutputStream();

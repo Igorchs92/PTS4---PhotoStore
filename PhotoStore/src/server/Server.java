@@ -16,7 +16,7 @@ import shared.ClientType;
 
 /**
  *
- * @author Igor Chernomorets
+ * @author Igor
  */
 public class Server {
     private static final Logger LOG = Logger.getLogger(Server.class.getName());
@@ -37,6 +37,7 @@ public class Server {
                     //Read input stream for ClientType type enum
                     newInputStream();
                     ClientType client = (ClientType) in.readObject();
+                    LOG.log(Level.INFO, "Client Type: {0}", client.name());
                     // Handle client request in a new thread
                     Thread thread;
                     if (client == ClientType.producer){

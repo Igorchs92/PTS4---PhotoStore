@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import client.ClientConnector;
 import shared.ClientType;
+
 /**
  *
  * @author Igor
@@ -18,7 +19,6 @@ public class PhotographerClient {
 
     private static final Logger LOG = Logger.getLogger(PhotographerClient.class.getName());
     private static PhotographerClientRunnable clientRunnable;
-
 
     /**
      * @param args the command line arguments
@@ -32,7 +32,7 @@ public class PhotographerClient {
             clientRunnable = new PhotographerClientRunnable(clientConnector.getSocket());
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
-        }  
+        }
     }
-    
+
 }

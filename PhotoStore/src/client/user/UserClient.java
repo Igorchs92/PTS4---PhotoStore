@@ -20,7 +20,6 @@ public class UserClient {
     private static final Logger LOG = Logger.getLogger(UserClient.class.getName());
     private static client.photographer.PhotographerClientRunnable clientRunnable;
 
-
     /**
      * @param args the command line arguments
      * @throws java.io.IOException
@@ -33,7 +32,7 @@ public class UserClient {
             clientRunnable = new client.photographer.PhotographerClientRunnable(clientConnector.getSocket());
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
-        }  
+        }
     }
-    
+
 }

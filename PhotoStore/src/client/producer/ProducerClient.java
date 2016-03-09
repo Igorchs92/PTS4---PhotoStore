@@ -7,9 +7,6 @@ package client.producer;
 
 import client.ClientConnector;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.ClientType;
@@ -23,7 +20,6 @@ public class ProducerClient {
     private static final Logger LOG = Logger.getLogger(ProducerClient.class.getName());
     private static client.photographer.PhotographerClientRunnable clientRunnable;
 
-
     /**
      * @param args the command line arguments
      * @throws java.io.IOException
@@ -36,7 +32,7 @@ public class ProducerClient {
             clientRunnable = new client.photographer.PhotographerClientRunnable(clientConnector.getSocket());
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
-        }  
+        }
     }
-    
+
 }
