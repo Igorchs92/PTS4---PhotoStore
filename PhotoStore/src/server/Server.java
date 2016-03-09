@@ -5,9 +5,9 @@
  */
 package server;
 
+import server.user.UserServerRunnable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -20,9 +20,6 @@ import shared.ClientType;
  */
 public class Server {
     private static final Logger LOG = Logger.getLogger(Server.class.getName());
-    private static Socket socket;
-    private static ObjectOutputStream out = null;
-    private static ObjectInputStream in = null;
     
     public static void main(String[] args) throws ClassNotFoundException {
         try {
@@ -32,10 +29,10 @@ public class Server {
             while (true) {
                 try {
                     // Wait for client connection
-                    socket = serverSocket.accept();
+                    Socket socket = serverSocket.accept();
                     LOG.log(Level.INFO, "New Client Connected: {0}", socket.getInetAddress());
                     //Read input stream for ClientType type enum
-                    newInputStream();
+                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
                     ClientType client = (ClientType) in.readObject();
                     LOG.log(Level.INFO, "Client Type: {0}", client.name());
                     // Handle client request in a new thread
@@ -63,11 +60,4 @@ public class Server {
         }
     }
     
-    private static void newInputStream() throws IOException{
-        in = new ObjectInputStream(socket.getInputStream());
-    }
-    
-    private static void newOutputStream() throws IOException{
-        out = new ObjectOutputStream(socket.getOutputStream());
-    }   
 }
