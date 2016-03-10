@@ -6,35 +6,20 @@
 package server.photographer;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import shared.SocketConnection;
 
 /**
  *
  * @author Igor
  */
-public class PhotographerServerRunnable implements Observer, Runnable {
-
-    private static final Logger LOG = Logger.getLogger(PhotographerServerRunnable.class.getName());
-    private Socket socket = null;
-    private ObjectOutputStream out = null;
-    private ObjectInputStream in = null;
+public class PhotographerServerRunnable extends SocketConnection implements Observer, Runnable {
 
     public PhotographerServerRunnable(Socket socket) {
         this.socket = socket;
-    }
-
-    private void newInputStream() throws IOException {
-        in = new ObjectInputStream(socket.getInputStream());
-    }
-
-    private void newOutputStream() throws IOException {
-        out = new ObjectOutputStream(socket.getOutputStream());
     }
 
     @Override
@@ -50,11 +35,11 @@ public class PhotographerServerRunnable implements Observer, Runnable {
     public void testConnection() {
         try {
             while (!socket.isClosed()) {
-                newInputStream();
+                newIn();
                 boolean receive = (boolean) in.readObject();
                 LOG.log(Level.INFO, "Message received: {0}", receive);
                 boolean send = true;
-                newOutputStream();
+                newOut();
                 out.writeObject(send);
                 LOG.log(Level.INFO, "Message sent: {0}", send);
             }

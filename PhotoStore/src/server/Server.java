@@ -13,13 +13,13 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.ClientType;
+import shared.SocketConnection;
 
 /**
  *
  * @author Igor
  */
-public class Server {
-    private static final Logger LOG = Logger.getLogger(Server.class.getName());
+public class Server extends SocketConnection {
     
     public static void main(String[] args) throws ClassNotFoundException {
         try {

@@ -25,16 +25,16 @@ public class PhotographerClient extends Application {
     private static final Logger LOG = Logger.getLogger(PhotographerClient.class.getName());
     private static PhotographerClientRunnable clientRunnable;
     private static final String title = "Photostore Photographer";
-    private static final String loginFXML = "PhotographerClientLogin.fxml";
-    private static final String menuFXML = "PhotographerClientMenu.fxml";
-    private static final String registerFXML = "PhotographerClientRegister.fxml";
+    private Stage stage;
+    private Scene sceneLogin;
+    private Scene sceneRegister;
+    private Scene sceneMain;
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource(loginFXML));
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle(title);
+        this.stage = stage;
+        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("PhotographerClientLogin.fxml")));
+        setSceneLogin();
         stage.show();
     }
 
@@ -44,13 +44,28 @@ public class PhotographerClient extends Application {
      * @throws java.lang.ClassNotFoundException
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        launch(args);
         try {
             ClientConnector clientConnector = new ClientConnector(ClientType.photographer);
             clientRunnable = new PhotographerClientRunnable(clientConnector.getSocket());
+            launch(args);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void setSceneLogin() {
+        stage.setScene(sceneLogin);
+        stage.setTitle(title + " - Login");
+    }
+
+    public void setSceneRegister() {
+        stage.setScene(sceneRegister);
+        stage.setTitle(title + " - Register");
+    }
+
+    public void setSceneMain() {
+        stage.setScene(sceneMain);
+        stage.setTitle(title);
     }
 
 }

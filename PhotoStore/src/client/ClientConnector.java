@@ -6,40 +6,25 @@
 package client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import shared.ClientType;
+import shared.SocketConnection;
 
 /**
  *
  * @author Igor
  */
-public class ClientConnector {
-
-    private final Logger LOG = Logger.getLogger(ClientConnector.class.getName());
-    private Socket socket;
-    private ObjectOutputStream out = null;
-    private ObjectInputStream in = null;
+public class ClientConnector extends SocketConnection{
 
     public ClientConnector(ClientType client) throws IOException {
         try {
             socket = new Socket("localhost", 8189);
-            newOutputStream();
+            newOut();
             out.writeObject(client);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
-    }
-
-    private void newInputStream() throws IOException {
-        in = new ObjectInputStream(socket.getInputStream());
-    }
-
-    private void newOutputStream() throws IOException {
-        out = new ObjectOutputStream(socket.getOutputStream());
     }
 
     public Socket getSocket() {

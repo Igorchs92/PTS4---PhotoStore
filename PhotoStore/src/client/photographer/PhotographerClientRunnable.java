@@ -6,42 +6,27 @@
 package client.photographer;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import shared.SocketConnection;
 
 /**
  *
  * @author Igor
  */
-public class PhotographerClientRunnable {
-
-    private final Logger LOG = Logger.getLogger(PhotographerClient.class.getName());
-    private final Socket socket;
-    private ObjectOutputStream out = null;
-    private ObjectInputStream in = null;
+public class PhotographerClientRunnable extends SocketConnection{
 
     public PhotographerClientRunnable(Socket socket) throws IOException, ClassNotFoundException {
         this.socket = socket;
         testConnection();
     }
 
-    private void newInputStream() throws IOException {
-        in = new ObjectInputStream(socket.getInputStream());
-    }
-
-    private void newOutputStream() throws IOException {
-        out = new ObjectOutputStream(socket.getOutputStream());
-    }
-
     public void testConnection() throws IOException, ClassNotFoundException {
         boolean send = false;
-        newOutputStream();
+        newOut();
         out.writeObject(send);
         LOG.log(Level.INFO, "Message sent: {0}", send);
-        newInputStream();
+        newIn();
         boolean receive = (boolean) in.readObject();
         LOG.log(Level.INFO, "Message received: {0}", receive);
     }
