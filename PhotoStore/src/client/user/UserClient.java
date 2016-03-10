@@ -24,12 +24,17 @@ public class UserClient extends Application {
 
     private static final Logger LOG = Logger.getLogger(UserClient.class.getName());
     private static UserClientRunnable clientRunnable;
-
+    private static final String title = "Photostore User";
+    private static final String loginFXML = "UserClientLogin.fxml";
+    private static final String menuFXML = "UserClientMenu.fxml";
+    private static final String registerFXML = "UserClientRegister.fxml";
+    
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("UserClientFXMLDocument.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource(loginFXML));
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setTitle(title);
         stage.show();
     }
 
