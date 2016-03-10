@@ -20,8 +20,7 @@ public class ClientConnector extends SocketConnection{
     public ClientConnector(ClientType client) throws IOException {
         try {
             socket = new Socket("localhost", 8189);
-            newOut();
-            out.writeObject(client);
+            writeObject(client);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }

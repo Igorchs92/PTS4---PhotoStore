@@ -23,11 +23,9 @@ public class PhotographerClientRunnable extends SocketConnection{
 
     public void testConnection() throws IOException, ClassNotFoundException {
         boolean send = false;
-        newOut();
-        out.writeObject(send);
+        writeObject(send);
         LOG.log(Level.INFO, "Message sent: {0}", send);
-        newIn();
-        boolean receive = (boolean) in.readObject();
+        boolean receive = (boolean) readObject();
         LOG.log(Level.INFO, "Message received: {0}", receive);
     }
 }

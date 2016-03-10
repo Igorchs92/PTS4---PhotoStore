@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author IGOR
+ * @author Igor
  */
 public class SocketConnection {
     protected Socket socket = null;
@@ -21,11 +21,13 @@ public class SocketConnection {
     protected ObjectInputStream in = null;
     protected static final Logger LOG = Logger.getLogger(SocketConnection.class.getName());
     
-    protected void newIn() throws IOException {
+    protected Object readObject() throws IOException, ClassNotFoundException {
         in = new ObjectInputStream(socket.getInputStream());
+        return in.readObject();
     }
 
-    protected void newOut() throws IOException {
+    protected void writeObject(Object obj) throws IOException {
         out = new ObjectOutputStream(socket.getOutputStream());
+        out.writeObject(obj);
     }
 }

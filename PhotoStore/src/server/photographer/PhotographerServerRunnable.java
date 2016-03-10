@@ -35,12 +35,10 @@ public class PhotographerServerRunnable extends SocketConnection implements Obse
     public void testConnection() {
         try {
             while (!socket.isClosed()) {
-                newIn();
-                boolean receive = (boolean) in.readObject();
+                boolean receive = (boolean) readObject();
                 LOG.log(Level.INFO, "Message received: {0}", receive);
                 boolean send = true;
-                newOut();
-                out.writeObject(send);
+                writeObject(send);
                 LOG.log(Level.INFO, "Message sent: {0}", send);
             }
         } catch (ClassNotFoundException ex) {

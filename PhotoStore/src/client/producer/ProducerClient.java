@@ -29,7 +29,7 @@ public class ProducerClient extends Application {
     private Scene sceneLogin;
     private Scene sceneRegister;
     private Scene sceneMain;
-
+    
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
@@ -44,7 +44,6 @@ public class ProducerClient extends Application {
      * @throws java.lang.ClassNotFoundException
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        launch(args);
         try {
             ClientConnector clientConnector = new ClientConnector(ClientType.producer);
             clientRunnable = new ProducerClientRunnable(clientConnector.getSocket());
