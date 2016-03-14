@@ -11,6 +11,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import shared.SocketConnection;
+import shared.photographer.PhotographerCall;
 
 /**
  *
@@ -29,7 +30,28 @@ public class PhotographerServerRunnable extends SocketConnection implements Obse
 
     @Override
     public void run() {
-        testConnection();
+        try {
+            while (!socket.isClosed()) {
+                PhotographerCall call = (PhotographerCall) readObject();
+                switch (call) {
+                    case test: {
+                        testConnection();
+                        break;
+                    }
+                    case login: {
+
+                        break;
+                    }
+                    case logout: {
+
+                    }
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            LOG.log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
+        }
     }
 
     public void testConnection() {

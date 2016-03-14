@@ -15,7 +15,7 @@ import shared.SocketConnection;
  *
  * @author Igor
  */
-public class ClientConnector extends SocketConnection{
+public class ClientConnector extends SocketConnection {
 
     public ClientConnector(ClientType client) throws IOException {
         try {

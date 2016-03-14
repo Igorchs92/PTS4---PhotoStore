@@ -33,7 +33,7 @@ public class PhotographerClient extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("PhotographerClientLogin.fxml")));
+        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("ui/PhotographerClientLogin.fxml")));
         setSceneLogin();
         stage.show();
     }

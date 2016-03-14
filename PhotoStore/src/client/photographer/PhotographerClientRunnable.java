@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
 import shared.SocketConnection;
+import shared.photographer.PhotographerCall;
 
 /**
  *
@@ -22,6 +23,7 @@ public class PhotographerClientRunnable extends SocketConnection{
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
+        writeObject(PhotographerCall.test);
         boolean send = false;
         writeObject(send);
         LOG.log(Level.INFO, "Message sent: {0}", send);

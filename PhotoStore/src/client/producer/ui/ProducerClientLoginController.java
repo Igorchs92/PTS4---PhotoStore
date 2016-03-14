@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package client.photographer;
+package client.producer.ui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,7 +18,7 @@ import javafx.scene.control.Label;
  *
  * @author IGOR
  */
-public class PhotographerClientLoginController implements Initializable {
+public class ProducerClientLoginController implements Initializable {
 
     @FXML
     private Button button;

@@ -5,13 +5,12 @@
  */
 package server;
 
-import server.user.UserServerRunnable;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import server.producer.ProducerServerRunnable;
+import server.photographer.PhotographerServerRunnable;
+import server.user.UserServerRunnable;
 import shared.ClientType;
 import shared.SocketConnection;
 
@@ -20,8 +19,8 @@ import shared.SocketConnection;
  * @author Igor
  */
 public class Server extends SocketConnection {
-    
-    public static void main(String[] args) throws ClassNotFoundException {
+
+    public void clientConnect() throws ClassNotFoundException {
         try {
             // Establish server socket
             ServerSocket serverSocket = new ServerSocket(8189);
@@ -29,27 +28,29 @@ public class Server extends SocketConnection {
             while (true) {
                 try {
                     // Wait for client connection
-                    Socket socket = serverSocket.accept();
+                    socket = serverSocket.accept();
                     LOG.log(Level.INFO, "New Client Connected: {0}", socket.getInetAddress());
                     //Read input stream for ClientType type enum
-                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-                    ClientType client = (ClientType) in.readObject();
+                    ClientType client = (ClientType) readObject();
                     LOG.log(Level.INFO, "Client Type: {0}", client.name());
                     // Handle client request in a new thread
                     Thread thread;
-                    if (client == ClientType.producer){
-                        thread = new Thread(new UserServerRunnable(socket));
-                        thread.start();
+                    switch (client) {
+                        case producer:
+                            thread = new Thread(new ProducerServerRunnable(socket));
+                            thread.start();
+                            break;
+                        case photographer:
+                            thread = new Thread(new PhotographerServerRunnable(socket));
+                            thread.start();
+                            break;
+                        case user:
+                            thread = new Thread(new UserServerRunnable(socket));
+                            thread.start();
+                            break;
+                        default:
+                            break;
                     }
-                    if (client == ClientType.photographer){
-                        thread = new Thread(new UserServerRunnable(socket));
-                        thread.start();
-                    }
-                    if (client == ClientType.user){
-                        thread = new Thread(new UserServerRunnable(socket));
-                        thread.start();
-                    }                    
-                    
                 } catch (IOException e) {
                     LOG.log(Level.WARNING, "IOException occurred: {0}", e.getMessage());
                 }
@@ -59,5 +60,9 @@ public class Server extends SocketConnection {
             LOG.log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    public static void main(String[] args) throws ClassNotFoundException {
+        (new Server()).clientConnect();
+    }
+
 }

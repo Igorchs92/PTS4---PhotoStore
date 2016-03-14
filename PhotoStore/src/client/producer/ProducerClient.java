@@ -33,7 +33,7 @@ public class ProducerClient extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("ProducerClientLogin.fxml")));
+        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("ui/ProducerClientLogin.fxml")));
         setSceneLogin();
         stage.show();
     }

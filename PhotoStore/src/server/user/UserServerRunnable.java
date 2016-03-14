@@ -11,6 +11,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import shared.SocketConnection;
+import shared.user.UserCall;
 
 /**
  *
@@ -29,7 +30,28 @@ public class UserServerRunnable extends SocketConnection implements Observer, Ru
 
     @Override
     public void run() {
-        testConnection();
+        try {
+            while (!socket.isClosed()) {
+                UserCall call = (UserCall) readObject();
+                switch (call) {
+                    case test: {
+                        testConnection();
+                        break;
+                    }
+                    case login: {
+
+                        break;
+                    }
+                    case logout: {
+
+                    }
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            LOG.log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
+        }
     }
 
     public void testConnection() {
