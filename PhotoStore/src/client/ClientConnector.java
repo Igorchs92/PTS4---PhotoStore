@@ -9,24 +9,27 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
 import shared.ClientType;
+import shared.Log;
 import shared.SocketConnection;
 
 /**
  *
  * @author Igor
  */
-public class ClientConnector extends SocketConnection {
-
+public class ClientConnector{
+    
+    SocketConnection socket;
+    
     public ClientConnector(ClientType client) throws IOException {
         try {
-            socket = new Socket("localhost", 8189);
-            writeObject(client);
+            socket = new SocketConnection(new Socket("localhost", 8189));
+            socket.writeObject(client);
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            Log.exception(ex);
         }
     }
 
-    public Socket getSocket() {
+    public SocketConnection getSocket() {
         return socket;
     }
 }

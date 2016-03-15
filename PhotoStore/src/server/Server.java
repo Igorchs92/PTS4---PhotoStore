@@ -12,27 +12,28 @@ import server.producer.ProducerServerRunnable;
 import server.photographer.PhotographerServerRunnable;
 import server.user.UserServerRunnable;
 import shared.ClientType;
+import shared.Log;
 import shared.SocketConnection;
 
 /**
  *
  * @author Igor
  */
-public class Server extends SocketConnection {
+public class Server {
 
     public void clientConnect() throws ClassNotFoundException {
         try {
             // Establish server socket
             ServerSocket serverSocket = new ServerSocket(8189);
-            LOG.log(Level.INFO, "Server is running. Listening on port: {0}", serverSocket.getLocalPort());
+            Log.info("Server is running. Listening on port: {0}", serverSocket.getLocalPort());
             while (true) {
                 try {
                     // Wait for client connection
-                    socket = serverSocket.accept();
-                    LOG.log(Level.INFO, "New Client Connected: {0}", socket.getInetAddress());
+                    SocketConnection socket = new SocketConnection(serverSocket.accept());
+                    Log.info("New Client Connected: {0}", socket.getInetAddress());
                     //Read input stream for ClientType type enum
-                    ClientType client = (ClientType) readObject();
-                    LOG.log(Level.INFO, "Client Type: {0}", client.name());
+                    ClientType client = (ClientType) socket.readObject();
+                    Log.info("Client Type: {0}", client.name());
                     // Handle client request in a new thread
                     Thread thread;
                     switch (client) {
@@ -52,12 +53,12 @@ public class Server extends SocketConnection {
                             break;
                     }
                 } catch (IOException e) {
-                    LOG.log(Level.WARNING, "IOException occurred: {0}", e.getMessage());
+                    Log.warning("IOException occurred: {0}", e.getMessage());
                 }
             }
 
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            Log.exception(ex);
         }
     }
 

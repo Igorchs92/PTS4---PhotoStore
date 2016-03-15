@@ -8,6 +8,7 @@ package client.producer;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
+import shared.Log;
 import shared.SocketConnection;
 import shared.producer.ProducerCall;
 
@@ -15,19 +16,21 @@ import shared.producer.ProducerCall;
  *
  * @author Igor
  */
-public class ProducerClientRunnable extends SocketConnection {
+public class ProducerClientRunnable {
 
-    public ProducerClientRunnable(Socket socket) throws IOException, ClassNotFoundException {
+    private SocketConnection socket;
+    
+    public ProducerClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         this.socket = socket;
         testConnection();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
-        writeObject(ProducerCall.test);
+        socket.writeObject(ProducerCall.test);
         boolean send = false;
-        writeObject(send);
-        LOG.log(Level.INFO, "Message sent: {0}", send);
-        boolean receive = (boolean) readObject();
-        LOG.log(Level.INFO, "Message received: {0}", receive);
+        socket.writeObject(send);
+        Log.info("Message sent: {0}", send);
+        boolean receive = (boolean) socket.readObject();
+        Log.info("Message received: {0}", receive);
     }
 }

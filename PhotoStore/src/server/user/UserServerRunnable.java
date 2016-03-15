@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
+import shared.Log;
 import shared.SocketConnection;
 import shared.user.UserCall;
 
@@ -17,22 +18,24 @@ import shared.user.UserCall;
  *
  * @author Igor
  */
-public class UserServerRunnable extends SocketConnection implements Observer, Runnable {
+public class UserServerRunnable implements Observer, Runnable {
 
-    public UserServerRunnable(Socket socket) {
+    private SocketConnection socket;
+
+    public UserServerRunnable(SocketConnection socket) {
         this.socket = socket;
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        LOG.log(Level.INFO, "Oberservable");
+        Log.info("Oberservable");
     }
 
     @Override
     public void run() {
         try {
             while (!socket.isClosed()) {
-                UserCall call = (UserCall) readObject();
+                UserCall call = (UserCall) socket.readObject();
                 switch (call) {
                     case test: {
                         testConnection();
@@ -48,25 +51,25 @@ public class UserServerRunnable extends SocketConnection implements Observer, Ru
                 }
             }
         } catch (ClassNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            Log.exception(ex);
         } catch (IOException ex) {
-            LOG.log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
+            Log.info("User client disconnected: {0}", socket.getInetAddress());
         }
     }
 
     public void testConnection() {
         try {
             while (!socket.isClosed()) {
-                boolean receive = (boolean) readObject();
-                LOG.log(Level.INFO, "Message received: {0}", receive);
+                boolean receive = (boolean) socket.readObject();
+                Log.info("Message received: {0}", receive);
                 boolean send = true;
-                writeObject(send);
-                LOG.log(Level.INFO, "Message sent: {0}", send);
+                socket.writeObject(send);
+                Log.info("Message sent: {0}", send);
             }
         } catch (ClassNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            Log.exception(ex);
         } catch (IOException ex) {
-            LOG.log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
+            Log.info("User client disconnected: {0}", socket.getInetAddress());
         }
     }
 }

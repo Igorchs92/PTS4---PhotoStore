@@ -8,6 +8,7 @@ package client.photographer;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
+import shared.Log;
 import shared.SocketConnection;
 import shared.photographer.PhotographerCall;
 
@@ -15,19 +16,21 @@ import shared.photographer.PhotographerCall;
  *
  * @author Igor
  */
-public class PhotographerClientRunnable extends SocketConnection{
+public class PhotographerClientRunnable {
 
-    public PhotographerClientRunnable(Socket socket) throws IOException, ClassNotFoundException {
-        this.socket = socket;
+    private SocketConnection socket;
+
+    public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
+        this.socket = s;
         testConnection();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
-        writeObject(PhotographerCall.test);
+        socket.writeObject(PhotographerCall.test);
         boolean send = false;
-        writeObject(send);
-        LOG.log(Level.INFO, "Message sent: {0}", send);
-        boolean receive = (boolean) readObject();
-        LOG.log(Level.INFO, "Message received: {0}", receive);
+        socket.writeObject(send);
+        Log.info("Message sent: {0}", send);
+        boolean receive = (boolean) socket.readObject();
+        Log.info("Message received: {0}", receive);
     }
 }

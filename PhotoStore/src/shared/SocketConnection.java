@@ -8,6 +8,7 @@ package shared;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,17 +19,32 @@ import java.util.logging.Logger;
  */
 public class SocketConnection {
 
-    protected Socket socket = null;
-    protected ObjectOutputStream out = null;
-    protected ObjectInputStream in = null;
-    protected static final Logger LOG = Logger.getLogger(SocketConnection.class.getName());
-
-    protected final Object readObject() throws IOException, ClassNotFoundException {
+    private Socket socket = null;
+    private ObjectOutputStream out = null;
+    private ObjectInputStream in = null;
+    
+    public SocketConnection(Socket s){
+        socket = s;
+    }
+    
+    public Socket getSocket(){
+        return socket;
+    }
+    
+    public boolean isClosed(){
+        return socket.isClosed();
+    }
+    
+    public InetAddress getInetAddress(){
+        return socket.getInetAddress();
+    }
+    
+    public Object readObject() throws IOException, ClassNotFoundException {
         in = new ObjectInputStream(socket.getInputStream());
         return in.readObject();
     }
 
-    protected final void writeObject(Object obj) throws IOException {
+    public void writeObject(Object obj) throws IOException {
         out = new ObjectOutputStream(socket.getOutputStream());
         out.writeObject(obj);
     }
