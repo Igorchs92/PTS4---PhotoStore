@@ -11,8 +11,8 @@ package shared.user;
  */
 public class Producent extends Account {
 
-    public Producent(String username, String password, String adress, String phonenumber) {
-        super(username, password, adress, phonenumber);
+    public Producent(String username, String name, String adress, String phonenumber) {
+        super(username);
     }
     
 }

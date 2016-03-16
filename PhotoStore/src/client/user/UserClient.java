@@ -33,7 +33,8 @@ public class UserClient extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("ui/UserClientLogin.fxml")));
+        Parent root = FXMLLoader.load(getClass().getResource("../ui/UserClientLogin.fxml"));
+        sceneLogin = new Scene(root);
 //        sceneRegister = new Scene(FXMLLoader.load(getClass().getResource("UserClientRegister.fxml")));
 //        sceneMain = new Scene(FXMLLoader.load(getClass().getResource("UserClientMain.fxml")));
         setSceneLogin();

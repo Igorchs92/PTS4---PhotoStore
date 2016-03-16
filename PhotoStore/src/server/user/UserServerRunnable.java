@@ -37,10 +37,15 @@ public class UserServerRunnable implements Observer, Runnable {
             while (!socket.isClosed()) {
                 UserCall call = (UserCall) socket.readObject();
                 switch (call) {
-                    case test: {
+                    case test:
                         testConnection();
                         break;
-                    }
+                    case register:
+                        Log.info("register");
+                        String uname = (String) socket.readObject();
+                        String pword = (String) socket.readObject();
+                        System.out.println("U: " + uname + " PW:" + pword);
+                        break;
                     case login: {
 
                         break;
@@ -59,13 +64,11 @@ public class UserServerRunnable implements Observer, Runnable {
 
     public void testConnection() {
         try {
-            while (!socket.isClosed()) {
-                boolean receive = (boolean) socket.readObject();
-                Log.info("Message received: {0}", receive);
-                boolean send = true;
-                socket.writeObject(send);
-                Log.info("Message sent: {0}", send);
-            }
+            boolean receive = (boolean) socket.readObject();
+            Log.info("Message received: {0}", receive);
+            boolean send = true;
+            socket.writeObject(send);
+            Log.info("Message sent: {0}", send);
         } catch (ClassNotFoundException ex) {
             Log.exception(ex);
         } catch (IOException ex) {
