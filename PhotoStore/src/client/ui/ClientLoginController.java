@@ -5,6 +5,7 @@
  */
 package client.ui;
 
+import client.ClientConnector;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -12,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 /**
  * FXML Controller class
@@ -19,21 +21,56 @@ import javafx.scene.control.Label;
  * @author Igor
  */
 public class ClientLoginController implements Initializable {
+    
     @FXML
-    private Button button;
+    private Button btnLogIn;
+    
     @FXML
-    private Label label;
+    private Button btnRegister;
+    
+    @FXML
+    private Label lblUsername;
+    
+    @FXML
+    private Label lblPassword;
+    
+    @FXML 
+    private TextField txtUsername;
+    
+    @FXML
+    private TextField txtPassword;
+    
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        // TODO make UI elements multi-language
     }    
-
+    
     @FXML
-    private void handleButtonAction(ActionEvent event) {
+    private void handleBtnLoginOnClick(ActionEvent event) {
+        // TODO: login
+        // set below boolean to true if login succeeds
+        ClientConnector.loggedIn = false;
+        // TODO: remove this window and go back to the old window
+    }
+    
+    @FXML
+    private void handleBtnRegisterOnClick(ActionEvent event) {
+        // TODO: goto register ui
+        switch (ClientConnector.clientType) {
+            case producer: {
+                
+            }
+            case photographer: {
+                
+            }
+            case user: {
+                
+            }
+        }
     }
     
 }
