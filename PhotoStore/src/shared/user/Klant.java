@@ -10,8 +10,8 @@ package shared.user;
  * @author Robin
  */
 public class Klant extends Account{
-    public Klant(String username, String password, String adress, String phonenumber) {
-        super(username, password, adress, phonenumber);
+    public Klant(String username, String name, String adress, String phonenumber) {
+        super(username);
     }
     
     

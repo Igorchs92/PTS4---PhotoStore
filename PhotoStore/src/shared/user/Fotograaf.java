@@ -11,8 +11,8 @@ package shared.user;
  */
 public class Fotograaf extends Account {
 
-    public Fotograaf(String username, String password, String adress, String phonenumber) {
-        super(username, password, adress, phonenumber);
+    public Fotograaf(String username, String name, String adress, String phonenumber) {
+        super(username);
     }
     
 }
