@@ -42,12 +42,12 @@ public class SocketConnection {
 
     private void establishEncryption() {
         try {
-            this.keyFactory = SecretKeyFactory.getInstance("DES");
-            byte[] key = "amLn4Hkb".getBytes();
-            secretKey = new SecretKeySpec(key, 0, key.length, "DES");
-            encrypter = Cipher.getInstance("DES");
+            this.keyFactory = SecretKeyFactory.getInstance("DESede");
+            byte[] key = "S(aHz&Cc}RP$A4=R,k]7bg_`".getBytes();
+            secretKey = new SecretKeySpec(key, 0, key.length, "DESede");
+            encrypter = Cipher.getInstance("DESede");
             encrypter.init(Cipher.ENCRYPT_MODE, secretKey);
-            decrypter = Cipher.getInstance("DES");
+            decrypter = Cipher.getInstance("DESede");
             decrypter.init(Cipher.DECRYPT_MODE, secretKey);
 
         } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException ex) {
