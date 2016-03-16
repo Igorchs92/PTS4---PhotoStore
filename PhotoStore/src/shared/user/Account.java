@@ -11,21 +11,22 @@ package shared.user;
  */
 public abstract class Account {
     private String username;
+    /*
     private String name;
     private String adress;
-    private String phoneNumber;
+    private String phoneNumber;*/
     
-    public Account(String username, String password, String adress, String phonenumber) {
+    public Account(String username/*, String name, String adress, String phonenumber*/) {
         this.username = username;
-        this.name = name;
+        /*this.name = name;
         this.adress = adress;
-        this.phoneNumber = phonenumber;
+        this.phoneNumber = phonenumber;*/
     }
     
     public String getUsername() {
         return username;
     }
-    
+    /*
     public String getName() {
         return name;
     }
@@ -37,5 +38,5 @@ public abstract class Account {
     public String getPhoneNumber() {
         return phoneNumber;
     }
-    
+    */
 }
