@@ -36,7 +36,7 @@ public class Databasemanager {
 
     public Account inloggen(String username, String password) throws SQLException {
         Statement st = conn.createStatement();
-        st.executeQuery("SELECT id, name, address, phonenumber, role FROM account WHERE username = LOWER('" + username + "') AND password = '" + password + "';");
+        st.executeQuery("SELECT id, name, adres, phonenumber, role FROM Accounts WHERE id = LOWER('" + username + "') AND password = '" + password + "';");
         ResultSet srs = st.getResultSet();
         String uname = "";
         String name = "";
@@ -48,7 +48,7 @@ public class Databasemanager {
             while (srs.next()) {
                 uname = srs.getString("id");
                 name = srs.getString("name");
-                address = srs.getString("address");
+                address = srs.getString("adres");
                 phonenumber = srs.getString("phonenumber");
                 role = srs.getString("role");
             }
@@ -75,10 +75,10 @@ public class Databasemanager {
             temp += s.substring(0, 1).toUpperCase() + s.substring(1) + " ";
         }
 
-        st.execute("SELECT * FROM account WHERE id = '" + uname + "';");
+        st.execute("SELECT * FROM Accounts WHERE id = '" + uname + "';");
         ResultSet srs = st.getResultSet();
         if (srs == null) {
-            st.execute("INSERT INTO account (id, name, password, address, phonenumber, role) "
+            st.execute("INSERT INTO Accounts (id, name, password, adres, phonenumber, role) "
                     + "VALUES ('" + uname + "', '" + name + "', '" + password + "', '" + address + "', '" + phonenumber + "', '" + role + "');");
         }
         else {
