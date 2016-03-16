@@ -18,9 +18,13 @@ import shared.SocketConnection;
  */
 public class ClientConnector{
     
+    static public ClientType clientType;
+    static public boolean loggedIn;
     SocketConnection socket;
     
     public ClientConnector(ClientType client) throws IOException {
+        clientType = client;
+        loggedIn = false;
         try {
             socket = new SocketConnection(new Socket("localhost", 8189));
             socket.writeObject(client);
