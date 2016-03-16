@@ -1,2 +1,3 @@
 *.properties
 PhotoStore/build/
+*.class
