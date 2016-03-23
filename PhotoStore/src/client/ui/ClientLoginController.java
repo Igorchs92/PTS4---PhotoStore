@@ -6,6 +6,7 @@
 package client.ui;
 
 import client.ClientConnector;
+import client.strings.Strings;
 import static client.strings.Strings.getString;
 import client.user.UserClientRunnable;
 import java.io.IOException;
@@ -74,7 +75,7 @@ public class ClientLoginController implements Initializable {
     @FXML
     private void handleBtnLoginOnClick(ActionEvent event) {
         if(txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
-            showAlert("Enter a username and password!", AlertType.ERROR);
+            showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
             return;
         }
         // TODO: login
@@ -86,7 +87,7 @@ public class ClientLoginController implements Initializable {
     @FXML
     private void handleBtnRegisterOnClick(ActionEvent event) throws IOException {
         if(txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
-            showAlert("Enter a username and password!", AlertType.ERROR);
+            showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
             return;
         }
         // TODO: goto register ui
@@ -104,7 +105,7 @@ public class ClientLoginController implements Initializable {
     }
     private void showAlert(String text, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle("Notification:");
+        alert.setTitle(Strings.getString("notification"));
         alert.setContentText(text);
         alert.show();
     }
