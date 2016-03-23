@@ -5,19 +5,15 @@
  */
 package server;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import shared.FileSystemCall;
 import shared.Log;
 import shared.SocketConnection;
 
 /**
  *
- * @author Hovsep
+ * @author Igor
  */
 public class FileSystem {
 
@@ -28,48 +24,30 @@ public class FileSystem {
         this.socket = socket;
         this.root = new File("resources/FileSystem/");
         if (!root.exists()) {
-            root.mkdir();
+            root.mkdirs();
         }
     }
 
-    public void saveFile() {
+    public void receiveFile() {
         try {
-            File map = root;
-            boolean end = false;
-            while (!end) {
-                switch ((FileSystemCall) socket.readObject()) {
-                    case map:
-                        map = new File(root + (String) socket.readObject());
-                        if (!map.exists()) {
-                            map.mkdir();
-                        }
-                        break;
-                    case file:
-                        String name = (String) socket.readObject();
-                        File file = new File(map + name + ".jpg");
-                        ImageIcon image = (ImageIcon) socket.readObject();
-                        ImageIO.write((BufferedImage) image.getImage(), "jpg", file);
-                        break;
-                    case end:
-                        end = true;
-                        break;
-                }
-            }
+            //receive groupId(0), uniqueId(1) and fileName(2)
+            String[] fileInfo = (String[]) socket.readObject();
+            //create a new file with the right directories
+            File file = new File(fileInfo[0] + "/" + fileInfo[1] + "/" + fileInfo[2] + ".jpg");
+            file.mkdirs();
+            socket.readFile(file);
         } catch (IOException | ClassNotFoundException ex) {
             Log.exception(ex);
         }
     }
 
-    
-    public void sendFile() {
+    public void sendFiles(String groupId, String uniqueId) {
         try {
-            //receive unique number
-            String uniqueNumber = (String) socket.readObject();
-            //load the existing File out of the unique number, first 5 characters are the group map name
-            File map = new File(root + uniqueNumber.substring(0, 5) + "/");
-            //does the map exist yet?
+            //load the existing File out of the groupId
+            File map = new File(root + groupId + "/");
+            //does the groupId exist yet?
             if (map.exists()) {
-                //load all files from the map File
+                //load all files from the groupId File
                 File[] files = map.listFiles();
                 for (File file : files) {
                     //we only want to retrieve the group photo's
@@ -77,40 +55,30 @@ public class FileSystem {
                         //we want to send a file now
                         socket.writeObject(FileSystemCall.file);
                         //~~send file (needs testing)
-                        socket.writeObject(fileToImageIcon(file));
+                        socket.writeFile(file);
                     }
                 }
             }
-            //load the existing File out of the unique number, last 5 characters are the personal map
-            map = new File(map + uniqueNumber.substring(5, 10) + "/");
-            //does the map exist?
+            //load the existing File out of the unique number
+            map = new File(map + uniqueId + "/");
+            //does the groupId exist?
             if (map.exists()) {
-                //load all files from the map File
+                //load all files from the groupId File
                 File[] files = map.listFiles();
                 for (File file : files) {
-                    //we only want to retrieve the files (not that we wont find a map)
+                    //we only want to retrieve the files (not that we wont find a groupId)
                     if (file.isFile()) {
                         //we want to send out a file now
                         socket.writeObject(FileSystemCall.file);
                         //~~send file (needs testing)
-                        socket.writeObject(fileToImageIcon(file));
-                        
+                        socket.writeFile(file);
                     }
                 }
             }
             socket.writeObject(FileSystemCall.end);
-        } catch (IOException | ClassNotFoundException ex) {
+        } catch (IOException ex) {
             Log.exception(ex);
         }
     }
     
-    private ImageIcon fileToImageIcon(File file) throws IOException{
-        ImageIcon imageIcon = new ImageIcon();
-        imageIcon.setImage(ImageIO.read(file));
-        return imageIcon;
-    }
-    
-    public void uploadFile() {
-
-    }
 }
