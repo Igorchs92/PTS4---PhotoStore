@@ -6,6 +6,7 @@
 package client.ui;
 
 import client.ClientConnector;
+import static client.strings.Strings.getString;
 import client.user.UserClientRunnable;
 import java.io.IOException;
 import java.net.URL;
@@ -60,21 +61,13 @@ public class ClientLoginController implements Initializable {
     }
     
     private void setUITexts() {
-        Locale l = Locale.getDefault();
-        ResourceBundle bundle;
-        try {
-        bundle = ResourceBundle.getBundle("client.strings.StringBundle", l);
-        }
-        catch (MissingResourceException ex) {
-            bundle = ResourceBundle.getBundle("StringBundle");
-        }
         
-        lblUsername.setText(bundle.getString("username"));
-        lblPassword.setText(bundle.getString("password"));
-        txtUsername.setPromptText(bundle.getString("username"));
-        txtPassword.setPromptText(bundle.getString("password"));
-        btnLogin.setText(bundle.getString("log_in"));
-        btnRegister.setText(bundle.getString("register"));
+        lblUsername.setText(getString("username"));
+        lblPassword.setText(getString("password"));
+        txtUsername.setPromptText(getString("username"));
+        txtPassword.setPromptText(getString("password"));
+        btnLogin.setText(getString("log_in"));
+        btnRegister.setText(getString("register"));
 
     }
     
