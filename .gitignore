@@ -2,6 +2,5 @@ PhotoStore/build/
 *.class
 PhotoStore/build/built-jar.properties
 *.jar
-PhotoStore/nbproject/private/private.xml
+PhotoStore/nbproject/private/
 PhotoStore/build/built-jar.properties
-PhotoStore/nbproject/private/private.xml
