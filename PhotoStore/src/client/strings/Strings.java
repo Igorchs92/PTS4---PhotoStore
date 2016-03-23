@@ -20,11 +20,13 @@ public final class Strings {
     
     private Strings() {
         l = Locale.getDefault();
-        try {
+        try { 
         bundle = ResourceBundle.getBundle("client.strings.StringBundle", l);
         }
         catch (MissingResourceException ex) {
-            bundle = ResourceBundle.getBundle("StringBundle");
+            // When the file for the requested language could not be found, the english language will be used.
+            Locale lBasic = new Locale("en", "EN");
+            bundle = ResourceBundle.getBundle("client.strings.StringBundle", lBasic);
         }
     }
     
