@@ -6,9 +6,12 @@
 package client.ui;
 
 import client.ClientConnector;
+import static client.strings.Strings.getString;
 import client.user.UserClientRunnable;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,7 +30,7 @@ import javafx.scene.control.TextField;
 public class ClientLoginController implements Initializable {
     
     @FXML
-    private Button btnLogIn;
+    private Button btnLogin;
     
     @FXML
     private Button btnRegister;
@@ -54,7 +57,19 @@ public class ClientLoginController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO make UI elements multi-language
         serverCom = UserClientRunnable.clientRunnable;
-    }    
+        setUITexts();
+    }
+    
+    private void setUITexts() {
+        
+        lblUsername.setText(getString("username"));
+        lblPassword.setText(getString("password"));
+        txtUsername.setPromptText(getString("username"));
+        txtPassword.setPromptText(getString("password"));
+        btnLogin.setText(getString("log_in"));
+        btnRegister.setText(getString("register"));
+
+    }
     
     @FXML
     private void handleBtnLoginOnClick(ActionEvent event) {
