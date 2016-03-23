@@ -9,6 +9,8 @@ import client.ClientConnector;
 import client.user.UserClientRunnable;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,7 +29,7 @@ import javafx.scene.control.TextField;
 public class ClientLoginController implements Initializable {
     
     @FXML
-    private Button btnLogIn;
+    private Button btnLogin;
     
     @FXML
     private Button btnRegister;
@@ -54,7 +56,27 @@ public class ClientLoginController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO make UI elements multi-language
         serverCom = UserClientRunnable.clientRunnable;
-    }    
+        setUITexts();
+    }
+    
+    private void setUITexts() {
+        Locale l = Locale.getDefault();
+        ResourceBundle bundle;
+        try {
+        bundle = ResourceBundle.getBundle("client.strings.StringBundle", l);
+        }
+        catch (MissingResourceException ex) {
+            bundle = ResourceBundle.getBundle("StringBundle");
+        }
+        
+        lblUsername.setText(bundle.getString("username"));
+        lblPassword.setText(bundle.getString("password"));
+        txtUsername.setPromptText(bundle.getString("username"));
+        txtPassword.setPromptText(bundle.getString("password"));
+        btnLogin.setText(bundle.getString("log_in"));
+        btnRegister.setText(bundle.getString("register"));
+
+    }
     
     @FXML
     private void handleBtnLoginOnClick(ActionEvent event) {
