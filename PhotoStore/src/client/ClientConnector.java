@@ -18,6 +18,7 @@ import shared.SocketConnection;
  */
 public class ClientConnector{
     
+    static public IClientRunnable iClient;
     static public ClientType clientType;
     static public boolean loggedIn;
     SocketConnection socket;
