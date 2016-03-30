@@ -38,14 +38,20 @@ public class UserClientRunnable {
     }
     
     public void registerUser(String username, String password/*, String name, String adress, String phonenumber*/) throws IOException {
-        System.out.println("Start write");
+        //System.out.println("Start write");
         socket.writeObject(UserCall.register);
         socket.writeObject(username);
         socket.writeObject(password);
-        System.out.println("Wrote objs");
+        //System.out.println("Wrote objs");
         /*
         socket.writeObject(name);
         socket.writeObject(adress);
         socket.writeObject(phonenumber);*/
+    }
+    
+    public void loginUser(String username, String password) throws IOException {
+        socket.writeObject(UserCall.login);
+        socket.writeObject(username);
+        socket.writeObject(password);
     }
 }

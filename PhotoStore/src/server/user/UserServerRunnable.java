@@ -7,9 +7,12 @@ package server.user;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import server.Databasemanager;
 import shared.Log;
 import shared.SocketConnection;
 import shared.user.UserCall;
@@ -21,9 +24,11 @@ import shared.user.UserCall;
 public class UserServerRunnable implements Observer, Runnable {
 
     private SocketConnection socket;
+    private Databasemanager dbm;
 
     public UserServerRunnable(SocketConnection socket) {
         this.socket = socket;
+        dbm= new Databasemanager();
     }
 
     @Override
@@ -32,7 +37,7 @@ public class UserServerRunnable implements Observer, Runnable {
     }
 
     @Override
-    public void run() {
+    public void run(){
         try {
             while (!socket.isClosed()) {
                 UserCall call = (UserCall) socket.readObject();
@@ -44,10 +49,17 @@ public class UserServerRunnable implements Observer, Runnable {
                         Log.info("register");
                         String uname = (String) socket.readObject();
                         String pword = (String) socket.readObject();
+                        try {
+                            dbm.registreren(uname, pword, "", "", "", "");
+                        } catch (SQLException ex) {
+                            Logger.getLogger(UserServerRunnable.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    
                         System.out.println("U: " + uname + " PW:" + pword);
                         break;
                     case login: {
-
+                        Log.info("login");
+                        
                         break;
                     }
                     case logout: {
