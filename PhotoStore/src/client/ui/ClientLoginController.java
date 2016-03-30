@@ -57,14 +57,15 @@ public class ClientLoginController implements Initializable {
     }    
     
     @FXML
-    private void handleBtnLoginOnClick(ActionEvent event) {
+    private void handleBtnLoginOnClick(ActionEvent event) throws IOException {
         if(txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
             showAlert("Enter a username and password!", AlertType.ERROR);
             return;
         }
+        serverCom.loginUser(txtUsername.getText(), txtPassword.getText());
         // TODO: login
         // set below boolean to true if login succeeds
-        ClientConnector.loggedIn = false;
+        ClientConnector.loggedIn = true;
         // TODO: remove this window and go back to the old window
     }
     
@@ -74,18 +75,7 @@ public class ClientLoginController implements Initializable {
             showAlert("Enter a username and password!", AlertType.ERROR);
             return;
         }
-        // TODO: goto register ui
-        switch (ClientConnector.clientType) {
-            case producer: {
-                
-            }
-            case photographer: {
-                
-            }
-            case user: {
-                serverCom.registerUser(txtUsername.getText(), txtPassword.getText());
-            }
-        }
+        serverCom.registerUser(txtUsername.getText(), txtPassword.getText());
     }
     private void showAlert(String text, Alert.AlertType type) {
         Alert alert = new Alert(type);
