@@ -5,11 +5,13 @@
  */
 package shared.user;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Robin
  */
-public abstract class Account {
+public abstract class Account implements Serializable{
     private String username;
     /*
     private String name;

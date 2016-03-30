@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import server.Databasemanager;
 import shared.Log;
 import shared.SocketConnection;
+import shared.user.Account;
+import shared.user.Klant;
 import shared.user.UserCall;
 
 /**
@@ -49,16 +51,40 @@ public class UserServerRunnable implements Observer, Runnable {
                         Log.info("register");
                         String uname = (String) socket.readObject();
                         String pword = (String) socket.readObject();
+                        Account acc=null;
                         try {
                             dbm.registreren(uname, pword, "", "", "", "");
+                            //TODO: pas deze regel aan zodat inloggen werkt
+                            acc = dbm.inloggen(uname, pword);
+                            //acc = new Klant("bert", "", "", "");
+                            System.out.println("ACCOUNT:" + acc);
+                            //Log.info("Account: " + acc);
                         } catch (SQLException ex) {
                             Logger.getLogger(UserServerRunnable.class.getName()).log(Level.SEVERE, null, ex);
+                            socket.writeObject(UserCall.fail);
+                            return;
                         }
-                    
+                        socket.writeObject(UserCall.login);
+                        socket.writeObject(acc);
                         System.out.println("U: " + uname + " PW:" + pword);
                         break;
                     case login: {
                         Log.info("login");
+                        String name = (String) socket.readObject();
+                        String word = (String) socket.readObject();
+                        Account acclogin=null;
+                        try {
+                            //TODO: pas deze regel aan zodat inloggen werkt
+                            acc = dbm.inloggen(name, word);
+                            //acc = new Klant("bert", "", "", "");
+                            System.out.println("ACCOUNT:" + acc);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(UserServerRunnable.class.getName()).log(Level.SEVERE, null, ex);
+                            socket.writeObject(UserCall.fail);
+                            return;
+                        }
+                        socket.writeObject(UserCall.login);
+                        socket.writeObject(acclogin);
                         
                         break;
                     }

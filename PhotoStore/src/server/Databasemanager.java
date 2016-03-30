@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import shared.user.Account;
+import shared.user.Klant;
 
 /**
  *
@@ -35,6 +36,7 @@ public class Databasemanager {
     }
 
     public Account inloggen(String username, String password) throws SQLException {
+        
         Statement st = conn.createStatement();
         st.executeQuery("SELECT id, name, adres, phonenumber, role FROM Accounts WHERE id = LOWER('" + username + "') AND password = '" + password + "';");
         ResultSet srs = st.getResultSet();
@@ -53,15 +55,15 @@ public class Databasemanager {
                 role = srs.getString("role");
             }
         }
-        
         //To Do
+        
         System.out.println("Inloggen returnt nog niks vanwege foute klassenamen!");
         
         switch (role) {
             case "photographer":
                 //return new Photographer(uname, name, address, phonenumber);
             case "user":
-                //return new User(uname, name, address, phonenumber);
+                //return new Klant(uname, name, address, phonenumber);
             case "producer":
                 //return new Producer(uname, name, address, phonenumber);
         }

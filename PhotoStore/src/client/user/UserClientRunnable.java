@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import shared.ClientType;
 import shared.Log;
 import shared.SocketConnection;
+import shared.user.Account;
 import shared.user.UserCall;
 
 /**
@@ -40,28 +41,43 @@ public class UserClientRunnable implements IClientRunnable{
     }
     
     @Override
-    public void registerUser(String username, String password) {
+    public Account registerUser(String username, String password) {
         try {
-            //System.out.println("Start write");
-            socket.writeObject(UserCall.register);
-            socket.writeObject(username);
-            socket.writeObject(password);
-            //System.out.println("Wrote objs");
-            /*
-            socket.writeObject(name);
-            socket.writeObject(adress);
-            socket.writeObject(phonenumber);*/
+
+
+	socket.writeObject(UserCall.register);
+        socket.writeObject(username);
+        socket.writeObject(password);
+        
+        Account acc = null;
+        UserCall pass = (UserCall) socket.readObject();
+        if(pass == pass.fail) {
+            return null;
+        }else if(pass == pass.login) {
+            acc = (Account) socket.readObject();
+        }
+        return acc;
+        //System.out.println("Wrote objs");
+	
         } catch (IOException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     @Override
-    public void loginUser(String username, String password) {
+    public Account loginUser(String username, String password) {
         try {
             socket.writeObject(UserCall.login);
-            socket.writeObject(username);
-            socket.writeObject(password);
+        socket.writeObject(username);
+        socket.writeObject(password);
+        UserCall pass = (UserCall) socket.readObject();
+        Account acc= null;
+        if(pass == pass.fail) {
+            return null;
+        }else if(pass == pass.login) {
+            acc = (Account) socket.readObject();
+        }
+        return acc;
         } catch (IOException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
