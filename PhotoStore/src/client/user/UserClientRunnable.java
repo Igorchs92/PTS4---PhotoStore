@@ -61,7 +61,10 @@ public class UserClientRunnable implements IClientRunnable{
 	
         } catch (IOException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
     
     @Override
@@ -80,7 +83,10 @@ public class UserClientRunnable implements IClientRunnable{
         return acc;
         } catch (IOException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 
 }

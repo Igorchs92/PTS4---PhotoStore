@@ -17,6 +17,7 @@ import shared.Log;
 import shared.SocketConnection;
 import shared.user.Account;
 import shared.user.Klant;
+import shared.user.Producent;
 import shared.user.UserCall;
 
 /**
@@ -30,7 +31,7 @@ public class UserServerRunnable implements Observer, Runnable {
 
     public UserServerRunnable(SocketConnection socket) {
         this.socket = socket;
-        dbm= new Databasemanager();
+        dbm = new Databasemanager();
     }
 
     @Override
@@ -39,7 +40,7 @@ public class UserServerRunnable implements Observer, Runnable {
     }
 
     @Override
-    public void run(){
+    public void run() {
         try {
             while (!socket.isClosed()) {
                 UserCall call = (UserCall) socket.readObject();
@@ -51,7 +52,7 @@ public class UserServerRunnable implements Observer, Runnable {
                         Log.info("register");
                         String uname = (String) socket.readObject();
                         String pword = (String) socket.readObject();
-                        Account acc=null;
+                        Account acc = null;
                         try {
                             dbm.registreren(uname, pword, "", "", "", "");
                             //TODO: pas deze regel aan zodat inloggen werkt
@@ -72,20 +73,14 @@ public class UserServerRunnable implements Observer, Runnable {
                         Log.info("login");
                         String name = (String) socket.readObject();
                         String word = (String) socket.readObject();
-                        Account acclogin=null;
-                        try {
-                            //TODO: pas deze regel aan zodat inloggen werkt
-                            acc = dbm.inloggen(name, word);
-                            //acc = new Klant("bert", "", "", "");
-                            System.out.println("ACCOUNT:" + acc);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(UserServerRunnable.class.getName()).log(Level.SEVERE, null, ex);
+                        Account acclogin = null;
+                        if (dbm.loginProducer(name, word)) {
+                            socket.writeObject(UserCall.login);
+                            acclogin = new Producent(name, "", word, "", "", "");
+                            socket.writeObject(acclogin);
+                        } else {
                             socket.writeObject(UserCall.fail);
-                            return;
                         }
-                        socket.writeObject(UserCall.login);
-                        socket.writeObject(acclogin);
-                        
                         break;
                     }
                     case logout: {

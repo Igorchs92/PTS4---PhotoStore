@@ -5,13 +5,15 @@
  */
 package client;
 
+import shared.user.Account;
+
 /**
  *
  * @author Igor
  */
 public interface IClientRunnable {
 
-    public void registerUser(String username, String password);
+    public Account registerUser(String username, String password);
 
-    public void loginUser(String username, String password);
+    public Account loginUser(String username, String password);
 }

@@ -10,8 +10,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import shared.user.Account;
 import shared.user.Klant;
+import shared.user.Producent;
 
 /**
  *
@@ -85,6 +90,40 @@ public class Databasemanager {
         }
         else {
             //To Do
+        }
+    }
+    
+    public List<Producent> getProducerUsers() throws SQLException {
+       
+        Statement st = conn.createStatement();
+        ResultSet srs = st.executeQuery("SELECT * FROM User");
+        ArrayList<Producent> userlist = new ArrayList<>();
+
+        while (srs.next()) {
+            String userid = srs.getString("acc_id");
+            String name = srs.getString("name");
+            String password = srs.getString("password");
+			String adres = srs.getString("adres");
+			String phonenumber = srs.getString("phonenumber");
+			String emailadres = srs.getString("emailadres");
+
+            Producent usr = new Producent(userid, name, password, adres, phonenumber, emailadres);
+            userlist.add(usr);
+        }
+        st.close();
+        return userlist;
+    }
+    
+    public boolean loginProducer(String name, String password){
+        try {
+            Statement st = conn.createStatement();
+            ResultSet srs = st.executeQuery("SELECT * FROM User WHERE acc_id = '" + name + "' AND password = '" + password + "';");
+            if (srs.next())
+            return true;
+            else return false;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
 }

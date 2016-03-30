@@ -81,7 +81,7 @@ public class ClientLoginController implements Initializable {
             return;
         }
 
-        Account acc = serverCom.loginUser(txtUsername.getText(), txtPassword.getText());
+        Account acc = client.loginUser(txtUsername.getText(), txtPassword.getText());
         if(acc != null) {
             showAlert(new String("You logged in with: " + acc.getUsername()), AlertType.CONFIRMATION);
             ClientConnector.loggedIn = true;
@@ -102,7 +102,7 @@ public class ClientLoginController implements Initializable {
             return;
         }
 
-        Account registered = serverCom.registerUser(txtUsername.getText(), txtPassword.getText());
+        Account registered = client.registerUser(txtUsername.getText(), txtPassword.getText());
         if(registered != null) {
             String alertstr = "You logged in as: " + registered.getUsername();
             showAlert(alertstr, AlertType.CONFIRMATION);

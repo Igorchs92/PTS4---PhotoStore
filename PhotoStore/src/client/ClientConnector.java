@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import shared.ClientType;
 import shared.Log;
 import shared.SocketConnection;
+import shared.user.Account;
 
 /**
  *
@@ -21,6 +22,7 @@ public class ClientConnector{
     static public IClientRunnable iClient;
     static public ClientType clientType;
     static public boolean loggedIn;
+    static public Account loggedInAccount;
     SocketConnection socket;
     
     public ClientConnector(ClientType client) throws IOException {

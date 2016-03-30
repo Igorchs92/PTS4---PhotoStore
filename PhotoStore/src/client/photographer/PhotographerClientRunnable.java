@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import shared.Log;
 import shared.SocketConnection;
 import shared.photographer.PhotographerCall;
+import shared.user.Account;
 
 /**
  *
@@ -36,12 +37,12 @@ public class PhotographerClientRunnable implements IClientRunnable {
     }
 
     @Override
-    public void registerUser(String username, String password) {
+    public Account registerUser(String username, String password) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void loginUser(String username, String password) {
+    public Account loginUser(String username, String password) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
