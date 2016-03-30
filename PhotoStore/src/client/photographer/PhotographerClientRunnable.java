@@ -5,6 +5,7 @@
  */
 package client.photographer;
 
+import client.IClientRunnable;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -16,7 +17,7 @@ import shared.photographer.PhotographerCall;
  *
  * @author Igor
  */
-public class PhotographerClientRunnable {
+public class PhotographerClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
 
@@ -33,4 +34,15 @@ public class PhotographerClientRunnable {
         boolean receive = (boolean) socket.readObject();
         Log.info("Message received: {0}", receive);
     }
+
+    @Override
+    public void registerUser(String username, String password) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void loginUser(String username, String password) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

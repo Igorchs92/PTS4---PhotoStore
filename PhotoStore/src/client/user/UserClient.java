@@ -50,6 +50,7 @@ public class UserClient extends Application {
         try {
             ClientConnector clientConnector = new ClientConnector(ClientType.user);
             clientRunnable = new UserClientRunnable(clientConnector.getSocket());
+            ClientConnector.iClient = clientRunnable;
             launch(args);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);

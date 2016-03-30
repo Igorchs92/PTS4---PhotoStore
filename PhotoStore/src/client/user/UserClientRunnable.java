@@ -5,9 +5,11 @@
  */
 package client.user;
 
+import client.IClientRunnable;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import shared.ClientType;
 import shared.Log;
 import shared.SocketConnection;
@@ -17,7 +19,7 @@ import shared.user.UserCall;
  *
  * @author Igor
  */
-public class UserClientRunnable {
+public class UserClientRunnable implements IClientRunnable{
 
     private SocketConnection socket;
     public static UserClientRunnable clientRunnable;
@@ -37,21 +39,32 @@ public class UserClientRunnable {
         Log.info("Message received: {0}", receive);
     }
     
-    public void registerUser(String username, String password/*, String name, String adress, String phonenumber*/) throws IOException {
-        //System.out.println("Start write");
-        socket.writeObject(UserCall.register);
-        socket.writeObject(username);
-        socket.writeObject(password);
-        //System.out.println("Wrote objs");
-        /*
-        socket.writeObject(name);
-        socket.writeObject(adress);
-        socket.writeObject(phonenumber);*/
+    @Override
+    public void registerUser(String username, String password) {
+        try {
+            //System.out.println("Start write");
+            socket.writeObject(UserCall.register);
+            socket.writeObject(username);
+            socket.writeObject(password);
+            //System.out.println("Wrote objs");
+            /*
+            socket.writeObject(name);
+            socket.writeObject(adress);
+            socket.writeObject(phonenumber);*/
+        } catch (IOException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
-    public void loginUser(String username, String password) throws IOException {
-        socket.writeObject(UserCall.login);
-        socket.writeObject(username);
-        socket.writeObject(password);
+    @Override
+    public void loginUser(String username, String password) {
+        try {
+            socket.writeObject(UserCall.login);
+            socket.writeObject(username);
+            socket.writeObject(password);
+        } catch (IOException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
 }

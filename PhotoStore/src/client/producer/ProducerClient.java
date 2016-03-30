@@ -33,7 +33,7 @@ public class ProducerClient extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("ui/ProducerClientLogin.fxml")));
+        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/UserClientLogin.fxml")));
         setSceneLogin();
         stage.show();
     }
@@ -47,6 +47,7 @@ public class ProducerClient extends Application {
         try {
             ClientConnector clientConnector = new ClientConnector(ClientType.producer);
             clientRunnable = new ProducerClientRunnable(clientConnector.getSocket());
+            ClientConnector.iClient = clientRunnable;
             launch(args);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
