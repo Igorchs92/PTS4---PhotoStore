@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import shared.ClientType;
 import shared.Log;
 import shared.SocketConnection;
+import shared.user.Account;
 import shared.user.UserCall;
 
 /**
@@ -37,11 +38,20 @@ public class UserClientRunnable {
         Log.info("Message received: {0}", receive);
     }
     
-    public void registerUser(String username, String password/*, String name, String adress, String phonenumber*/) throws IOException {
+    public Account registerUser(String username, String password/*, String name, String adress, String phonenumber*/) throws IOException, ClassNotFoundException {
         //System.out.println("Start write");
         socket.writeObject(UserCall.register);
         socket.writeObject(username);
         socket.writeObject(password);
+        
+        Account acc = null;
+        UserCall pass = (UserCall) socket.readObject();
+        if(pass == pass.fail) {
+            return null;
+        }else if(pass == pass.login) {
+            acc = (Account) socket.readObject();
+        }
+        return acc;
         //System.out.println("Wrote objs");
         /*
         socket.writeObject(name);
@@ -49,9 +59,17 @@ public class UserClientRunnable {
         socket.writeObject(phonenumber);*/
     }
     
-    public void loginUser(String username, String password) throws IOException {
+    public Account loginUser(String username, String password) throws IOException, ClassNotFoundException {
         socket.writeObject(UserCall.login);
         socket.writeObject(username);
         socket.writeObject(password);
+        UserCall pass = (UserCall) socket.readObject();
+        Account acc= null;
+        if(pass == pass.fail) {
+            return null;
+        }else if(pass == pass.login) {
+            acc = (Account) socket.readObject();
+        }
+        return acc;
     }
 }

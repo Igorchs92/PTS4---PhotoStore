@@ -22,6 +22,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import shared.user.Account;
 
 /**
  * FXML Controller class
@@ -29,26 +31,25 @@ import javafx.scene.control.TextField;
  * @author Igor
  */
 public class ClientLoginController implements Initializable {
-    
+
     @FXML
     private Button btnLogin;
-    
+
     @FXML
     private Button btnRegister;
-    
+
     @FXML
     private Label lblUsername;
-    
+
     @FXML
     private Label lblPassword;
-    
-    @FXML 
+
+    @FXML
     private TextField txtUsername;
-    
+
     @FXML
     private TextField txtPassword;
-    
-    
+
     private UserClientRunnable serverCom;
 
     /**
@@ -60,9 +61,9 @@ public class ClientLoginController implements Initializable {
         serverCom = UserClientRunnable.clientRunnable;
         setUITexts();
     }
-    
+
     private void setUITexts() {
-        
+
         lblUsername.setText(getString("username"));
         lblPassword.setText(getString("password"));
         txtUsername.setPromptText(getString("username"));
@@ -71,32 +72,47 @@ public class ClientLoginController implements Initializable {
         btnRegister.setText(getString("register"));
 
     }
-    
+
     @FXML
-    private void handleBtnLoginOnClick(ActionEvent event) throws IOException {
-        if(txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
+    private void handleBtnLoginOnClick(ActionEvent event) throws IOException, ClassNotFoundException {
+        if (txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
             showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
             return;
         }
-        serverCom.loginUser(txtUsername.getText(), txtPassword.getText());
+        Account acc = serverCom.loginUser(txtUsername.getText(), txtPassword.getText());
+        if(acc != null) {
+            showAlert(new String("You logged in with: " + acc.getUsername()), AlertType.CONFIRMATION);
+            ClientConnector.loggedIn = true;
+        }else {
+            showAlert("Error while logging in!", AlertType.ERROR);
+            ClientConnector.loggedIn = false;
+        }
         // TODO: login
         // set below boolean to true if login succeeds
-        ClientConnector.loggedIn = true;
+        
         // TODO: remove this window and go back to the old window
     }
-    
+
     @FXML
-    private void handleBtnRegisterOnClick(ActionEvent event) throws IOException {
-        if(txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
+    private void handleBtnRegisterOnClick(ActionEvent event) throws IOException, ClassNotFoundException {
+        if (txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
             showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
             return;
         }
-        serverCom.registerUser(txtUsername.getText(), txtPassword.getText());
+        Account registered = serverCom.registerUser(txtUsername.getText(), txtPassword.getText());
+        if(registered != null) {
+            String alertstr = "You logged in as: " + registered.getUsername();
+            showAlert(alertstr, AlertType.CONFIRMATION);
+        } else {
+            showAlert("Error while registering!", AlertType.ERROR);
+        }
     }
+
     private void showAlert(String text, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setTitle(Strings.getString("notification"));
         alert.setContentText(text);
         alert.show();
     }
+
 }
