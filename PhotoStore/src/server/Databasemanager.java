@@ -96,7 +96,7 @@ public class Databasemanager {
     public List<Producent> getProducerUsers() throws SQLException {
        
         Statement st = conn.createStatement();
-        ResultSet srs = st.executeQuery("SELECT * FROM User");
+        ResultSet srs = st.executeQuery("SELECT * FROM Accounts");
         ArrayList<Producent> userlist = new ArrayList<>();
 
         while (srs.next()) {
@@ -117,7 +117,7 @@ public class Databasemanager {
     public boolean loginProducer(String name, String password){
         try {
             Statement st = conn.createStatement();
-            ResultSet srs = st.executeQuery("SELECT * FROM User WHERE acc_id = '" + name + "' AND password = '" + password + "';");
+            ResultSet srs = st.executeQuery("SELECT * FROM Accounts WHERE acc_id = '" + name + "' AND password = '" + password + "';");
             if (srs.next())
             return true;
             else return false;
