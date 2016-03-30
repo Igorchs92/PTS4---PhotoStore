@@ -44,6 +44,7 @@ public class PhotographerClient extends Application {
      * @throws java.lang.ClassNotFoundException
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+        
         try {
             ClientConnector clientConnector = new ClientConnector(ClientType.photographer);
             clientRunnable = new PhotographerClientRunnable(clientConnector.getSocket());

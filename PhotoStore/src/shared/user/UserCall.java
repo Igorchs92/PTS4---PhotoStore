@@ -11,5 +11,5 @@ package shared.user;
  * @author IGOR
  */
 public enum UserCall {
-    test, login, logout
+    test, register, login, logout
 }
