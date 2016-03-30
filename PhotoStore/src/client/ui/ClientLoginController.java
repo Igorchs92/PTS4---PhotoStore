@@ -6,6 +6,7 @@
 package client.ui;
 
 import client.ClientConnector;
+import client.IClientRunnable;
 import client.strings.Strings;
 import static client.strings.Strings.getString;
 import client.user.UserClientRunnable;
@@ -49,8 +50,8 @@ public class ClientLoginController implements Initializable {
 
     @FXML
     private TextField txtPassword;
-
-    private UserClientRunnable serverCom;
+    
+    private IClientRunnable client;
 
     /**
      * Initializes the controller class.
@@ -58,7 +59,7 @@ public class ClientLoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO make UI elements multi-language
-        serverCom = UserClientRunnable.clientRunnable;
+        client = ClientConnector.iClient;
         setUITexts();
     }
 
@@ -79,6 +80,7 @@ public class ClientLoginController implements Initializable {
             showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
             return;
         }
+
         Account acc = serverCom.loginUser(txtUsername.getText(), txtPassword.getText());
         if(acc != null) {
             showAlert(new String("You logged in with: " + acc.getUsername()), AlertType.CONFIRMATION);
@@ -99,6 +101,7 @@ public class ClientLoginController implements Initializable {
             showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
             return;
         }
+
         Account registered = serverCom.registerUser(txtUsername.getText(), txtPassword.getText());
         if(registered != null) {
             String alertstr = "You logged in as: " + registered.getUsername();
@@ -107,7 +110,6 @@ public class ClientLoginController implements Initializable {
             showAlert("Error while registering!", AlertType.ERROR);
         }
     }
-
     private void showAlert(String text, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setTitle(Strings.getString("notification"));

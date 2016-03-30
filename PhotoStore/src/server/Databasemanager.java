@@ -22,10 +22,10 @@ public class Databasemanager {
     Connection conn;
 
     public Databasemanager() {
-        String url = "jdbc:mysql://sql2.freesqldatabase.com:3306/";
-        String dbName = "sql294852";
-        String userName = "sql294852";
-        String password = "dA7%fV6*";
+        String url = "jdbc:mysql://sql7.freesqldatabase.com:3306/";
+        String dbName = "sql7112896";
+        String userName = "sql7112896";
+        String password = "Md3KSKmmsh";
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(url + dbName, userName, password);

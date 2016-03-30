@@ -5,9 +5,11 @@
  */
 package client.user;
 
+import client.IClientRunnable;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import shared.ClientType;
 import shared.Log;
 import shared.SocketConnection;
@@ -18,7 +20,7 @@ import shared.user.UserCall;
  *
  * @author Igor
  */
-public class UserClientRunnable {
+public class UserClientRunnable implements IClientRunnable{
 
     private SocketConnection socket;
     public static UserClientRunnable clientRunnable;
@@ -38,9 +40,12 @@ public class UserClientRunnable {
         Log.info("Message received: {0}", receive);
     }
     
-    public Account registerUser(String username, String password/*, String name, String adress, String phonenumber*/) throws IOException, ClassNotFoundException {
-        //System.out.println("Start write");
-        socket.writeObject(UserCall.register);
+    @Override
+    public Account registerUser(String username, String password) {
+        try {
+
+
+	socket.writeObject(UserCall.register);
         socket.writeObject(username);
         socket.writeObject(password);
         
@@ -53,14 +58,16 @@ public class UserClientRunnable {
         }
         return acc;
         //System.out.println("Wrote objs");
-        /*
-        socket.writeObject(name);
-        socket.writeObject(adress);
-        socket.writeObject(phonenumber);*/
+	
+        } catch (IOException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
-    public Account loginUser(String username, String password) throws IOException, ClassNotFoundException {
-        socket.writeObject(UserCall.login);
+    @Override
+    public Account loginUser(String username, String password) {
+        try {
+            socket.writeObject(UserCall.login);
         socket.writeObject(username);
         socket.writeObject(password);
         UserCall pass = (UserCall) socket.readObject();
@@ -71,5 +78,9 @@ public class UserClientRunnable {
             acc = (Account) socket.readObject();
         }
         return acc;
+        } catch (IOException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
 }

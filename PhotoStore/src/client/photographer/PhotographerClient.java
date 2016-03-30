@@ -48,6 +48,7 @@ public class PhotographerClient extends Application {
         try {
             ClientConnector clientConnector = new ClientConnector(ClientType.photographer);
             clientRunnable = new PhotographerClientRunnable(clientConnector.getSocket());
+            ClientConnector.iClient = clientRunnable;
             launch(args);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
