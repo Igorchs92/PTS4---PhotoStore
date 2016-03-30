@@ -6,9 +6,13 @@
 package client.ui;
 
 import client.ClientConnector;
+import client.strings.Strings;
+import static client.strings.Strings.getString;
 import client.user.UserClientRunnable;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,7 +31,7 @@ import javafx.scene.control.TextField;
 public class ClientLoginController implements Initializable {
     
     @FXML
-    private Button btnLogIn;
+    private Button btnLogin;
     
     @FXML
     private Button btnRegister;
@@ -54,12 +58,24 @@ public class ClientLoginController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO make UI elements multi-language
         serverCom = UserClientRunnable.clientRunnable;
-    }    
+        setUITexts();
+    }
+    
+    private void setUITexts() {
+        
+        lblUsername.setText(getString("username"));
+        lblPassword.setText(getString("password"));
+        txtUsername.setPromptText(getString("username"));
+        txtPassword.setPromptText(getString("password"));
+        btnLogin.setText(getString("log_in"));
+        btnRegister.setText(getString("register"));
+
+    }
     
     @FXML
     private void handleBtnLoginOnClick(ActionEvent event) throws IOException {
         if(txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
-            showAlert("Enter a username and password!", AlertType.ERROR);
+            showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
             return;
         }
         serverCom.loginUser(txtUsername.getText(), txtPassword.getText());
@@ -72,14 +88,14 @@ public class ClientLoginController implements Initializable {
     @FXML
     private void handleBtnRegisterOnClick(ActionEvent event) throws IOException {
         if(txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
-            showAlert("Enter a username and password!", AlertType.ERROR);
+            showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
             return;
         }
         serverCom.registerUser(txtUsername.getText(), txtPassword.getText());
     }
     private void showAlert(String text, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle("Notification:");
+        alert.setTitle(Strings.getString("notification"));
         alert.setContentText(text);
         alert.show();
     }

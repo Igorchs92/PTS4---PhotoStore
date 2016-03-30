@@ -5,10 +5,19 @@
  */
 package shared;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
 import java.io.Serializable;
+
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.InvalidKeyException;
@@ -87,6 +96,33 @@ public class SocketConnection {
             out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(sealedObj);
         } catch (IllegalBlockSizeException ex) {
+            Log.exception(ex);
+        }
+    }
+
+    public void writeFile(File file) {
+        try {
+            byte[] byteArray = new byte[(int) file.length()];
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+            bis.read(byteArray, 0, byteArray.length);
+            OutputStream os = socket.getOutputStream();
+            os.write(byteArray, 0, byteArray.length);
+            os.flush();
+        } catch (IOException ex) {
+            Log.exception(ex);
+        }
+    }
+
+    public void readFile(File file) {
+        try {
+            byte[] byteArray = new byte[1024];
+            InputStream is = socket.getInputStream();
+            FileOutputStream fos = new FileOutputStream(file);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            int bytesRead = is.read(byteArray, 0, byteArray.length);
+            bos.write(byteArray, 0, bytesRead);
+            bos.close();
+        } catch (IOException ex) {
             Log.exception(ex);
         }
     }
