@@ -6,11 +6,12 @@
 package server.producer;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
-import shared.Log;
+import java.util.logging.Logger;
+import server.Databasemanager;
+import shared.ClientType;
 import shared.SocketConnection;
 import shared.producer.ProducerCall;
 
@@ -21,18 +22,21 @@ import shared.producer.ProducerCall;
 public class ProducerServerRunnable implements Observer, Runnable {
 
     private SocketConnection socket;
+    private Databasemanager dbm;
 
     public ProducerServerRunnable(SocketConnection socket) {
         this.socket = socket;
+        dbm = new Databasemanager();
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        Log.info("Oberservable");
+        Logger.getAnonymousLogger().log(Level.INFO, "Oberservable");
     }
 
     @Override
     public void run() {
+        String[] arg;
         try {
             while (!socket.isClosed()) {
                 ProducerCall call = (ProducerCall) socket.readObject();
@@ -41,8 +45,16 @@ public class ProducerServerRunnable implements Observer, Runnable {
                         testConnection();
                         break;
                     }
+                    case register: {
+                        Logger.getAnonymousLogger().log(Level.INFO, "register");
+                        arg = (String[]) socket.readObject();
+                        socket.writeObject(dbm.registerProducer(arg[0], arg[1], arg[2]));
+                        break;
+                    }
                     case login: {
-
+                        Logger.getAnonymousLogger().log(Level.INFO, "login");
+                        arg = (String[]) socket.readObject();
+                        socket.writeObject(dbm.login(ClientType.producer, arg[0], arg[1]));
                         break;
                     }
                     case logout: {
@@ -51,9 +63,9 @@ public class ProducerServerRunnable implements Observer, Runnable {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Log.info("User client disconnected: {0}", socket.getInetAddress());
+            Logger.getAnonymousLogger().log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
         }
     }
 
@@ -61,15 +73,15 @@ public class ProducerServerRunnable implements Observer, Runnable {
         try {
             while (!socket.isClosed()) {
                 boolean receive = (boolean) socket.readObject();
-                Log.info("Message received: {0}", receive);
+                Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
                 boolean send = true;
                 socket.writeObject(send);
-                Log.info("Message sent: {0}", send);
+                Logger.getAnonymousLogger().log(Level.INFO, "Message sent: {0}", send);
             }
         } catch (ClassNotFoundException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Log.info("Producer client disconnected: {0}", socket.getInetAddress());
+            Logger.getAnonymousLogger().log(Level.INFO, "Producer client disconnected: {0}", socket.getInetAddress());
         }
     }
 }

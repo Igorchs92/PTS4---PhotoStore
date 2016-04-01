@@ -8,11 +8,11 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import server.producer.ProducerServerRunnable;
 import server.photographer.PhotographerServerRunnable;
 import server.user.UserServerRunnable;
 import shared.ClientType;
-import shared.Log;
 import shared.SocketConnection;
 
 /**
@@ -25,15 +25,15 @@ public class Server {
         try {
             // Establish server socket
             ServerSocket serverSocket = new ServerSocket(8189);
-            Log.info("Server is running. Listening on port: {0}", serverSocket.getLocalPort());
+            Logger.getAnonymousLogger().log(Level.INFO, "Server is running. Listening on port: {0}", serverSocket.getLocalPort());
             while (true) {
                 try {
                     // Wait for client connection
                     SocketConnection socket = new SocketConnection(serverSocket.accept());
-                    Log.info("New Client Connected: {0}", socket.getInetAddress());
+                    Logger.getAnonymousLogger().log(Level.INFO, "New Client Connected: {0}", socket.getInetAddress());
                     //Read input stream for ClientType type enum
                     ClientType client = (ClientType) socket.readObject();
-                    Log.info("Client Type: {0}", client.name());
+                    Logger.getAnonymousLogger().log(Level.INFO, "Client Type: {0}", client.name());
                     // Handle client request in a new thread
                     Thread thread;
                     switch (client) {
@@ -53,12 +53,12 @@ public class Server {
                             break;
                     }
                 } catch (IOException e) {
-                    Log.warning("IOException occurred: {0}", e.getMessage());
+                    Logger.getAnonymousLogger().log(Level.WARNING, "IOException occurred: {0}", e.getMessage());
                 }
             }
 
         } catch (IOException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null,  ex);
         }
     }
 

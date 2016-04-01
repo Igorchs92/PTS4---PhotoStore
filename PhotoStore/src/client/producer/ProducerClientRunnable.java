@@ -7,21 +7,19 @@ package client.producer;
 
 import client.IClientRunnable;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.logging.Level;
-import shared.Log;
+import java.util.logging.Logger;
 import shared.SocketConnection;
 import shared.producer.ProducerCall;
-import shared.user.Account;
 
 /**
  *
  * @author Igor
  */
-public class ProducerClientRunnable implements IClientRunnable{
+public class ProducerClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
-    
+
     public ProducerClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         this.socket = socket;
         testConnection();
@@ -31,18 +29,31 @@ public class ProducerClientRunnable implements IClientRunnable{
         socket.writeObject(ProducerCall.test);
         boolean send = false;
         socket.writeObject(send);
-        Log.info("Message sent: {0}", send);
+        Logger.getAnonymousLogger().log(Level.INFO, "Message sent: {0}", send);
         boolean receive = (boolean) socket.readObject();
-        Log.info("Message received: {0}", receive);
+        Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
+    }
+
+    public boolean registerUser(String email, String password, String name, String phone, String address, String zipcode, String city, String country) {
+        try {
+            socket.writeObject(ProducerCall.register);
+            socket.writeObject(new String[]{email, password, name, phone, address, zipcode, city, country});
+            return (boolean) socket.readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     @Override
-    public Account registerUser(String username, String password) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Account loginUser(String username, String password) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean login(String email, String password) {
+        try {
+            socket.writeObject(ProducerCall.login);
+            socket.writeObject(new String[]{email, password});
+            return (boolean) socket.readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 }

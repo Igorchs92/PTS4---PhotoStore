@@ -6,18 +6,13 @@
 package server.user;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.sql.SQLException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import server.Databasemanager;
-import shared.Log;
+import shared.ClientType;
 import shared.SocketConnection;
-import shared.user.Account;
-import shared.user.Klant;
-import shared.user.Producent;
 import shared.user.UserCall;
 
 /**
@@ -36,51 +31,30 @@ public class UserServerRunnable implements Observer, Runnable {
 
     @Override
     public void update(Observable o, Object arg) {
-        Log.info("Oberservable");
+        Logger.getAnonymousLogger().log(Level.INFO, "Oberservable");
     }
 
     @Override
     public void run() {
+        String[] arg;
         try {
             while (!socket.isClosed()) {
                 UserCall call = (UserCall) socket.readObject();
                 switch (call) {
-                    case test:
+                    case test: {
                         testConnection();
                         break;
-                    case register:
-                        Log.info("register");
-                        String uname = (String) socket.readObject();
-                        String pword = (String) socket.readObject();
-                        Account acc = null;
-                        try {
-                            dbm.registreren(uname, pword, "", "", "", "");
-                            //TODO: pas deze regel aan zodat inloggen werkt
-                            acc = dbm.inloggen(uname, pword);
-                            //acc = new Klant("bert", "", "", "");
-                            System.out.println("ACCOUNT:" + acc);
-                            //Log.info("Account: " + acc);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(UserServerRunnable.class.getName()).log(Level.SEVERE, null, ex);
-                            socket.writeObject(UserCall.fail);
-                            return;
-                        }
-                        socket.writeObject(UserCall.login);
-                        socket.writeObject(acc);
-                        System.out.println("U: " + uname + " PW:" + pword);
+                    }
+                    case register: {
+                        Logger.getAnonymousLogger().log(Level.INFO, "register");
+                        arg = (String[]) socket.readObject();
+                        socket.writeObject(dbm.registerUser(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]));
                         break;
+                    }
                     case login: {
-                        Log.info("login");
-                        String name = (String) socket.readObject();
-                        String word = (String) socket.readObject();
-                        Account acclogin = null;
-                        if (dbm.loginProducer(name, word)) {
-                            socket.writeObject(UserCall.login);
-                            acclogin = new Producent(name, "", word, "", "", "");
-                            socket.writeObject(acclogin);
-                        } else {
-                            socket.writeObject(UserCall.fail);
-                        }
+                        Logger.getAnonymousLogger().log(Level.INFO, "login");
+                        arg = (String[]) socket.readObject();
+                        socket.writeObject(dbm.login(ClientType.user, arg[0], arg[1]));
                         break;
                     }
                     case logout: {
@@ -89,23 +63,23 @@ public class UserServerRunnable implements Observer, Runnable {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Log.info("User client disconnected: {0}", socket.getInetAddress());
+            Logger.getAnonymousLogger().log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
         }
     }
 
     public void testConnection() {
         try {
             boolean receive = (boolean) socket.readObject();
-            Log.info("Message received: {0}", receive);
+            Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
             boolean send = true;
             socket.writeObject(send);
-            Log.info("Message sent: {0}", send);
+            Logger.getAnonymousLogger().log(Level.INFO, "Message sent: {0}", send);
         } catch (ClassNotFoundException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null,  ex);
         } catch (IOException ex) {
-            Log.info("User client disconnected: {0}", socket.getInetAddress());
+            Logger.getAnonymousLogger().log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
         }
     }
 }

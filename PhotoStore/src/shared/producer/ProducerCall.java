@@ -10,5 +10,5 @@ package shared.producer;
  * @author IGOR
  */
 public enum ProducerCall {
-    test, login, logout
+    test, login, logout, register
 }

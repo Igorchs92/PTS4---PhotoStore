@@ -7,16 +7,12 @@ package server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import shared.user.Account;
-import shared.user.Klant;
-import shared.user.Producent;
+import shared.ClientType;
 
 /**
  *
@@ -40,89 +36,80 @@ public class Databasemanager {
         }
     }
 
-    public Account inloggen(String username, String password) throws SQLException {
-        
-        Statement st = conn.createStatement();
-        st.executeQuery("SELECT id, name, adres, phonenumber, role FROM Accounts WHERE id = LOWER('" + username + "') AND password = '" + password + "';");
-        ResultSet srs = st.getResultSet();
-        String uname = "";
-        String name = "";
-        String address = "";
-        String phonenumber = "";
-        String role = "";
-
-        if (srs != null) {
-            while (srs.next()) {
-                uname = srs.getString("id");
-                name = srs.getString("name");
-                address = srs.getString("adres");
-                phonenumber = srs.getString("phonenumber");
-                role = srs.getString("role");
-            }
-        }
-        //To Do
-        
-        System.out.println("Inloggen returnt nog niks vanwege foute klassenamen!");
-        
-        switch (role) {
-            case "photographer":
-                //return new Photographer(uname, name, address, phonenumber);
-            case "user":
-                //return new Klant(uname, name, address, phonenumber);
-            case "producer":
-                //return new Producer(uname, name, address, phonenumber);
-        }
-        return null;
-    }
-
-    public void registreren(String uname, String name, String password, String address, String phonenumber, String role) throws SQLException {
-        Statement st = conn.createStatement();
-        String temp = "";
-        for (String s : name.toLowerCase().split(name)) {
-            temp += s.substring(0, 1).toUpperCase() + s.substring(1) + " ";
-        }
-
-        st.execute("SELECT * FROM Accounts WHERE id = '" + uname + "';");
-        ResultSet srs = st.getResultSet();
-        if (srs == null) {
-            st.execute("INSERT INTO Accounts (id, name, password, adres, phonenumber, role) "
-                    + "VALUES ('" + uname + "', '" + name + "', '" + password + "', '" + address + "', '" + phonenumber + "', '" + role + "');");
-        }
-        else {
-            //To Do
-        }
-    }
-    
-    public List<Producent> getProducerUsers() throws SQLException {
-       
-        Statement st = conn.createStatement();
-        ResultSet srs = st.executeQuery("SELECT * FROM Accounts");
-        ArrayList<Producent> userlist = new ArrayList<>();
-
-        while (srs.next()) {
-            String userid = srs.getString("acc_id");
-            String name = srs.getString("name");
-            String password = srs.getString("password");
-			String adres = srs.getString("adres");
-			String phonenumber = srs.getString("phonenumber");
-			String emailadres = srs.getString("emailadres");
-
-            Producent usr = new Producent(userid, name, password, adres, phonenumber, emailadres);
-            userlist.add(usr);
-        }
-        st.close();
-        return userlist;
-    }
-    
-    public boolean loginProducer(String name, String password){
+    public boolean login(ClientType type, String email, String password) {
         try {
-            Statement st = conn.createStatement();
-            ResultSet srs = st.executeQuery("SELECT * FROM Accounts WHERE acc_id = '" + name + "' AND password = '" + password + "';");
-            if (srs.next())
-            return true;
-            else return false;
+            String sql = "SELECT * FROM '?' WHERE acc_id = '?' AND password = '?' AND status = '1';";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, type.toString());
+            ps.setString(2, email);
+            ps.setString(3, password);
+            ResultSet srs = ps.executeQuery();
+            if (srs.next()) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean registerUser(String email, String password, String name, String phone, String address, String zipcode, String city, String country) {
+        try {
+            String sql = "INSERT INTO User(email, password, name, phone, address, zipcode, city, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ps.setString(2, password);
+            ps.setString(3, name);
+            ps.setString(4, phone);            
+            ps.setString(5, address);
+            ps.setString(6, zipcode);
+            ps.setString(7, city);
+            ps.setString(8, country);
+            ps.setString(9, zipcode);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, null,  ex);
+            return false;
+        }
+    }
+    
+    public boolean registerPhotographer(String email, String password, String name, String phone, String address, String zipcode, String city, String country, String kvk){
+        try {
+            String sql = "UPDATE Photographer SET password = ?, name = ?, phone = ?, address = ?, zipcode = ?, city = ?, country = ?, kvk = ?, status = ? WHERE email = ? AND password = ? AND status = '0';";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, password);
+            ps.setString(2, name);
+            ps.setString(3, phone);            
+            ps.setString(4, address);
+            ps.setString(5, zipcode);
+            ps.setString(6, city);
+            ps.setString(7, country);
+            ps.setString(8, zipcode);
+            ps.setString(9, kvk);
+            ps.setString(10, email);
+            ps.setString(11, password);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    public boolean registerProducer(String email, String password, String name){
+        try {
+            String sql = "INSERT INTO Producer(email, password, name) VALUES (?, ?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ps.setString(2, password);
+            ps.setString(3, name);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, null,  ex);
             return false;
         }
     }

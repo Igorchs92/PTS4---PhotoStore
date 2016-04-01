@@ -5,7 +5,7 @@
  */
 package client;
 
-import shared.user.Account;
+import shared.ClientType;
 
 /**
  *
@@ -13,7 +13,5 @@ import shared.user.Account;
  */
 public interface IClientRunnable {
 
-    public Account registerUser(String username, String password);
-
-    public Account loginUser(String username, String password);
+    public boolean login(String username, String password);
 }

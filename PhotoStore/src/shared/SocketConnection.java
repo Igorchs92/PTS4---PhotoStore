@@ -15,13 +15,13 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-
 import java.io.Serializable;
-
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -60,7 +60,7 @@ public class SocketConnection {
             decrypter.init(Cipher.DECRYPT_MODE, secretKey);
 
         } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         }
     }
 
@@ -84,7 +84,7 @@ public class SocketConnection {
             unsealedObj = sealedObj.getObject(decrypter);
             return unsealedObj;
         } catch (IllegalBlockSizeException | BadPaddingException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -96,7 +96,7 @@ public class SocketConnection {
             out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(sealedObj);
         } catch (IllegalBlockSizeException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         }
     }
 
@@ -109,7 +109,7 @@ public class SocketConnection {
             os.write(byteArray, 0, byteArray.length);
             os.flush();
         } catch (IOException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         }
     }
 
@@ -123,7 +123,7 @@ public class SocketConnection {
             bos.write(byteArray, 0, bytesRead);
             bos.close();
         } catch (IOException ex) {
-            Log.exception(ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         }
     }
 }
