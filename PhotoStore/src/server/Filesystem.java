@@ -32,9 +32,9 @@ public class Filesystem {
     public void receiveFile() {
         try {
             //receive groupId(0), uniqueId(1) and fileName(2)
-            String[] fileInfo = (String[]) socket.readObject();
+            String[] arg = (String[]) socket.readObject();
             //create a new file with the right directories
-            File file = new File(fileInfo[0] + "/" + fileInfo[1] + "/" + fileInfo[2] + ".jpg");
+            File file = new File(arg[0] + "/" + arg[1] + "/" + arg[2] + ".jpg");
             file.mkdirs();
             socket.readFile(file);
         } catch (IOException | ClassNotFoundException ex) {

@@ -6,6 +6,7 @@
 package client.photographer;
 
 import client.IClientRunnable;
+import static client.user.UserClientRunnable.clientRunnable;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,10 +18,12 @@ import shared.photographer.PhotographerCall;
  * @author Igor
  */
 public class PhotographerClientRunnable implements IClientRunnable {
-
+    
     private SocketConnection socket;
+    public static PhotographerClientRunnable clientRunnable;
 
     public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
+        clientRunnable = this;
         this.socket = s;
         //testConnection();
     }
@@ -34,10 +37,10 @@ public class PhotographerClientRunnable implements IClientRunnable {
         Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
     }
 
-    public boolean registerUser(String email, String password, String name, String phone, String address, String zipcode, String city, String country) {
+    public boolean registerUser(String email, String password, String name, String phone, String address, String zipcode, String city, String country, String kvk, String auth) {
         try {
             socket.writeObject(PhotographerCall.register);
-            socket.writeObject(new String[]{email, password, name, phone, address, zipcode, city, country});
+            socket.writeObject(new String[]{email, password, name, phone, address, zipcode, city, country, kvk, auth});
             return (boolean) socket.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);

@@ -22,7 +22,7 @@ import shared.photographer.PhotographerCall;
 public class PhotographerServerRunnable implements Observer, Runnable {
 
     private SocketConnection socket;
-     private Databasemanager dbm;
+    private Databasemanager dbm;
 
     public PhotographerServerRunnable(SocketConnection socket) {
         this.socket = socket;
@@ -36,7 +36,8 @@ public class PhotographerServerRunnable implements Observer, Runnable {
 
     @Override
     public void run() {
-        String[] arg;
+        String[] args;
+        boolean result;
         try {
             while (!socket.isClosed()) {
                 PhotographerCall call = (PhotographerCall) socket.readObject();
@@ -46,15 +47,15 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                         break;
                     }
                     case register: {
-                        Logger.getAnonymousLogger().log(Level.INFO, "register");
-                        arg = (String[]) socket.readObject();
-                        socket.writeObject(dbm.registerPhotographer(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]));
+                        args = (String[]) socket.readObject();
+                        result = dbm.registerPhotographer(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+                        socket.writeObject(result);
                         break;
                     }
                     case login: {
-                        Logger.getAnonymousLogger().log(Level.INFO, "login");
-                        arg = (String[]) socket.readObject();
-                        socket.writeObject(dbm.login(ClientType.photographer, arg[0], arg[1]));
+                        args = (String[]) socket.readObject();
+                        result = dbm.login(ClientType.photographer, args[0], args[1]);
+                        socket.writeObject(result);
                         break;
                     }
                     case logout: {
@@ -71,15 +72,13 @@ public class PhotographerServerRunnable implements Observer, Runnable {
 
     public void testConnection() {
         try {
-            while (!socket.isClosed()) {
-                boolean receive = (boolean) socket.readObject();
-                Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
-                boolean send = true;
-                socket.writeObject(send);
-                Logger.getAnonymousLogger().log(Level.INFO, "Message sent: {0}", send);
-            }
+            boolean receive = (boolean) socket.readObject();
+            Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
+            boolean send = true;
+            socket.writeObject(send);
+            Logger.getAnonymousLogger().log(Level.INFO, "Message sent: {0}", send);
         } catch (ClassNotFoundException ex) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, null,  ex);
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getAnonymousLogger().log(Level.INFO, "Photographer client disconnected: {0}", socket.getInetAddress());
         }

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.producer.ui.ProducerClientRegisterController">
+   <children>
+      <VBox layoutX="85.0" layoutY="64.0" prefHeight="45.0" prefWidth="180.0" AnchorPane.topAnchor="64.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Producer Registration">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Text>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="All fields are required">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Text>
+            <Separator prefHeight="2.0" prefWidth="248.0" />
+         </children>
+      </VBox>
+      <TilePane layoutX="85.0" layoutY="110.0" prefHeight="180.0" prefWidth="180.0" AnchorPane.topAnchor="110.0">
+         <children>
+            <VBox prefHeight="45.0" prefWidth="180.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="E-mail address" />
+                  <TextField fx:id="bEmail" prefHeight="25.0" prefWidth="180.0" promptText="example@photostore.com" />
+               </children>
+            </VBox>
+            <VBox prefHeight="45.0" prefWidth="0.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Full Name" />
+                  <TextField fx:id="bName" prefHeight="25.0" prefWidth="0.0" promptText="Jeff Donkers" />
+               </children>
+            </VBox>
+            <VBox prefHeight="45.0" prefWidth="0.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password" />
+                  <PasswordField fx:id="bPassword" promptText="************" />
+               </children>
+            </VBox>
+            <VBox prefHeight="45.0" prefWidth="0.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Password" />
+                  <PasswordField fx:id="bConfirmPassword" promptText="************" />
+               </children>
+            </VBox>
+         </children>
+      </TilePane>
+      <ToolBar layoutY="365.0" maxHeight="-Infinity" maxWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="35.0" prefWidth="350.0">
+         <items>
+            <Button mnemonicParsing="false" onMouseClicked="#handleCancelButtonAction" prefHeight="25.0" prefWidth="57.0" text="Cancel" />
+            <Button mnemonicParsing="false" onMouseClicked="#handleConfirmButtonAction" prefHeight="25.0" prefWidth="62.0" text="Confirm">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
+         </items>
+      </ToolBar>
+      <ImageView fx:id="imgCountryFlag" fitHeight="45.0" fitWidth="36.0" layoutX="300.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../ui/resources/EN.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

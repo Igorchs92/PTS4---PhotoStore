@@ -6,6 +6,7 @@
 package client.ui;
 
 import client.ClientConnector;
+import client.IClient;
 import client.IClientRunnable;
 import client.strings.Strings;
 import static client.strings.Strings.getString;
@@ -19,6 +20,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 
 /**
  * FXML Controller class
@@ -34,18 +37,21 @@ public class ClientLoginController implements Initializable {
     private Button btnRegister;
 
     @FXML
-    private Label lblUsername;
+    private Text lblUsername;
 
     @FXML
-    private Label lblPassword;
+    private Text lblPassword;
 
     @FXML
     private TextField txtUsername;
 
     @FXML
     private TextField txtPassword;
-    
-    private IClientRunnable client;
+
+    private IClient client;
+    private IClientRunnable clientRunnable;
+    @FXML
+    private ImageView imgCountryFlag;
 
     /**
      * Initializes the controller class.
@@ -53,16 +59,16 @@ public class ClientLoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO make UI elements multi-language
-        client = ClientConnector.iClient;
+        client = ClientConnector.client;
+        clientRunnable = ClientConnector.clientRunnable;
         setUITexts();
     }
 
     private void setUITexts() {
-
-        lblUsername.setText(getString("username"));
+        //lblUsername.setText(getString("username"));
         lblPassword.setText(getString("password"));
-        txtUsername.setPromptText(getString("username"));
-        txtPassword.setPromptText(getString("password"));
+        //txtUsername.setPromptText(getString("username"));
+        //txtPassword.setPromptText(getString("password"));
         btnLogin.setText(getString("log_in"));
         btnRegister.setText(getString("register"));
 
@@ -70,38 +76,21 @@ public class ClientLoginController implements Initializable {
 
     @FXML
     private void handleBtnLoginOnClick(ActionEvent event) throws IOException, ClassNotFoundException {
-        if (txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
-            InterfaceCall.showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
-            return;
-        }
-        if(client.login(txtUsername.getText(), txtPassword.getText())) {
-            InterfaceCall.showAlert("You logged in", AlertType.CONFIRMATION);
+        if (txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0 || !InterfaceCall.isValidEmailAddress(txtUsername.getText())) {
+            InterfaceCall.showAlert(AlertType.INFORMATION, Strings.getString("enter_a_username_and_password"));
+        } else if (clientRunnable.login(txtUsername.getText(), txtPassword.getText())) {
+            InterfaceCall.showAlert(AlertType.CONFIRMATION, "You have logged in!");
             ClientConnector.account_Id = txtUsername.getText();
             ClientConnector.loggedIn = true;
-        }else {
-            InterfaceCall.showAlert("Error while logging in!", AlertType.ERROR);
-            ClientConnector.loggedIn = false;
+            client.loggedIn();
+        } else {
+            InterfaceCall.showAlert(AlertType.INFORMATION, "E-mail does not match the password.");
         }
-        // TODO: login
-        // set below boolean to true if login succeeds
-        
-        // TODO: remove this window and go back to the old window
     }
 
     @FXML
     private void handleBtnRegisterOnClick(ActionEvent event) throws IOException, ClassNotFoundException {
-        if (txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0) {
-            InterfaceCall.showAlert(Strings.getString("enter_a_username_and_password"), AlertType.ERROR);
-            return;
-        }
-        /*
-        if(client.registerUser(txtUsername.getText(), txtPassword.getText())) {
-            String alertstr = "You logged in as";
-            showAlert(alertstr, AlertType.CONFIRMATION);
-        } else {
-            showAlert("Error while registering!", AlertType.ERROR);
-        }*/
+        ClientConnector.client.setSceneRegister();
     }
-    
 
 }

@@ -19,8 +19,10 @@ import shared.producer.ProducerCall;
 public class ProducerClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
-
+    public static ProducerClientRunnable clientRunnable;
+    
     public ProducerClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
+        clientRunnable = this;
         this.socket = socket;
         testConnection();
     }
@@ -34,10 +36,10 @@ public class ProducerClientRunnable implements IClientRunnable {
         Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
     }
 
-    public boolean registerUser(String email, String password, String name, String phone, String address, String zipcode, String city, String country) {
+    public boolean registerUser(String email, String password, String name) {
         try {
             socket.writeObject(ProducerCall.register);
-            socket.writeObject(new String[]{email, password, name, phone, address, zipcode, city, country});
+            socket.writeObject(new String[]{email, password, name});
             return (boolean) socket.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);

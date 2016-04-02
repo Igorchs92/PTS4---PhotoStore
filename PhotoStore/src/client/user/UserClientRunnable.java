@@ -35,11 +35,14 @@ public class UserClientRunnable implements IClientRunnable {
         boolean receive = (boolean) socket.readObject();
         Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
     }
-
-    public boolean registerUser(String email, String password, String name, String phone, String address, String zipcode, String city, String country) {
+    
+    /**
+     *@see user(email, password, name, address, zipcode, city, country, phone, status)
+     */
+    public boolean registerUser(String email, String password, String name, String address, String zipcode, String city, String country, String phone) {
         try {
             socket.writeObject(UserCall.register);
-            socket.writeObject(new String[]{email, password, name, phone, address, zipcode, city, country});
+            socket.writeObject(new String[]{email, password, name, address, zipcode, city, country, phone});
             return (boolean) socket.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);

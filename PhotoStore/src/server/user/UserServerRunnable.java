@@ -36,7 +36,8 @@ public class UserServerRunnable implements Observer, Runnable {
 
     @Override
     public void run() {
-        String[] arg;
+        String[] args;
+        boolean result;
         try {
             while (!socket.isClosed()) {
                 UserCall call = (UserCall) socket.readObject();
@@ -46,15 +47,15 @@ public class UserServerRunnable implements Observer, Runnable {
                         break;
                     }
                     case register: {
-                        Logger.getAnonymousLogger().log(Level.INFO, "register");
-                        arg = (String[]) socket.readObject();
-                        socket.writeObject(dbm.registerUser(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]));
+                        args = (String[]) socket.readObject();
+                        result = dbm.registerUser(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+                        socket.writeObject(result);
                         break;
                     }
                     case login: {
-                        Logger.getAnonymousLogger().log(Level.INFO, "login");
-                        arg = (String[]) socket.readObject();
-                        socket.writeObject(dbm.login(ClientType.user, arg[0], arg[1]));
+                        args = (String[]) socket.readObject();
+                        result = dbm.login(ClientType.user, args[0], args[1]);
+                        socket.writeObject(result);
                         break;
                     }
                     case logout: {

@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package shared.producer;
+package client;
 
 /**
  *
  * @author IGOR
  */
-public enum ProducerCall {
-    test, login, logout, register, new_photographer
+public interface IClient {
+
+    public void setSceneRegister();
+
+    public void loggedIn();
 }

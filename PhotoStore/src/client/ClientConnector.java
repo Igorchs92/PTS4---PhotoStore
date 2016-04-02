@@ -5,6 +5,7 @@
  */
 package client;
 
+import client.ui.InterfaceCall;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -18,20 +19,25 @@ import shared.SocketConnection;
  */
 public class ClientConnector {
 
-    static public IClientRunnable iClient;
+    static public IClientRunnable clientRunnable;
+    static public IClient client;
     static public ClientType clientType;
-    static public boolean loggedIn;
+    static public boolean loggedIn = false;
     static public String account_Id;
     SocketConnection socket;
 
-    public ClientConnector(ClientType client) throws IOException {
+    public ClientConnector() throws IOException {
+    }
+    
+    public boolean connectToServer(ClientType client) {
         clientType = client;
-        loggedIn = false;
         try {
             socket = new SocketConnection(new Socket("localhost", 8189));
             socket.writeObject(client);
+            return true;
         } catch (IOException ex) {
             Logger.getLogger(ClientConnector.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
 

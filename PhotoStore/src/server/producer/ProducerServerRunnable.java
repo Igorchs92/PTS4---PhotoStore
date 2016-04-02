@@ -36,7 +36,8 @@ public class ProducerServerRunnable implements Observer, Runnable {
 
     @Override
     public void run() {
-        String[] arg;
+        String[] args;
+        boolean result;
         try {
             while (!socket.isClosed()) {
                 ProducerCall call = (ProducerCall) socket.readObject();
@@ -46,15 +47,21 @@ public class ProducerServerRunnable implements Observer, Runnable {
                         break;
                     }
                     case register: {
-                        Logger.getAnonymousLogger().log(Level.INFO, "register");
-                        arg = (String[]) socket.readObject();
-                        socket.writeObject(dbm.registerProducer(arg[0], arg[1], arg[2]));
+                        args = (String[]) socket.readObject();
+                        result = dbm.registerProducer(args[0], args[1], args[2]);
+                        socket.writeObject(result);
                         break;
                     }
                     case login: {
-                        Logger.getAnonymousLogger().log(Level.INFO, "login");
-                        arg = (String[]) socket.readObject();
-                        socket.writeObject(dbm.login(ClientType.producer, arg[0], arg[1]));
+                        args = (String[]) socket.readObject();
+                        result = dbm.login(ClientType.producer, args[0], args[1]);
+                        socket.writeObject(result);
+                        break;
+                    }
+                    case new_photographer: {
+                        args = (String[]) socket.readObject();
+                        result = dbm.login(ClientType.producer, args[0], args[1]);
+                        socket.writeObject(result);
                         break;
                     }
                     case logout: {
@@ -71,13 +78,11 @@ public class ProducerServerRunnable implements Observer, Runnable {
 
     public void testConnection() {
         try {
-            while (!socket.isClosed()) {
-                boolean receive = (boolean) socket.readObject();
-                Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
-                boolean send = true;
-                socket.writeObject(send);
-                Logger.getAnonymousLogger().log(Level.INFO, "Message sent: {0}", send);
-            }
+            boolean receive = (boolean) socket.readObject();
+            Logger.getAnonymousLogger().log(Level.INFO, "Message received: {0}", receive);
+            boolean send = true;
+            socket.writeObject(send);
+            Logger.getAnonymousLogger().log(Level.INFO, "Message sent: {0}", send);
         } catch (ClassNotFoundException ex) {
             Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
