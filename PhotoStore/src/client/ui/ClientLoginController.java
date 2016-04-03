@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -30,6 +31,7 @@ import javafx.scene.text.Text;
  */
 public class ClientLoginController implements Initializable {
 
+    private Stage stage;
     @FXML
     private Button btnLogin;
 
@@ -79,7 +81,7 @@ public class ClientLoginController implements Initializable {
         if (txtUsername.getText().compareTo("") == 0 || txtPassword.getText().compareTo("") == 0 || !InterfaceCall.isValidEmailAddress(txtUsername.getText())) {
             InterfaceCall.showAlert(AlertType.INFORMATION, Strings.getString("enter_a_username_and_password"));
         } else if (clientRunnable.login(txtUsername.getText(), txtPassword.getText())) {
-            InterfaceCall.showAlert(AlertType.CONFIRMATION, "You have logged in!");
+            //InterfaceCall.showAlert(AlertType.CONFIRMATION, "You have logged in!");
             ClientConnector.account_Id = txtUsername.getText();
             ClientConnector.loggedIn = true;
             client.loggedIn();
@@ -91,6 +93,10 @@ public class ClientLoginController implements Initializable {
     @FXML
     private void handleBtnRegisterOnClick(ActionEvent event) throws IOException, ClassNotFoundException {
         ClientConnector.client.setSceneRegister();
+    }
+
+    public void setDialogStage(Stage stage) {
+        this.stage = stage;
     }
 
 }

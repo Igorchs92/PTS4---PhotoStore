@@ -26,7 +26,8 @@ import shared.ClientType;
  * @author Igor
  */
 public class ProducerClient extends Application implements IClient {
-
+    
+    public static ProducerClient client;
     private static ProducerClientRunnable clientRunnable;
     private static final String title = "Photostore Producer";
     private Stage primaryStage;
@@ -36,10 +37,12 @@ public class ProducerClient extends Application implements IClient {
 
     @Override
     public void start(Stage stage) throws Exception {
+        client = this;
         connectToServer();
         ClientConnector.client = this;
         this.primaryStage = stage;
         sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
+        sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/ProducerClientMain.fxml")));
         setSceneLogin();
         stage.show();
     }
@@ -72,6 +75,7 @@ public class ProducerClient extends Application implements IClient {
         primaryStage.setTitle(title + " - Login");
     }
 
+    @Override
     public void setSceneRegister() {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
@@ -101,7 +105,12 @@ public class ProducerClient extends Application implements IClient {
 
     @Override
     public void loggedIn() {
-        System.exit(0);
+        setSceneMain();
+    }
+
+    @Override
+    public boolean login(String username, String password) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

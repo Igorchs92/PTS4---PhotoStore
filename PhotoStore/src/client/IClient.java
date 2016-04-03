@@ -10,7 +10,8 @@ package client;
  * @author IGOR
  */
 public interface IClient {
-
+    public boolean login(String username, String password);
+    
     public void setSceneRegister();
 
     public void loggedIn();

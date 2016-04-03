@@ -24,7 +24,7 @@ public class ClientConnector {
     static public ClientType clientType;
     static public boolean loggedIn = false;
     static public String account_Id;
-    SocketConnection socket;
+    static public SocketConnection socket;
 
     public ClientConnector() throws IOException {
     }

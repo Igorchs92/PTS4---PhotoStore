@@ -26,24 +26,22 @@ import shared.ClientType;
  * @author Igor
  */
 public class UserClient extends Application implements IClient {
-
+    
+    public static UserClient client;
     private static UserClientRunnable clientRunnable;
     private static final String title = "Photostore User";
     private Stage primaryStage;
     private Scene sceneLogin;
-    private Scene sceneRegister;
     private Scene sceneMain;
 
     @Override
     public void start(Stage stage) throws Exception {
+        client = this;
         connectToServer();
         ClientConnector.client = this;
         this.primaryStage = stage;
-        stage.setTitle(title);
-        Parent root = FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml"));
-        sceneLogin = new Scene(root);
-        sceneRegister = new Scene(FXMLLoader.load(getClass().getResource("ui/UserClientRegister.fxml")));
-//        sceneMain = new Scene(FXMLLoader.load(getClass().getResource("UserClientMain.fxml")));
+        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
+        sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/UserClientMain.fxml")));
         setSceneLogin();
         stage.show();
     }
@@ -107,7 +105,12 @@ public class UserClient extends Application implements IClient {
 
     @Override
     public void loggedIn() {
-        System.exit(0);
+        setSceneMain();
+    }
+
+    @Override
+    public boolean login(String username, String password) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

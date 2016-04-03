@@ -100,7 +100,7 @@
             <VBox>
                <children>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Authentication code" />
-                  <TextField fx:id="bAuth" promptText="16C1-407F-B03F-C36D" />
+                  <TextField fx:id="bAuth" promptText="5CED4CC3" />
                </children>
             </VBox>
          </children>
@@ -115,7 +115,7 @@
             </Button>
          </items>
       </ToolBar>
-      <ImageView fx:id="imgCountryFlag" fitHeight="45.0" fitWidth="36.0" layoutX="386.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="25.0">
+      <ImageView fx:id="imgCountryFlag" fitHeight="45.0" fitWidth="36.0" layoutX="386.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="25.0">
          <image>
             <Image url="@../../ui/resources/EN.png" />
          </image>

@@ -3,27 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package client.photographer.ui;
+package client.producer.ui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 /**
  * FXML Controller class
  *
  * @author IGOR
  */
-public class PhotographerClientLoginController implements Initializable {
+public class ProducerClientAddPhotographerController implements Initializable {
 
     @FXML
-    private Button button;
+    private TextField bEmail;
     @FXML
-    private Label label;
+    private TextField bAuth;
 
     /**
      * Initializes the controller class.
@@ -34,7 +35,15 @@ public class PhotographerClientLoginController implements Initializable {
     }    
 
     @FXML
-    private void handleButtonAction(ActionEvent event) {
+    private void handleCancelButtonAction(MouseEvent event) {
+    }
+
+    @FXML
+    private void handleGetAuthButtonAction(MouseEvent event) {
+    }
+
+    @FXML
+    private void handleAddButtonAction(MouseEvent event) {
     }
     
 }

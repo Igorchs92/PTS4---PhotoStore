@@ -5,6 +5,7 @@
  */
 package shared;
 
+import client.ClientConnector;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -85,6 +86,7 @@ public class SocketConnection {
             return unsealedObj;
         } catch (IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
+
             return null;
         }
     }
