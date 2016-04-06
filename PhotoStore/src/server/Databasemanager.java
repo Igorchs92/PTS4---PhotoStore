@@ -24,10 +24,10 @@ public class Databasemanager {
     Connection conn;
 
     public Databasemanager() {
-        String url = "jdbc:mysql://sql7.freesqldatabase.com:3306/";
-        String dbName = "sql7112896";
-        String userName = "sql7112896";
-        String password = "Md3KSKmmsh";
+        String url = "jdbc:mysql://db4free.net:3306/";
+        String dbName = "pts4photostore";
+        String userName = "pts4";
+        String password = "photostore";
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(url + dbName, userName, password);
