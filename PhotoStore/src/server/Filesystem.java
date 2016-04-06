@@ -34,7 +34,8 @@ public class Filesystem {
             //receive groupId(0), uniqueId(1) and fileName(2)
             String[] arg = (String[]) socket.readObject();
             //create a new file with the right directories
-            File file = new File(arg[0] + "/" + arg[1] + "/" + arg[2] + ".jpg");
+            String pictureId /*= getFromDatabase()*/ = "0"; 
+            File file = new File(arg[0] + "/" + arg[1] + "/" + pictureId + ".jpg");
             file.mkdirs();
             socket.readFile(file);
         } catch (IOException | ClassNotFoundException ex) {
