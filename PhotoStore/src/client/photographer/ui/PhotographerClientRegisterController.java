@@ -64,7 +64,7 @@ public class PhotographerClientRegisterController implements Initializable {
         stage.close();
     }
 
-        @FXML
+    @FXML
     private void handleConfirmButtonAction(MouseEvent event) {
         if (validateForm()) {
             if (PhotographerClientRunnable.clientRunnable.registerUser(bEmail.getText(), bPassword.getText(), bName.getText(), bAddress.getText(), bZipcode.getText(), bCity.getText(), bCountry.getText(), bPhone.getText(), bKvk.getText(), bAuth.getText())) {

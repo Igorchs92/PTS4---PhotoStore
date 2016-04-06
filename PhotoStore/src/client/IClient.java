@@ -14,5 +14,7 @@ public interface IClient {
     
     public void setSceneRegister();
 
+    public void setSceneMain();
+    
     public void loggedIn();
 }

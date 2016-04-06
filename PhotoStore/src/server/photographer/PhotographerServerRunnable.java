@@ -6,6 +6,8 @@
 package server.photographer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -82,5 +84,11 @@ public class PhotographerServerRunnable implements Observer, Runnable {
         } catch (IOException ex) {
             Logger.getAnonymousLogger().log(Level.INFO, "Photographer client disconnected: {0}", socket.getInetAddress());
         }
+    }
+    
+    public ArrayList generateUniquenumber(){
+        ArrayList ListOfUniqueNumbers = new ArrayList();
+        
+        return ListOfUniqueNumbers;
     }
 }

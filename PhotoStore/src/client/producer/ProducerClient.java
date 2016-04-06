@@ -98,6 +98,8 @@ public class ProducerClient extends Application implements IClient {
         }
     }
 
+    
+    @Override
     public void setSceneMain() {
         primaryStage.setScene(sceneMain);
         primaryStage.setTitle(title);
