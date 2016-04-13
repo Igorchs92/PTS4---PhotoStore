@@ -10,5 +10,5 @@ package shared.photographer;
  * @author IGOR
  */
 public enum PhotographerCall {
-    test, login, logout, register
+    test, login, logout, register, upload
 }
