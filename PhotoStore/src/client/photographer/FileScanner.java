@@ -66,11 +66,11 @@ public class FileScanner implements Runnable{
                         System.out.println(filePaths.size());
                     }
                     else if (kind == ENTRY_DELETE) {
-                        filePaths.remove(fileName);
+                        DeleteFromList(fileName);
                         System.out.println(filePaths.size());
                     }
                     else if (kind == ENTRY_MODIFY) {
-                        filePaths.remove(fileName);
+                        DeleteFromList(fileName);
                         addToList(fileName);
                         System.out.println("My source file has changed!!!");
                         System.out.println(filePaths.size());
@@ -89,16 +89,17 @@ public class FileScanner implements Runnable{
     }
     
     private void addToList(Path p) {
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{bin, txt}");
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{BIN,TXT}");
+        //TODO: change this to use the enum with supported path exstentions when it's available
 
         if (matcher.matches(p)) {
             
             filePaths.add(p);
-            System.out.println("added");
+            System.out.println("path added to list: " + p);
         }
     }
     
     private void DeleteFromList(Path p) {
-        
+        filePaths.remove(p);
     }
 }
