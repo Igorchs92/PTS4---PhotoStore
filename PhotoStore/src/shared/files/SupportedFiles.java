@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package shared.photographer;
+package shared.files;
 
 /**
  *
- * @author IGOR
+ * @author Igor
  */
-public enum PhotographerCall {
-    test, login, logout, register, upload
+public enum SupportedFiles {
+
+    jpg, jpeg, png /*, bmp, pnm, tiff, wbmp*/
+
 }

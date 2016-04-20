@@ -7,6 +7,7 @@ package client.photographer;
 
 import client.IClientRunnable;
 import static client.user.UserClientRunnable.clientRunnable;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +56,17 @@ public class PhotographerClientRunnable implements IClientRunnable {
             socket.writeObject(new String[]{email, password});
             return (boolean) socket.readObject();
         } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    public boolean uploadFile(File file){
+        try{
+            socket.writeObject(PhotographerCall.upload);
+            socket.writeObject(file);
+            return true;
+        } catch (IOException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }

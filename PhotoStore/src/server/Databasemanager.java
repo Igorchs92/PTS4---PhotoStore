@@ -10,10 +10,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.ClientType;
+import shared.files.Picture;
+import shared.files.PictureGroup;
 
 /**
  *
@@ -24,10 +28,10 @@ public class Databasemanager {
     Connection conn;
 
     public Databasemanager() {
-        String url = "jdbc:mysql://sql7.freesqldatabase.com:3306/";
-        String dbName = "sql7112896";
-        String userName = "sql7112896";
-        String password = "Md3KSKmmsh";
+        String url = "jdbc:mysql://db4free.net:3306/";
+        String dbName = "pts4photostore";
+        String userName = "pts4";
+        String password = "photostore";
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(url + dbName, userName, password);
@@ -35,6 +39,10 @@ public class Databasemanager {
             System.out.println("Connecting to database failed");
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public java.sql.Date convertJavaDateToSqlDate(java.util.Date date) {
+        return new java.sql.Date(date.getTime());
     }
 
     public boolean login(ClientType type, String email, String password) {
@@ -117,4 +125,47 @@ public class Databasemanager {
             return false;
         }
     }
+
+    public int createOriginalPicture(Picture picture) {
+        try {
+            String sql = "INSERT INTO originalPicture(extension, name, price, created) VALUES (?, ?, ?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, picture.getExtension());
+            ps.setString(2, picture.getName());
+            ps.setDouble(3, picture.getPrice());
+            ps.setDate(4, convertJavaDateToSqlDate(picture.getCreated()));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                return 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    }
+    /*
+    public boolean addPictureGroupInfo(PictureGroup group){
+                try {
+            String sql = "INSERT INTO originalPicture(extension, name, price, created) VALUES (?, ?, ?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, picture.getExtension());
+            ps.setString(2, picture.getName());
+            ps.setDouble(3, picture.getPrice());
+            ps.setDate(4, convertJavaDateToSqlDate(picture.getCreated()));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    */
 }
