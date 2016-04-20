@@ -16,71 +16,76 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class LocalDatabaseManager {
 
-    private Properties props;
     private Connection conn;
+    static final String WRITE_OBJECT_SQL = "INSERT INTO java_objects(name, object_value) VALUES (?, ?)";
+    static final String READ_OBJECT_SQL = "SELECT object_value FROM java_objects WHERE id = ?";
+    /*
+ mysql> CREATE TABLE java_objects ( 
+ id INTEGER PRIMARY KEY, 
+ name varchar(128), 
+ object_value BLOB;
+ **/
 
+    private long writeJavaObject(Connection conn, Object object) throws Exception {
+    String className = object.getClass().getName();
+    PreparedStatement pstmt = conn.prepareStatement(WRITE_OBJECT_SQL);
 
+    // set input parameters
+    pstmt.setString(1, className);
+    pstmt.setObject(2, object);
+    pstmt.executeUpdate();
+
+    // get the generated key for the id
+    ResultSet rs = pstmt.getGeneratedKeys();
+    int id = -1;
+    if (rs.next()) {
+      id = rs.getInt(1);
+    }
+
+    rs.close();
+    pstmt.close();
+    System.out.println("writeJavaObject: done serializing: " + className);
+    return id;
+  }
+
+    private Object readJavaObject(Connection conn, long id) throws Exception {
+    PreparedStatement pstmt = conn.prepareStatement(READ_OBJECT_SQL);
+    pstmt.setLong(1, id);
+    ResultSet rs = pstmt.executeQuery();
+    rs.next();
+    Object object = rs.getObject(1);
+    String className = object.getClass().getName();
+
+    rs.close();
+    pstmt.close();
+    System.out.println("readJavaObject: done de-serializing: " + className);
+    return object;
+  }
     
-    public void save(Object o) throws IOException {
-        try {
-            //todo opgave 4
-            resetDatabase();
-            initConnection();            
-            String insertIntoPersoon = "insert into persoon (persoonsnummer, achternaam, voornamen, tussenvoegsel, geboortedatum, geboorteplaats, geslacht) " +
-                    "values ";
-            String insertIntoGezin = "insert into gezin (gezinsnummer, ouder1, ouder2, huwelijksdatum, scheidingsdatum) values ";
-            
-            for (Persoon p : admin.getPersonen())
-            {
-                String query = insertIntoPersoon + "(?, ?, ?, ?, ?, ?, ?);";
-                PreparedStatement st = conn.prepareStatement(query);
-                st.setInt(1, p.getNr());
-                st.setString(2, p.getAchternaam());
-                st.setString(3, p.getVoornamen());
-                st.setString(4, p.getTussenvoegsel());
-                st.setString(5, (new Timestamp(p.getGebDat().getTimeInMillis())).toString());
-                st.setString(6, p.getGebPlaats());
-                st.setString(7, p.getGeslacht().toString());
-                st.execute();
-                
-                if (p.getOuderlijkGezin() != null) {
-                    query = "update persoon set ouders= ? where persoonsnummer = ?;";
-                    PreparedStatement st2 = conn.prepareStatement(query);
-                    st2.setInt(1, p.getOuderlijkGezin().getNr());
-                    st2.setInt(2, p.getNr());
-                    st2.execute();
-                }
+    public void saveObjects(List<Object> objects) throws Exception {
+        initConnection();
+        for (Object o : objects) {
+            if (o instanceof java.io.Serializable) {
+            writeJavaObject(conn, o);
             }
-            
-            for(Gezin gezin : admin.getGezinnen()) {
-                String query = insertIntoGezin + "(?, ?, ?, ?, ?);";
-                
-                PreparedStatement st = conn.prepareStatement(query);
-                st.setInt(1, gezin.getNr());
-                st.setInt(2, gezin.getOuder1().getNr());
-                if (gezin.getOuder2() == null) st.setNull(3, java.sql.Types.INTEGER);
-                else st.setInt(3, gezin.getOuder2().getNr());
-                if (gezin.getHuwelijksdatum() == null) st.setNull(4, java.sql.Types.TIMESTAMP);
-                else st.setString(4, (new Timestamp(gezin.getHuwelijksdatum().getTimeInMillis())).toString());
-                if (gezin.getScheidingsdatum() == null) st.setNull(5, java.sql.Types.TIMESTAMP);
-                else st.setString(5, (new Timestamp(gezin.getScheidingsdatum().getTimeInMillis())).toString());
-                st.execute();
+            else {
+                // maybe throw an error, this object is not serializable
             }
-            
-        } catch (Exception ex) {
-            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
         }
-        finally {
-            closeConnection();
-        }
+        closeConnection();
     }
     
+    public List<Object> getAllObjects() {
+        
+        return null;
+    }
     
     private void initConnection() throws SQLException{
         if (conn != null) closeConnection();
@@ -94,13 +99,13 @@ public class LocalDatabaseManager {
         
     }
     
-    private void resetDatabase(){
+    public void resetDatabase(){
         ArrayList<String> queries = new ArrayList<String>();
-        queries.add("drop table if exists Persoon;");
-        queries.add("drop table if exists Gezin;");
-        queries.add("CREATE TABLE Persoon (persoonsNummer INT PRIMARY KEY NOT NULL, achternaam STRING NOT NULL, voornamen STRING NOT NULL, tussenvoegsel STRING, geboortedatum DATETIME NOT NULL, geboorteplaats STRING NOT NULL, geslacht STRING NOT NULL);");
-        queries.add("CREATE TABLE Gezin (gezinsNummer INTEGER PRIMARY KEY NOT NULL, ouder1 INTEGER REFERENCES Persoon (persoonsNummer) NOT NULL, ouder2 INTEGER REFERENCES Persoon (persoonsNummer), huwelijksdatum DATETIME, scheidingsdatum DATETIME);");
-        queries.add("alter table Persoon add column ouders integer references Gezin(GezinsNummer);");
+                
+        queries.add("mysql> CREATE TABLE java_objects ( \n" +
+        " id INTEGER PRIMARY KEY, \n" +
+        " name varchar(128), \n" +
+        " object_value BLOB;");
         for(String q: queries)
             {
                 try {
