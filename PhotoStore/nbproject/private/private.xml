@@ -3,16 +3,33 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/ui/ClientLogin.fxml</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/user/UserClientRunnable.java</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/ui/ClientLoginController.java</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/producer/ProducerClient.java</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/IClientRunnable.java</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/photographer/PhotographerClient.java</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/user/ui/UserClientRegisterController.java</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/user/UserClient.java</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/ClientConnector.java</file>
-            <file>file:/C:/Users/IGOR/Dropbox/S4/PTS4/PTS4-PhotoStore/PhotoStore/src/client/IClient.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/shared/ClientType.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/server/Server.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/shared/files/Picture.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/photographer/SqliteDatabaseManager.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/server/Databasemanager.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/server/photographer/PhotographerServerRunnable.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/shared/photographer/PhotographerCall.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/shared/files/ModifiedPicture.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/shared/files/SupportedFiles.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/shared/user/UserCall.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/ClientConnector.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/strings/Strings.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/server/user/UserServerRunnable.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/server/producer/ProducerServerRunnable.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/ui/ClientLoginController.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/IClientRunnable.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/server/Filesystem.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/UserClient.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/strings/StringBundle_en_EN.properties</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/photographer/PhotographerClientRunnable.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/photographer/PhotographerClient.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/UserClientRunnable.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/strings/StringBundle_nl_NL.properties</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/shared/files/PictureGroup.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/shared/files/PersonalPicture.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/producer/ProducerClient.java</file>
+            <file>file:/C:/Users/martijn/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/photographer/LocalDatabaseManager.java</file>
         </group>
     </open-files>
 </project-private>
