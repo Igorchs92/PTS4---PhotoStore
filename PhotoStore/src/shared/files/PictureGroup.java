@@ -19,7 +19,7 @@ public class PictureGroup implements Serializable {
     private String name;
     private String description;
     private List<Picture> groupPictures;
-    private List<PersonalPicture> persons;
+    private List<PersonalPicture> personalPictures;
 
 
     public PictureGroup(int id) {
@@ -63,11 +63,15 @@ public class PictureGroup implements Serializable {
         groupPictures.add(picture);
     }
 
-    public List<PersonalPicture> getPersons() {
-        return persons;
+    public List<PersonalPicture> getPersonalPictures() {
+        return personalPictures;
     }
 
-    public void setPersons(List<PersonalPicture> persons) {
-        this.persons = persons;
+    public void setPersonalPictures(List<PersonalPicture> persons) {
+        this.personalPictures = persons;
+    }
+    
+    public void addPersonalPicture(PersonalPicture personalPicture){
+        this.personalPictures.add(personalPicture);
     }
 }
