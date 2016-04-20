@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.ClientType;
+import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
 
@@ -149,11 +150,25 @@ public class Databasemanager {
 
     public boolean addPictureGroupInfo(PictureGroup group) {
         try {
-            String sql = "UPDATE groupPictures SET name=?, description=? WHERE ID=?;";
+            String sql = "UPDATE groupPictures SET name = ?, description = ? WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, group.getName());
             ps.setString(2, group.getDescription());
             ps.setInt(3, group.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean addPersonalPictureToGroupPicture(PictureGroup pg, PersonalPicture pp) {
+        try {
+            String sql = "UPDATE personalPictures SET group_id = ? WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pg.getId());
+            ps.setInt(2, pp.getId());
             return ps.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class

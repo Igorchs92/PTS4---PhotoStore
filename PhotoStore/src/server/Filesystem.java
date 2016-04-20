@@ -88,6 +88,7 @@ public class Filesystem {
         }
 
         for (PersonalPicture pp : pg.getPersonalPictures()) {
+            dbsm.addPersonalPictureToGroupPicture(pg, pp);
             for (Picture p : pp.getPersonalPictures()) {
                 p.setId(dbsm.createOriginalPicture(p));
                 if (p.getId() != 0) {
