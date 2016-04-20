@@ -146,26 +146,20 @@ public class Databasemanager {
             return 0;
         }
     }
-    /*
-    public boolean addPictureGroupInfo(PictureGroup group){
-                try {
-            String sql = "INSERT INTO originalPicture(extension, name, price, created) VALUES (?, ?, ?, ?);";
+
+    public boolean addPictureGroupInfo(PictureGroup group) {
+        try {
+            String sql = "UPDATE groupPictures SET name=?, description=? WHERE ID=?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, picture.getExtension());
-            ps.setString(2, picture.getName());
-            ps.setDouble(3, picture.getPrice());
-            ps.setDate(4, convertJavaDateToSqlDate(picture.getCreated()));
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            } else {
-                return true;
-            }
+            ps.setString(1, group.getName());
+            ps.setString(2, group.getDescription());
+            ps.setInt(3, group.getId());
+            return ps.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class
                     .getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }
-    */
+
 }

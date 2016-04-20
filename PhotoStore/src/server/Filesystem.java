@@ -22,6 +22,7 @@ import javax.media.jai.RenderedOp;
 import shared.SocketConnection;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
+import shared.files.PictureGroup;
 
 /**
  *
@@ -46,99 +47,57 @@ public class Filesystem {
         }
     }
 
-    public void compressPicture(File fileInput, File fileOutput) throws FileNotFoundException, IOException {
-        File input = fileInput;
-        File output = fileOutput;
-
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(input));
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(output));
-        SeekableStream ss = SeekableStream.wrapInputStream(bis, true);
-        RenderedOp image = JAI.create("stream", ss);
-        ((OpImage) image.getRendering()).setTileCache(null);
-
-        RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        RenderedOp resizedImage = JAI.create("SubsampleAverage", image, 0.5, 0.5, qualityHints);
-        JAI.create("encode", resizedImage, bos, "JPEG", null);
-    }
-
-    public boolean addPersonalPicture(PersonalPicture pp) {
-        String root_personal = pp.getGroup().getId() + "/" + pp.getId() + "/";
-        File root_highres = new File(root.getPath() + highres + root_personal);
-        File root_lowres = new File(root.getPath() + lowres + root_personal);
-        root_highres.mkdirs();
-        root_lowres.mkdirs();
-        if (pp.getPersonalPictures().isEmpty()) {
-            return false;
-        }
-        for (Picture p : pp.getPersonalPictures()) {
-            p.setId(dbsm.createOriginalPicture(p));
-            if (p.getId() == 0) {
-                return false;
-            }
-            String path_picture = root_highres + Integer.toString(p.getId()) + p.getExtension();
-            File highres_file = new File(path_picture);
-            File file_lowres = new File(path_picture);
-            socket.readFile(path_picture);
-            compressPicture(highres_file, lowres_file)
-            /*
-             TO DO: LOW RES PICTURES
-             */
-        }
-        return true;
-    }
-
-    public void receiveFile() {
+    public void compressPicture(File fileInput, File fileOutput) {
+        BufferedInputStream bis = null;
         try {
-            //receive groupId(0), uniqueId(1) and fileName(2)
-            String[] arg = (String[]) socket.readObject();
-            //create a new file with the right directories
-            String pictureId /*= getFromDatabase()*/ = "0";
-            File file = new File(arg[0] + "/" + arg[1] + "/" + pictureId + ".jpg");
-            file.mkdirs();
-            socket.readFile(file);
-        } catch (IOException | ClassNotFoundException ex) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
+            File input = fileInput;
+            File output = fileOutput;
+            bis = new BufferedInputStream(new FileInputStream(input));
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(output));
+            SeekableStream ss = SeekableStream.wrapInputStream(bis, true);
+            RenderedOp image = JAI.create("stream", ss);
+            ((OpImage) image.getRendering()).setTileCache(null);
+            RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            RenderedOp resizedImage = JAI.create("SubsampleAverage", image, 0.5, 0.5, qualityHints);
+            JAI.create("encode", resizedImage, bos, "JPEG", null);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                bis.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
-    /*
-     public void sendFiles(String groupId, String uniqueId) {
-     try {
-     //load the existing File out of the groupId
-     File map = new File(root + groupId + "/");
-     //does the groupId exist yet?
-     if (map.exists()) {
-     //load all files from the groupId File
-     File[] files = map.listFiles();
-     for (File file : files) {
-     //we only want to retrieve the group photo's
-     if (file.isFile()) {
-     //we want to send a file now
-     socket.writeObject(FileSystemCall.file);
-     //~~send file (needs testing)
-     socket.writeFile(file);
-     }
-     }
-     }
-     //load the existing File out of the unique number
-     map = new File(map + uniqueId + "/");
-     //does the groupId exist?
-     if (map.exists()) {
-     //load all files from the groupId File
-     File[] files = map.listFiles();
-     for (File file : files) {
-     //we only want to retrieve the files (not that we wont find a groupId)
-     if (file.isFile()) {
-     //we want to send out a file now
-     socket.writeObject(FileSystemCall.file);
-     //~~send file (needs testing)
-     socket.writeFile(file);
-     }
-     }
-     }
-     socket.writeObject(FileSystemCall.end);
-     } catch (IOException ex) {
-     Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
-     }
-     }
-     */
+
+    public void addGroupAndPersonalPictures(PictureGroup pg) {
+        if (dbsm.addPictureGroupInfo(pg)) {
+            return;
+        }
+        File root_group = new File(Integer.toString(pg.getId()) + "/");
+        //add group pictures
+        for (Picture p : pg.getGroupPictures()) {
+            p.setId(dbsm.createOriginalPicture(p));
+            if (p.getId() != 0) {
+                File root_group_highres = new File(root_group + this.highres + p.toString());
+                File root_group_lowres = new File(root_group + this.lowres + p.toString());
+                socket.readFile(root_group_highres);
+                compressPicture(root_group_highres, root_group_lowres);
+            }
+        }
+
+        for (PersonalPicture pp : pg.getPersonalPictures()) {
+            for (Picture p : pp.getPersonalPictures()) {
+                p.setId(dbsm.createOriginalPicture(p));
+                if (p.getId() != 0) {
+                    File root_group_highres = new File(root_group + Integer.toString(pg.getId()) + this.highres + p.toString());
+                    File root_group_lowres = new File(root_group + Integer.toString(pg.getId()) + this.lowres + p.toString());
+                    socket.readFile(root_group_highres);
+                    compressPicture(root_group_highres, root_group_lowres);
+                }
+            }
+        }
+    }
+
 }

@@ -81,4 +81,9 @@ public class Picture implements Serializable {
         }
     }
 
+    @Override
+    public String toString() {
+        return  id + "." + extension;
+    }
+
 }
