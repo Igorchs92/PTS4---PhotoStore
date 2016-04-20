@@ -5,3 +5,8 @@ PhotoStore/build/built-jar.properties
 PhotoStore/nbproject/private/
 PhotoStore/build/built-jar.properties
 /PhotoStore/dist/
+!/PhotoStore/lib/mysql-connector-java-5.1.38-bin.jar
+!/PhotoStore/lib/mlibwrapper_jai.jar
+!/PhotoStore/lib/jai_core.jar
+!/PhotoStore/lib/jai_codec.jar
+!/PhotoStore/lib/sqlite-jdbc-3.8.11.2.jar

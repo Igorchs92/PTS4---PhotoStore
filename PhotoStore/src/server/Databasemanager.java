@@ -127,7 +127,7 @@ public class Databasemanager {
         }
     }
 
-    public int createOriginalPicture(Picture picture) {
+    public int addOriginalPicture(Picture picture) {
         try {
             String sql = "INSERT INTO originalPicture(extension, name, price, created) VALUES (?, ?, ?, ?);";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -147,8 +147,47 @@ public class Databasemanager {
             return 0;
         }
     }
-
-    public boolean addPictureGroupInfo(PictureGroup group) {
+    public boolean addGroupPicturesPicture(PictureGroup pg, Picture p){
+              try {
+            String sql = "INSERT INTO groupPictures_picture (group_id, picture_id) VALUES (?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pg.getId());
+            ps.setInt(2, p.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    public boolean addPersonalPicturesPicture(PersonalPicture pp, Picture p){
+               try {
+            String sql = "INSERT INTO personalPictures_picture (personal_id, picture_id) VALUES (?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pp.getId());
+            ps.setInt(2, p.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    public boolean modifyPersonalPicture(PictureGroup pg, PersonalPicture pp) {
+        try {
+            String sql = "UPDATE personalPictures SET group_id = ? WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pg.getId());
+            ps.setInt(2, pp.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    public boolean modifyGroupPictureInfo(PictureGroup group) {
         try {
             String sql = "UPDATE groupPictures SET name = ?, description = ? WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -163,18 +202,6 @@ public class Databasemanager {
         }
     }
 
-    public boolean addPersonalPictureToGroupPicture(PictureGroup pg, PersonalPicture pp) {
-        try {
-            String sql = "UPDATE personalPictures SET group_id = ? WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, pg.getId());
-            ps.setInt(2, pp.getId());
-            return ps.executeUpdate() != 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(Databasemanager.class
-                    .getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
+
 
 }
