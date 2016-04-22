@@ -22,7 +22,7 @@ import java.util.List;
 import shared.files.Picture;
 import shared.files.PictureGroup;
 
-public class SqliteDatabaseManager {
+public class LocalDatabaseTest {
 
    
 
