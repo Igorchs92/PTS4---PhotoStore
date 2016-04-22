@@ -6,12 +6,14 @@
 package client.photographer;
 
 import client.IClientRunnable;
-import static client.user.UserClientRunnable.clientRunnable;
-import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.SocketConnection;
+import shared.files.PersonalPicture;
+import shared.files.Picture;
+import shared.files.PictureGroup;
 import shared.photographer.PhotographerCall;
 
 /**
@@ -19,14 +21,17 @@ import shared.photographer.PhotographerCall;
  * @author Igor
  */
 public class PhotographerClientRunnable implements IClientRunnable {
-    
-    private SocketConnection socket;
+
+    private final SocketConnection socket;
     public static PhotographerClientRunnable clientRunnable;
+    private final LocalDatabase ldb;
+    private final List<PictureGroup> pgl;
 
     public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
         clientRunnable = this;
         this.socket = s;
-        //testConnection();
+        ldb = new LocalDatabase();
+        pgl = ldb.getPictureGroups();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
@@ -60,11 +65,67 @@ public class PhotographerClientRunnable implements IClientRunnable {
             return false;
         }
     }
-    
-    public boolean uploadFile(File file){
-        try{
+
+    public boolean uploadPictureGroups(List<PictureGroup> pgl) {
+        try {
             socket.writeObject(PhotographerCall.upload);
-            socket.writeObject(file);
+            //filter picturegroup list on images that havent been uploaded yet and send this to the server.
+            List<PictureGroup> fPgl = pgl;
+            for (PictureGroup pg : fPgl) {
+                for (Picture p : pg.getPictures()) {
+                    if (p.isUploaded()) {
+                        //already uploaded, we can remove it
+                        pg.removePicture(p);
+                    }
+                }
+                //select each personalpicture
+                for (PersonalPicture pp : pg.getPersonalPictures()) {
+                    for (Picture p : pg.getPictures()) {
+                        if (p.isUploaded()) {
+                            //already uploaded, we can remove it
+                            pg.removePicture(p);
+                        }
+                    }
+                    if (pp.getPictures().isEmpty()) {
+                        //personalpicture doesnt contain any pictures, we can remove it
+                        pg.removePersonalPicture(pp);
+                    }
+                }
+                if (pg.getPersonalPictures().isEmpty() && pg.getPictures().isEmpty()) {
+                    //picturegroup doesnt contain any pictures, we can remove it
+                    fPgl.remove(pg);
+                }
+            }
+            //send the filtered list to the server
+            socket.writeObject(fPgl);
+
+            for (PictureGroup pg : pgl) {
+                boolean saveRequired = false;
+                for (Picture p : pg.getPictures()) {
+                    if (!p.isUploaded()) {
+                        //picture isnt uploaded, send it to the server
+                        socket.writeFile(p.getFile());
+                        //update the uploaded status on the picture
+                        p.setUploaded(true);
+                        saveRequired = true;
+                    }
+                }
+                for (PersonalPicture pp : pg.getPersonalPictures()) {
+                    for (Picture p : pp.getPictures()) {
+                        if (!p.isUploaded()) {
+                            //picture isnt uploaded, send it to the server
+                            socket.writeFile(p.getFile());
+                            //update the uploaded status on the picture
+                            p.setUploaded(true);
+                            saveRequired = true;
+                        }
+                    }
+                }
+                if (saveRequired) {
+                    //save is required, save the new picturegroup on the local database
+                    ldb.savePictureGroup(pg);
+                }
+            }
             return true;
         } catch (IOException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);

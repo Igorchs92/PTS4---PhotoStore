@@ -5,10 +5,8 @@
  */
 package shared.files;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.Serializable;
-import java.nio.file.FileSystems;
 import java.util.Date;
 
 /**
@@ -18,18 +16,28 @@ import java.util.Date;
 public class Picture implements Serializable {
 
     private int id;
-    private String location;
-    private String extension;
+    private final String location;
+    private final String extension;
     private String name;
     private double price;
-    private Date created;
+    private final Date created;
+    private boolean uploaded;
 
-    public Picture(String location, String name, double price, Date created) {
+    public boolean isUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(boolean uploaded) {
+        this.uploaded = uploaded;
+    }
+
+    public Picture(String location, String name, double price) {
         this.location = location;
         this.extension = getFileExtension(new File(location));
         this.name = name;
         this.price = price;
-        this.created = created;
+        this.created = new Date();
+        this.uploaded = false;
     }    
 
     public int getId() {
@@ -42,10 +50,6 @@ public class Picture implements Serializable {
 
     public String getExtension() {
         return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
     }
 
     public String getName() {
@@ -75,10 +79,15 @@ public class Picture implements Serializable {
     private static String getFileExtension(File file) {
         String fileName = file.getName();
         if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
-            return fileName.substring(fileName.lastIndexOf(".") + 1);
+            return fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
         } else {
             return "";
         }
+    }
+
+    @Override
+    public String toString() {
+        return id + "." + extension.toLowerCase();
     }
 
 }

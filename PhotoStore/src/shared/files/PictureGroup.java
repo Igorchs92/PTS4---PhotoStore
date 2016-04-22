@@ -18,11 +18,13 @@ public class PictureGroup implements Serializable {
     private int id;
     private String name;
     private String description;
-    private List<Picture> groupPictures;
+    private List<Picture> pictures;
+    private List<PersonalPicture> personalPictures;
+
 
     public PictureGroup(int id) {
         this.id = id;
-        groupPictures = new ArrayList<>();
+        pictures = new ArrayList<>();
     }
 
     public int getId() {
@@ -49,16 +51,35 @@ public class PictureGroup implements Serializable {
         this.description = description;
     }
 
-    public List<Picture> getGroupPictures() {
-        return groupPictures;
+    public List<Picture> getPictures() {
+        return pictures;
     }
 
-    public void setGroupPictures(List<Picture> groupPictures) {
-        this.groupPictures = groupPictures;
+    public void setPictures(List<Picture> pictures) {
+        this.pictures = pictures;
     }
 
-    public void addGroupPicture(Picture picture) {
-        groupPictures.add(picture);
+    public void addPicture(Picture picture) {
+        this.pictures.add(picture);
+    }
+    
+    public void removePicture(Picture picture) {
+        this.pictures.remove(picture);
     }
 
+    public List<PersonalPicture> getPersonalPictures() {
+        return personalPictures;
+    }
+
+    public void setPersonalPictures(List<PersonalPicture> persons) {
+        this.personalPictures = persons;
+    }
+    
+    public void addPersonalPicture(PersonalPicture personalPicture){
+        this.personalPictures.add(personalPicture);
+    }
+    
+    public void removePersonalPicture(PersonalPicture personalPicture){
+        this.personalPictures.remove(personalPicture);
+    }
 }

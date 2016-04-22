@@ -15,8 +15,7 @@ import java.util.List;
 public class PersonalPicture implements Serializable {
 
     private int id;
-    private PictureGroup group;
-    private List<Picture> personalPictures;
+    private List<Picture> pictures;
     
     public int getId() {
         return id;
@@ -26,20 +25,15 @@ public class PersonalPicture implements Serializable {
         this.id = id;
     }
 
-    public PictureGroup getGroup() {
-        return group;
+    public List<Picture> getPictures() {
+        return pictures;
     }
 
-    public void setGroup(PictureGroup group) {
-        this.group = group;
+    public void setPictures(List<Picture> pictures) {
+        this.pictures = pictures;
     }
-
-    public List<Picture> getPersonalPictures() {
-        return personalPictures;
+    
+    public void addPicture(Picture picture){
+        this.pictures.add(picture);
     }
-
-    public void setPersonalPictures(List<Picture> personalPictures) {
-        this.personalPictures = personalPictures;
-    }
-
 }
