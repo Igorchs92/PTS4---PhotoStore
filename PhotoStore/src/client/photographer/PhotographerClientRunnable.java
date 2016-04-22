@@ -26,7 +26,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
     public static PhotographerClientRunnable clientRunnable;
     private final LocalDatabase ldb;
     private final List<PictureGroup> pgl;
-
+    
     public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
         clientRunnable = this;
         this.socket = s;

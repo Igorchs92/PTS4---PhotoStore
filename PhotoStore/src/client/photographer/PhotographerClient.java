@@ -43,6 +43,7 @@ public class PhotographerClient extends Application implements IClient {
         sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/PhotographerClientMain.fxml")));
         setSceneMain();
         stage.show();
+        LocalFileManager l = new LocalFileManager("C:\\hoi");
     }
 
     /**
