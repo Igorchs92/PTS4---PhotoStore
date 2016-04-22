@@ -6,13 +6,16 @@
 package server.photographer;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import server.Databasemanager;
+import server.Filesystem;
 import shared.ClientType;
 import shared.SocketConnection;
+import shared.files.PictureGroup;
 import shared.photographer.PhotographerCall;
 
 /**
@@ -23,10 +26,12 @@ public class PhotographerServerRunnable implements Observer, Runnable {
 
     private SocketConnection socket;
     private Databasemanager dbm;
-
+    private Filesystem fs;
+    
     public PhotographerServerRunnable(SocketConnection socket) {
         this.socket = socket;
         dbm = new Databasemanager();
+        fs = new Filesystem(socket);
     }
 
     @Override
@@ -56,6 +61,10 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                         args = (String[]) socket.readObject();
                         result = dbm.login(ClientType.photographer, args[0], args[1]);
                         socket.writeObject(result);
+                        break;
+                    }
+                    case upload: {
+                        fs.upload((List<PictureGroup>) socket.readObject());
                         break;
                     }
                     case logout: {

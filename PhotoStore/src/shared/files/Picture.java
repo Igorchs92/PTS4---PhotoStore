@@ -18,18 +18,18 @@ import java.util.Date;
 public class Picture implements Serializable {
 
     private int id;
-    private String location;
+    private final String location;
     private String extension;
     private String name;
     private double price;
-    private Date created;
+    private final Date created;
 
-    public Picture(String location, String name, double price, Date created) {
+    public Picture(String location, String name, double price) {
         this.location = location;
         this.extension = getFileExtension(new File(location));
         this.name = name;
         this.price = price;
-        this.created = created;
+        created = new Date();
     }    
 
     public int getId() {
@@ -42,10 +42,6 @@ public class Picture implements Serializable {
 
     public String getExtension() {
         return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
     }
 
     public String getName() {
@@ -75,7 +71,7 @@ public class Picture implements Serializable {
     private static String getFileExtension(File file) {
         String fileName = file.getName();
         if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
-            return fileName.substring(fileName.lastIndexOf(".") + 1);
+            return fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
         } else {
             return "";
         }
@@ -83,7 +79,7 @@ public class Picture implements Serializable {
 
     @Override
     public String toString() {
-        return  id + "." + extension;
+        return id + "." + extension.toLowerCase();
     }
 
 }

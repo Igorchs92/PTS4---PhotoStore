@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.JAI;
@@ -71,36 +72,36 @@ public class Filesystem {
         }
     }
 
-    public void addGroupAndPersonalPictures(PictureGroup pg) {
-        if (dbsm.modifyGroupPictureInfo(pg)) {
-            return;
-        }
-        File root_group = new File(Integer.toString(pg.getId()) + "/");
-        //add group pictures
-        for (Picture p : pg.getGroupPictures()) {
-            p.setId(dbsm.addOriginalPicture(p));
-            if (p.getId() != 0) {
-                dbsm.addGroupPicturesPicture(pg, p);
-                File root_group_highres = new File(root_group + this.highres + p.toString());
-                File root_group_lowres = new File(root_group + this.lowres + p.toString());
-                socket.readFile(root_group_highres);
-                compressPicture(root_group_highres, root_group_lowres);
-            }
-        }
-
-        for (PersonalPicture pp : pg.getPersonalPictures()) {
-            dbsm.modifyPersonalPicture(pg, pp);
-            for (Picture p : pp.getPersonalPictures()) {
+    public void upload(List<PictureGroup> pgl) {
+        for (PictureGroup pg : pgl) {
+            dbsm.modifyGroupPictureInfo(pg);
+            File root_group = new File(Integer.toString(pg.getId()) + "/");
+            //add group pictures
+            for (Picture p : pg.getGroupPictures()) {
                 p.setId(dbsm.addOriginalPicture(p));
                 if (p.getId() != 0) {
-                    dbsm.addPersonalPicturesPicture(pp, p);
-                    File root_group_highres = new File(root_group + Integer.toString(pg.getId()) + this.highres + p.toString());
-                    File root_group_lowres = new File(root_group + Integer.toString(pg.getId()) + this.lowres + p.toString());
+                    dbsm.addGroupPicturesPicture(pg, p);
+                    File root_group_highres = new File(root_group + this.highres + p.toString());
+                    File root_group_lowres = new File(root_group + this.lowres + p.toString());
                     socket.readFile(root_group_highres);
                     compressPicture(root_group_highres, root_group_lowres);
                 }
             }
+            for (PersonalPicture pp : pg.getPersonalPictures()) {
+                dbsm.modifyPersonalPicture(pg, pp);
+                for (Picture p : pp.getPersonalPictures()) {
+                    p.setId(dbsm.addOriginalPicture(p));
+                    if (p.getId() != 0) {
+                        dbsm.addPersonalPicturesPicture(pp, p);
+                        File root_group_highres = new File(root_group + Integer.toString(pg.getId()) + this.highres + p.toString());
+                        File root_group_lowres = new File(root_group + Integer.toString(pg.getId()) + this.lowres + p.toString());
+                        socket.readFile(root_group_highres);
+                        compressPicture(root_group_highres, root_group_lowres);
+                    }
+                }
+            }
         }
+
     }
 
 }
