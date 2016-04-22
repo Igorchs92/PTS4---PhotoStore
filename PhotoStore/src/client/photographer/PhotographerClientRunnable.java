@@ -67,6 +67,17 @@ public class PhotographerClientRunnable implements IClientRunnable {
             return false;
         }
     }
+    
+    public boolean uploadFile(File file){
+        try{
+            socket.writeObject(PhotographerCall.upload);
+            socket.writeObject(file);
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
 
     public boolean uploadPictureGroups(List<PictureGroup> pgl) {
         try {

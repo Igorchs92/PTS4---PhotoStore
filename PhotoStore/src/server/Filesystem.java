@@ -51,6 +51,7 @@ public class Filesystem {
     public void compressPicture(File fileInput, File fileOutput) {
         BufferedInputStream bis = null;
         try {
+//////////////////////// THE FOLLOWING PART WAS ON THE BRANCH "upload-groups-pictures"
             File input = fileInput;
             File output = fileOutput;
             bis = new BufferedInputStream(new FileInputStream(input));
@@ -69,6 +70,20 @@ public class Filesystem {
             } catch (IOException ex) {
                 Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
             }
+///////////////////////UNTIL HERE
+
+
+////////////////THE FOLLOWING PART WAS ON THE MASTER BRANCH BEFORE MERGING
+            //receive groupId(0), uniqueId(1) and fileName(2)
+            String[] arg = (String[]) socket.readObject();
+            //create a new file with the right directories
+            String pictureId /*= getFromDatabase()*/ = "0"; 
+            File file = new File(arg[0] + "/" + arg[1] + "/" + pictureId + ".jpg");
+            file.mkdirs();
+            socket.readFile(file);
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, null,  ex);
+/////////////////// UNTIL HERE
         }
     }
 
