@@ -10,3 +10,6 @@ PhotoStore/build/built-jar.properties
 !/PhotoStore/lib/jai_core.jar
 !/PhotoStore/lib/jai_codec.jar
 !/PhotoStore/lib/sqlite-jdbc-3.8.11.2.jar
+!/PhotoStore/lib/CopyLibs/org-netbeans-modules-java-j2seproject-copylibstask.jar
+PhotoStore/save.dat
+*.data
