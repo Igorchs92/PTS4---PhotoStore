@@ -26,13 +26,14 @@ public final class LocalDatabaseManager {
 
     Connection conn;
     File db;
+
     public LocalDatabaseManager() {
         db = new File("save.dat");
         try {
             boolean dbExists = db.exists();
-            conn = DriverManager.getConnection("jdbc:sqlite:"+db); //set the connection string
-            if (!dbExists){
-               resetDatabase(); 
+            conn = DriverManager.getConnection("jdbc:sqlite:" + db); //set the connection string
+            if (!dbExists) {
+                resetDatabase();
             }
         } catch (Exception ex) {
             System.out.println(ex.toString());
@@ -53,7 +54,7 @@ public final class LocalDatabaseManager {
         }
     }
 
-    public void savePictureGroup(PictureGroup pg) throws Exception {
+    public boolean savePictureGroup(PictureGroup pg) throws Exception {
         try {
             PreparedStatement ps;
             String sql;
@@ -64,15 +65,27 @@ public final class LocalDatabaseManager {
             oos.close();
             bos.close();
             byte[] data = bos.toByteArray();
-            sql = "insert into pictureGroup (id, obj) values(?, ?);";
+            sql = "SELECT * from pictureGroup WHERE id = ?";
             ps = conn.prepareStatement(sql);
             ps.setInt(1, pg.getId());
-            ps.setObject(2, data);
-            ps.executeUpdate();
+            if (ps.executeQuery().next()) {
+                sql = "UPDATE pictureGroup SET obj = ? WHERE id = ?";
+                ps = conn.prepareStatement(sql);
+                ps.setObject(1, data);
+                ps.setInt(2, pg.getId());
+                ps.executeUpdate();
+            } else {
+                sql = "INSERT INTO pictureGroup (id, obj) VALUES(?, ?);";
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, pg.getId());
+                ps.setObject(2, data);
+                ps.executeUpdate();
+            }
         } catch (IOException | SQLException ex) {
             Logger.getLogger(LocalDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-
+        return true;
     }
 
     public List<PictureGroup> getPictureGroups() {

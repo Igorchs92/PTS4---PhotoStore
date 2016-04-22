@@ -33,6 +33,6 @@ public class SqliteDatabaseManager {
         pg.addGroupPicture(new Picture("/file.png", "testp", 20));
         ldbm.savePictureGroup(pg);
         ldbm.getPictureGroups();
-        ldbm.resetDatabase();
+        //ldbm.resetDatabase();
     }
 }
