@@ -24,13 +24,16 @@ import shared.photographer.PhotographerCall;
  */
 public class PhotographerClientRunnable implements IClientRunnable {
 
-    private SocketConnection socket;
+    private final SocketConnection socket;
     public static PhotographerClientRunnable clientRunnable;
-
+    private final LocalDatabase ld;
+    private final List<PictureGroup> pgl;
+    
     public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
         clientRunnable = this;
         this.socket = s;
-        //testConnection();
+        ld = new LocalDatabase();
+        pgl = ld.getPictureGroups();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {

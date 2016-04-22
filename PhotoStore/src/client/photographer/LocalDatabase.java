@@ -22,12 +22,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import shared.files.PictureGroup;
 
-public final class LocalDatabaseManager {
+public final class LocalDatabase {
 
     Connection conn;
     File db;
 
-    public LocalDatabaseManager() {
+    public LocalDatabase() {
         db = new File("save.dat");
         try {
             boolean dbExists = db.exists();
@@ -82,7 +82,7 @@ public final class LocalDatabaseManager {
                 ps.executeUpdate();
             }
         } catch (IOException | SQLException ex) {
-            Logger.getLogger(LocalDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
         return true;
@@ -109,12 +109,12 @@ public final class LocalDatabaseManager {
                     System.out.println(pg.getGroupPictures().get(0).getCreated() + " - " + pg.getGroupPictures().get(0).getExtension());
                     ins.close();
                 } catch (SQLException | IOException | ClassNotFoundException ex) {
-                    Logger.getLogger(LocalDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             return pictureGroups;
         } catch (SQLException ex) {
-            Logger.getLogger(LocalDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

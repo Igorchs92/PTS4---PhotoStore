@@ -27,7 +27,7 @@ public class SqliteDatabaseManager {
    
 
     public static void main(String args[]) throws Exception {
-        LocalDatabaseManager ldbm = new LocalDatabaseManager();
+        LocalDatabase ldbm = new LocalDatabase();
         PictureGroup pg = new PictureGroup(0);
         pg.setName("test");
         pg.addGroupPicture(new Picture("/file.png", "testp", 20));
