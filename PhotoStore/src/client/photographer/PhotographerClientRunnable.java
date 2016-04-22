@@ -9,9 +9,13 @@ import client.IClientRunnable;
 import static client.user.UserClientRunnable.clientRunnable;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.SocketConnection;
+import shared.files.PersonalPicture;
+import shared.files.Picture;
+import shared.files.PictureGroup;
 import shared.photographer.PhotographerCall;
 
 /**
@@ -19,14 +23,17 @@ import shared.photographer.PhotographerCall;
  * @author Igor
  */
 public class PhotographerClientRunnable implements IClientRunnable {
-    
-    private SocketConnection socket;
-    public static PhotographerClientRunnable clientRunnable;
 
+    private final SocketConnection socket;
+    public static PhotographerClientRunnable clientRunnable;
+    private final LocalDatabase ld;
+    private final List<PictureGroup> pgl;
+    
     public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
         clientRunnable = this;
         this.socket = s;
-        //testConnection();
+        ld = new LocalDatabase();
+        pgl = ld.getPictureGroups();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
@@ -65,6 +72,28 @@ public class PhotographerClientRunnable implements IClientRunnable {
         try{
             socket.writeObject(PhotographerCall.upload);
             socket.writeObject(file);
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean uploadPictureGroups(List<PictureGroup> pgl) {
+        try {
+            socket.writeObject(PhotographerCall.upload);
+            socket.writeObject(pgl);
+            for (PictureGroup pg : pgl) {
+                //add group pictures
+                for (Picture p : pg.getGroupPictures()) {
+                    socket.writeFile(p.getFile());
+                }
+                for (PersonalPicture pp : pg.getPersonalPictures()) {
+                    for (Picture p : pp.getPersonalPictures()) {
+                        socket.writeFile(p.getFile());
+                    }
+                }
+            }
             return true;
         } catch (IOException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);

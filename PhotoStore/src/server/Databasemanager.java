@@ -10,10 +10,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.ClientType;
+import shared.files.PersonalPicture;
+import shared.files.Picture;
+import shared.files.PictureGroup;
 
 /**
  *
@@ -35,6 +40,10 @@ public class Databasemanager {
             System.out.println("Connecting to database failed");
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public java.sql.Date convertJavaDateToSqlDate(java.util.Date date) {
+        return new java.sql.Date(date.getTime());
     }
 
     public boolean login(ClientType type, String email, String password) {
@@ -117,4 +126,82 @@ public class Databasemanager {
             return false;
         }
     }
+
+    public int addOriginalPicture(Picture picture) {
+        try {
+            String sql = "INSERT INTO originalPicture(extension, name, price, created) VALUES (?, ?, ?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, picture.getExtension());
+            ps.setString(2, picture.getName());
+            ps.setDouble(3, picture.getPrice());
+            ps.setDate(4, convertJavaDateToSqlDate(picture.getCreated()));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                return 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    }
+    public boolean addGroupPicturesPicture(PictureGroup pg, Picture p){
+              try {
+            String sql = "INSERT INTO groupPictures_picture (group_id, picture_id) VALUES (?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pg.getId());
+            ps.setInt(2, p.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    public boolean addPersonalPicturesPicture(PersonalPicture pp, Picture p){
+               try {
+            String sql = "INSERT INTO personalPictures_picture (personal_id, picture_id) VALUES (?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pp.getId());
+            ps.setInt(2, p.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    public boolean modifyPersonalPicture(PictureGroup pg, PersonalPicture pp) {
+        try {
+            String sql = "UPDATE personalPictures SET group_id = ? WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pg.getId());
+            ps.setInt(2, pp.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    public boolean modifyGroupPictureInfo(PictureGroup group) {
+        try {
+            String sql = "UPDATE groupPictures SET name = ?, description = ? WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, group.getName());
+            ps.setString(2, group.getDescription());
+            ps.setInt(3, group.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+
+
 }
