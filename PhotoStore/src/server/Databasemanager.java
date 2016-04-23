@@ -278,4 +278,15 @@ public class Databasemanager {
         st.close(); 
     }
     
+    
+    //Change prize of the given picture
+    public void changePicturePrice(int photo_id, double price) throws SQLException {
+        Statement st = conn.createStatement();
+        String query = "UPDATE originalPicture set price = ? where id = ?";
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setDouble(1, price);
+        ps.setInt(2, photo_id);
+        ps.executeUpdate();
+        st.close();
+    }
 }

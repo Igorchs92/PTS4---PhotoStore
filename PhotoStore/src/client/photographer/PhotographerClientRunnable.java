@@ -76,6 +76,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
         }
     }
 
+    //create maximum ammount of groups and return the ids as a list.
     public List<Integer> createGroups(String photographer_id) {
         List<Integer> groupNumbers = new ArrayList<>();
         
@@ -95,6 +96,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
         return groupNumbers;
     }
 
+    //add groups to the given personal(unique)number
     public void addGroupToUniqueNumber(int group_id, int personalPictures_id) {
         try {
             socket.writeObject(PhotographerCall.addUniqueNumberToGroup);
@@ -108,6 +110,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
         }
     }
 
+    //get all uniquelist
     public List<Integer> getUniqueNumbers(String photographer_id) {
         List<Integer> uniqueNumbers = new ArrayList<>();
         try {
@@ -123,8 +126,19 @@ public class PhotographerClientRunnable implements IClientRunnable {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //todo
         return uniqueNumbers;
+    }
+    
+    
+    //change prize
+    public void changePicturePrice(int pictureID, double price){
+        try {
+            socket.writeObject(PhotographerCall.changePicturePrice);
+            socket.writeObject(pictureID);
+            socket.writeObject(price);
+        } catch (IOException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

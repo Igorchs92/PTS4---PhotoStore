@@ -75,6 +75,12 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                         socket.writeObject(result);
                         break;
                     }
+                    case changePicturePrice: {
+                        int pictureID = (int)socket.readObject();
+                        double price = (double)socket.readObject();
+                        dbm.changePicturePrice(pictureID, price);
+                        
+                    }
                     case logout: {
 
                     }
