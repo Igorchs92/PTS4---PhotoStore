@@ -89,7 +89,7 @@ public class FileScanner implements Runnable{
     }
     
     private void addToList(Path p) {
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{BIN,TXT}");
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{BIN,TXT,JPG}");
         //TODO: change this to use the enum with supported path exstentions when it's available
 
         if (matcher.matches(p)) {

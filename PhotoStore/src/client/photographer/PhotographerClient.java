@@ -31,6 +31,7 @@ public class PhotographerClient extends Application implements IClient {
     private Stage primaryStage;
     private Scene sceneLogin;
     private Scene sceneMain;
+    public LocalFileManager localfilemanager;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -38,11 +39,12 @@ public class PhotographerClient extends Application implements IClient {
         connectToServer();
         ClientConnector.client = this;
         this.primaryStage = stage;
+        localfilemanager  = new LocalFileManager("D:\\fotos");
         sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
         sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/PhotographerClient.fxml")));
         setSceneLogin();
         stage.show();
-        LocalFileManager l = new LocalFileManager("C:\\hoi");
+        
     }
 
     /**
