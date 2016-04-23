@@ -10,10 +10,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.ClientType;
+import static shared.ClientType.photographer;
 
 /**
  *
@@ -39,7 +42,8 @@ public class Databasemanager {
 
     public boolean login(ClientType type, String email, String password) {
         try {
-            String sql = "SELECT * FROM `" + type.toString() + "` WHERE email = ? AND password = ? AND status = '1';";
+            String sql = "SELECT * FROM `" + type.toString() + "` WHERE email = ? AND password = ?;";
+            /*AND status = '1'*/
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email.toLowerCase());
             ps.setString(2, password);
@@ -69,20 +73,21 @@ public class Databasemanager {
         }
     }
 
-    public boolean registerPhotographer(String email, String password, String name, String phone, String address, String zipcode, String city, String country, String kvk, String auth) {
+    public boolean registerPhotographer(String email, String password, String name, String address, String zipcode, String city, String country, String phone, String kvk) {
         try {
-            String sql = "UPDATE photographer SET password = ?, name = ?, address = ?, zipcode = ?, city = ?, country = ?, phone = ?, kvk = ?, status = '1' WHERE email = ? AND password = ? AND status = '0';";
+            System.out.println("Hij komt hier 1");
+            String sql = "INSERT INTO photographer(email, password, name, address, zipcode, city, country, phone, kvk)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, password);
-            ps.setString(2, name);
-            ps.setString(3, address);
-            ps.setString(4, zipcode);
-            ps.setString(5, city);
-            ps.setString(6, country);
-            ps.setString(7, phone);
-            ps.setString(8, kvk);
-            ps.setString(9, email.toLowerCase());
-            ps.setString(10, password);
+            ps.setString(1, email.toLowerCase());
+            ps.setString(2, password);
+            ps.setString(3, name);
+            ps.setString(4, address);
+            ps.setString(5, zipcode);
+            ps.setString(6, city);
+            ps.setString(7, country);
+            ps.setString(8, phone);
+            ps.setString(9, kvk);
+            System.out.println("Hij komt hier 2");
             return ps.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
@@ -117,4 +122,160 @@ public class Databasemanager {
             return false;
         }
     }
+
+    //Make new unique numbers with the given photographer and return the list.
+    public List getUniqueNumbers(String photographer) throws SQLException {
+        int count = 0;
+        String sql = "SELECT * FROM personalPictures WHERE photographer_id = ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, photographer);
+        //select the not used unique numbers where th photographer is equal to the given photographer.
+        ResultSet srs = ps.executeQuery();
+
+        
+        //count how many unique numbers are not used.
+        while (srs.next()) {
+            count += 1;
+            System.out.println("test 2: " + count);
+        }
+
+        //make new unique numbers
+        sql = "INSERT INTO personalPictures(photographer_id) VALUES (?);";
+        ps = conn.prepareStatement(sql);
+        
+        //Make new unique numbers till we have the 10.000 numbers
+        while (count < 50) {
+            System.out.println(count);
+            ps.setString(1, photographer);
+            ps.executeUpdate();
+            count++;
+            System.out.println();
+        }
+        ps.close();
+
+        
+        
+        //Total list of all Uniquenumbers for the photographer
+        ArrayList uniqueNumberList = new ArrayList<>();
+
+        // Get all the unused unique numbers with the photographer again.
+        sql = "SELECT * FROM personalPictures WHERE photographer_id = ? AND group_id is null";
+        ps = conn.prepareStatement(sql);
+        ps.setString(1, photographer);
+        srs = ps.executeQuery();
+        while (srs.next()) {
+            int unqiueNumber = srs.getInt("id");
+            uniqueNumberList.add(unqiueNumber);
+        }
+        return uniqueNumberList;
+    }
+
+    
+    //edit the groups
+    public void editGroup(String photographer_id, String name, String description) throws SQLException {
+
+        try {
+            Statement st = conn.createStatement();
+
+            //select the not used unique numbers where the photographer is equal to the given photographer.
+            String query = ("INSERT INTO groupPictures (photographer_id, name, description)" + " VALUES (?,?,?)");
+            PreparedStatement ps = conn.prepareStatement(query);
+
+            ps.setString(1, photographer_id);
+            ps.setString(2, name);
+            ps.setString(3, description);
+            ps.execute();
+            ps.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    
+    //make 500 groups for the given photographer
+    public void makeTonsOfGroup(String photographer_id) throws SQLException {
+
+        int count = 0;
+
+        Statement st = conn.createStatement();
+        //
+        ResultSet srs = st.executeQuery("SELECT * FROM groupPictures WHERE photographer_id = '" + photographer_id + "'");
+        System.out.println(srs.getFetchSize());
+
+        //count how many unique numbers are used.
+        while (srs.next()) {
+            count += 1;
+        }
+
+        PreparedStatement ps;
+        st = conn.createStatement();
+ 
+        //select the not used unique numbers where the photographer is equal to the given photographer.
+        String query = ("INSERT INTO groupPictures (photographer_id, name, description)" + " VALUES (?,?,?)");
+        ps = conn.prepareStatement(query);
+        while (count < 500) {
+            try {
+
+                ps.setString(1, photographer_id);
+                ps.setString(2, "");
+                ps.setString(3, "");
+                ps.execute();
+
+                count++;
+            } catch (SQLException ex) {
+                Logger.getLogger(Databasemanager.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        ps.close();
+    }
+    
+    // return a list of the groups with the given photographer
+    public List<Integer> getGroups(String photographer) throws SQLException{
+        //Total list of all groupNumbers for the photographer
+        ArrayList groupNumberList = new ArrayList<>();
+
+        // Get all the unused unique numbers with the photographer again.
+        String sql = "SELECT * FROM groupPictures WHERE photographer_id = ? ";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, photographer);
+        ResultSet srs = ps.executeQuery();
+        while (srs.next()) {
+            int unqiueNumber = srs.getInt("id");
+            groupNumberList.add(unqiueNumber);
+        }
+        return groupNumberList;
+    }
+    
+
+    //add groups to the personal unique number
+    public void addGroupToUniqueNumber(int group_id, int personalPictures_id) throws SQLException {
+        Statement st = conn.createStatement();
+
+        // create the mysql update preparedstatement
+        String query = "UPDATE personalPictures set group_id = ? where id = ?";
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setInt(1, group_id);
+        ps.setInt(2, personalPictures_id);
+        System.out.println(group_id + " pers number   "  + personalPictures_id);
+        // execute the java preparedstatement
+        ps.executeUpdate();
+        st.close();
+    }
+    
+    public void attachCodeToAccount(String user_id, int personalPictures_id) throws SQLException{
+        
+        Statement st = conn.createStatement();
+
+        // create the mysql update preparedstatement
+        String query = "UPDATE personalPictures set user_id = ? where id = ?";
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setString(1, user_id);
+        ps.setInt(2, personalPictures_id);
+        // execute the java preparedstatement
+        ps.executeUpdate();
+        st.close(); 
+    }
+    
 }

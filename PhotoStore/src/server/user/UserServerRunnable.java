@@ -6,6 +6,7 @@
 package server.user;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -61,12 +62,21 @@ public class UserServerRunnable implements Observer, Runnable {
                     case logout: {
 
                     }
+                    case attachCodeToAccount: {
+                        String s = (String) socket.readObject();
+                        int i = (int) socket.readObject();
+                        dbm.attachCodeToAccount(s, i);
+                        break;
+                    }
+                    
                 }
             }
         } catch (ClassNotFoundException ex) {
             Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getAnonymousLogger().log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
+        } catch (SQLException ex) {
+            Logger.getLogger(UserServerRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

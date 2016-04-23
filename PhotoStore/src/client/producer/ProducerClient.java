@@ -8,6 +8,7 @@ package client.producer;
 import client.ClientConnector;
 import client.IClient;
 import client.producer.ui.ProducerClientRegisterController;
+import client.producer.ui.ProducerClientRegisterPhotographerController;
 import client.ui.InterfaceCall;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -97,6 +98,29 @@ public class ProducerClient extends Application implements IClient {
             Logger.getLogger(ProducerClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+        public void setSceneRegisterPhotographer() {
+            try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ProducerClient.class.getResource("ui/ProducerClientRegisterPhotographer.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+            // Create the dialog Stage.
+            Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            stage.setScene(scene);
+            stage.setTitle(title + " - Register");
+            ProducerClientRegisterPhotographerController controller = loader.getController();
+            controller.setDialogStage(stage);
+            // Show the dialog and wait until the user closes it
+            stage.showAndWait();
+        } catch (IOException ex) {
+            Logger.getLogger(ProducerClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 
     public void setSceneMain() {
         primaryStage.setScene(sceneMain);

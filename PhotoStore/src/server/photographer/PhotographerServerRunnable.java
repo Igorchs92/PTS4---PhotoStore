@@ -6,6 +6,9 @@
 package server.photographer;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -46,10 +49,24 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                         testConnection();
                         break;
                     }
-                    case register: {
-                        args = (String[]) socket.readObject();
-                        result = dbm.registerPhotographer(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
-                        socket.writeObject(result);
+                    case createTonsOfGroups: {
+                        String s = socket.readObject().toString();
+                        dbm.makeTonsOfGroup(s);
+                        List groupNumbers = dbm.getGroups(s);
+                        socket.writeObject(groupNumbers);
+                        break;
+                    }
+                    case addUniqueNumberToGroup: {
+                        int groupid = (int)socket.readObject();
+                        int personalid = (int)socket.readObject();
+                        dbm.addGroupToUniqueNumber(groupid, personalid);
+                        System.out.println("we got here");
+                        break;
+                    }
+                    case getUniqueNumbers: {
+                        String s = socket.readObject().toString();
+                        List uniqueNumbersList = dbm.getUniqueNumbers(s);
+                        socket.writeObject(uniqueNumbersList);
                         break;
                     }
                     case login: {
@@ -67,6 +84,8 @@ public class PhotographerServerRunnable implements Observer, Runnable {
             Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getAnonymousLogger().log(Level.INFO, "User client disconnected: {0}", socket.getInetAddress());
+        } catch (SQLException ex) {
+            Logger.getLogger(PhotographerServerRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -83,4 +102,5 @@ public class PhotographerServerRunnable implements Observer, Runnable {
             Logger.getAnonymousLogger().log(Level.INFO, "Photographer client disconnected: {0}", socket.getInetAddress());
         }
     }
+
 }
