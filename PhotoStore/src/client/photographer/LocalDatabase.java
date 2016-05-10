@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import shared.files.PersonalPicture;
 import shared.files.PictureGroup;
 
 public final class LocalDatabase {
@@ -45,6 +46,8 @@ public final class LocalDatabase {
         ArrayList<String> queries = new ArrayList<>();
         queries.add("DROP TABLE IF EXISTS pictureGroup;");
         queries.add("CREATE TABLE pictureGroup (id INTEGER PRIMARY KEY, obj BLOB);");
+        queries.add("DROP TABLE IF EXISTS personalPicture;");
+        queries.add("CREATE TABLE personalPicture (id INTEGER PRIMARY KEY, obj BLOB);");
         for (String q : queries) {
             try {
                 Statement st = conn.createStatement();
@@ -91,6 +94,42 @@ public final class LocalDatabase {
         return true;
     }
 
+    public boolean savePersonalPicture(PersonalPicture pp) {
+        try {
+            //create a byte array from the personalPicture object
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(pp);
+            oos.flush();
+            oos.close();
+            bos.close();
+            byte[] data = bos.toByteArray();
+            //check if the personalPicture already exists on the database
+            String sql = "SELECT * from personalPicture WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pp.getId());
+            if (ps.executeQuery().next()) {
+                //personalPicture exists, update is required
+                sql = "UPDATE personalPicture SET obj = ? WHERE id = ?;";
+                ps = conn.prepareStatement(sql);
+                ps.setObject(1, data);
+                ps.setInt(2, pp.getId());
+                ps.executeUpdate();
+            } else {
+                //personalPicture doesnt exist, insert is required
+                sql = "INSERT INTO personalPicture (id, obj) VALUES(?, ?);";
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, pp.getId());
+                ps.setObject(2, data);
+                ps.executeUpdate();
+            }
+        } catch (IOException | SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+
     public List<PictureGroup> getPictureGroups() {
         try {
             //create new list that will contain the picturegroups
@@ -113,6 +152,34 @@ public final class LocalDatabase {
                 }
             }
             return pictureGroups;
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public List<PersonalPicture> getPersonalPicture() {
+        try {
+            //create new list that will contain the PersonalPicture
+            List<PersonalPicture> personalPicture = new ArrayList<>();
+            String sql = "SELECT * FROM pictureGroup;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ByteArrayInputStream bais;
+                ObjectInputStream ins;
+                try {
+                    bais = new ByteArrayInputStream(rs.getBytes("obj"));
+                    ins = new ObjectInputStream(bais);
+                    PersonalPicture pp = (PersonalPicture) ins.readObject(); //extract PersonalPicture object from the database
+                    personalPicture.add(pp); //add the PersonalPicture to the list
+                    System.out.println(pp.getPictures().get(0).getCreated() + " - " + pp.getPictures().get(0).getExtension()); //this is for testing
+                    ins.close();
+                } catch (SQLException | IOException | ClassNotFoundException ex) {
+                    Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            return personalPicture;
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
             return null;
