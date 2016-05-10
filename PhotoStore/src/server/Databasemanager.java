@@ -48,11 +48,11 @@ public class Databasemanager {
 
     public boolean login(ClientType type, String email, String password) {
         try {
-            String sql = "SELECT * FROM `" + type.toString() + "` WHERE email = ? AND password = ? AND status = '1';";
+            String sql = "SELECT * FROM `" + type.toString() + "` WHERE email = ? AND password = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email.toLowerCase());
             ps.setString(2, password);
-            return ps.executeQuery().first();
+            return ps.executeQuery().next();
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
             return false;

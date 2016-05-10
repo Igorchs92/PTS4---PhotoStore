@@ -76,6 +76,7 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                     case login: {
                         args = (String[]) socket.readObject();
                         result = dbm.login(ClientType.photographer, args[0], args[1]);
+                        System.out.println(args[0] + args[1]);
                         socket.writeObject(result);
                         break;
                     }
