@@ -48,8 +48,6 @@ public class ProducerClientRegisterPhotographerController implements Initializab
     @FXML
     private PasswordField bConfirmPassword;
     @FXML
-    private TextField bAuth;
-    @FXML
     private ImageView imgCountryFlag;
 
     /**
@@ -88,10 +86,6 @@ public class ProducerClientRegisterPhotographerController implements Initializab
         }
         if (!InterfaceCall.doStringsMatch(bPassword.getText(), bConfirmPassword.getText())){
             InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "Password doesn't match.");
-            return false;
-        }
-        if (!InterfaceCall.isNumeric(bAuth.getText())){
-            InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "Please check your authentication number.");
             return false;
         }
         if (!InterfaceCall.isNumeric(bPhone.getText())){
