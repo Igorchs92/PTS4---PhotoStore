@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -172,7 +173,8 @@ public class PhotographerClientRunnable implements IClientRunnable {
             }
         });
         t.start();
-
+    }
+    
     //create maximum ammount of groups and return the ids as a list.
     public List<Integer> createGroups(String photographer_id) {
         List<Integer> groupNumbers = new ArrayList<>();

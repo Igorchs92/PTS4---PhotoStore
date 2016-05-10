@@ -10,6 +10,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.ClientType;
@@ -75,20 +78,21 @@ public class Databasemanager {
         }
     }
 
-    public boolean registerPhotographer(String email, String password, String name, String phone, String address, String zipcode, String city, String country, String kvk, String auth) {
+    public boolean registerPhotographer(String email, String password, String name, String address, String zipcode, String city, String country, String phone, String kvk) {
         try {
-            String sql = "UPDATE photographer SET password = ?, name = ?, address = ?, zipcode = ?, city = ?, country = ?, phone = ?, kvk = ?, status = '1' WHERE email = ? AND password = ? AND status = '0';";
+            System.out.println("Hij komt hier 1");
+            String sql = "INSERT INTO photographer(email, password, name, address, zipcode, city, country, phone, kvk)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, password);
-            ps.setString(2, name);
-            ps.setString(3, address);
-            ps.setString(4, zipcode);
-            ps.setString(5, city);
-            ps.setString(6, country);
-            ps.setString(7, phone);
-            ps.setString(8, kvk);
-            ps.setString(9, email.toLowerCase());
-            ps.setString(10, password);
+            ps.setString(1, email.toLowerCase());
+            ps.setString(2, password);
+            ps.setString(3, name);
+            ps.setString(4, address);
+            ps.setString(5, zipcode);
+            ps.setString(6, city);
+            ps.setString(7, country);
+            ps.setString(8, phone);
+            ps.setString(9, kvk);
+            System.out.println("Hij komt hier 2");
             return ps.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
@@ -202,132 +206,6 @@ public class Databasemanager {
         }
     }
 
-}
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package server;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import shared.ClientType;
-import static shared.ClientType.photographer;
-
-/**
- *
- * @author Jeroen0606 & Igor
- */
-public class Databasemanager {
-
-    Connection conn;
-
-    public Databasemanager() {
-        String url = "jdbc:mysql://db4free.net:3306/";
-        String dbName = "pts4photostore";
-        String userName = "pts4";
-        String password = "photostore";
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(url + dbName, userName, password);
-        } catch (Exception ex) {
-            System.out.println("Connecting to database failed");
-            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public boolean login(ClientType type, String email, String password) {
-        try {
-            String sql = "SELECT * FROM `" + type.toString() + "` WHERE email = ? AND password = ?;";
-            /*AND status = '1'*/
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email.toLowerCase());
-            ps.setString(2, password);
-            return ps.executeQuery().first();
-        } catch (SQLException ex) {
-            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
-    public boolean registerUser(String email, String password, String name, String address, String zipcode, String city, String country, String phone) {
-        try {
-            String sql = "INSERT INTO user(email, password, name, address, zipcode, city, country, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email.toLowerCase());
-            ps.setString(2, password);
-            ps.setString(3, name);
-            ps.setString(4, address);
-            ps.setString(5, zipcode);
-            ps.setString(6, city);
-            ps.setString(7, country);
-            ps.setString(8, phone);
-            return ps.executeUpdate() != 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
-    public boolean registerPhotographer(String email, String password, String name, String address, String zipcode, String city, String country, String phone, String kvk) {
-        try {
-            System.out.println("Hij komt hier 1");
-            String sql = "INSERT INTO photographer(email, password, name, address, zipcode, city, country, phone, kvk)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email.toLowerCase());
-            ps.setString(2, password);
-            ps.setString(3, name);
-            ps.setString(4, address);
-            ps.setString(5, zipcode);
-            ps.setString(6, city);
-            ps.setString(7, country);
-            ps.setString(8, phone);
-            ps.setString(9, kvk);
-            System.out.println("Hij komt hier 2");
-            return ps.executeUpdate() != 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
-    public boolean registerProducer(String email, String password, String name) {
-        try {
-            String sql = "INSERT INTO producer(email, password, name) VALUES (?, ?, ?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email.toLowerCase());
-            ps.setString(2, password);
-            ps.setString(3, name);
-            return ps.executeUpdate() != 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
-    public boolean createPhotographer(String email, String auth) {
-        try {
-            String sql = "INSERT INTO photographer(email, password) VALUES (?, ?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email.toLowerCase());
-            ps.setString(2, auth);
-            return ps.executeUpdate() != 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(Databasemanager.class
-                    .getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
     //Make new unique numbers with the given photographer and return the list.
     public List getUniqueNumbers(String photographer) throws SQLException {
         int count = 0;
@@ -337,7 +215,6 @@ public class Databasemanager {
         //select the not used unique numbers where th photographer is equal to the given photographer.
         ResultSet srs = ps.executeQuery();
 
-        
         //count how many unique numbers are not used.
         while (srs.next()) {
             count += 1;
@@ -347,7 +224,7 @@ public class Databasemanager {
         //make new unique numbers
         sql = "INSERT INTO personalPictures(photographer_id) VALUES (?);";
         ps = conn.prepareStatement(sql);
-        
+
         //Make new unique numbers till we have the 10.000 numbers
         while (count < 50) {
             System.out.println(count);
@@ -358,8 +235,6 @@ public class Databasemanager {
         }
         ps.close();
 
-        
-        
         //Total list of all Uniquenumbers for the photographer
         ArrayList uniqueNumberList = new ArrayList<>();
 
@@ -375,7 +250,6 @@ public class Databasemanager {
         return uniqueNumberList;
     }
 
-    
     //edit the groups
     public void editGroup(String photographer_id, String name, String description) throws SQLException {
 
@@ -397,7 +271,6 @@ public class Databasemanager {
         }
     }
 
-    
     //make 500 groups for the given photographer
     public void makeTonsOfGroup(String photographer_id) throws SQLException {
 
@@ -415,7 +288,7 @@ public class Databasemanager {
 
         PreparedStatement ps;
         st = conn.createStatement();
- 
+
         //select the not used unique numbers where the photographer is equal to the given photographer.
         String query = ("INSERT INTO groupPictures (photographer_id, name, description)" + " VALUES (?,?,?)");
         ps = conn.prepareStatement(query);
@@ -435,9 +308,9 @@ public class Databasemanager {
         }
         ps.close();
     }
-    
+
     // return a list of the groups with the given photographer
-    public List<Integer> getGroups(String photographer) throws SQLException{
+    public List<Integer> getGroups(String photographer) throws SQLException {
         //Total list of all groupNumbers for the photographer
         ArrayList groupNumberList = new ArrayList<>();
 
@@ -452,7 +325,6 @@ public class Databasemanager {
         }
         return groupNumberList;
     }
-    
 
     //add groups to the personal unique number
     public void addGroupToUniqueNumber(int group_id, int personalPictures_id) throws SQLException {
@@ -463,14 +335,14 @@ public class Databasemanager {
         PreparedStatement ps = conn.prepareStatement(query);
         ps.setInt(1, group_id);
         ps.setInt(2, personalPictures_id);
-        System.out.println(group_id + " pers number   "  + personalPictures_id);
+        System.out.println(group_id + " pers number   " + personalPictures_id);
         // execute the java preparedstatement
         ps.executeUpdate();
         st.close();
     }
-    
-    public void attachCodeToAccount(String user_id, int personalPictures_id) throws SQLException{
-        
+
+    public void attachCodeToAccount(String user_id, int personalPictures_id) throws SQLException {
+
         Statement st = conn.createStatement();
 
         // create the mysql update preparedstatement
@@ -480,10 +352,9 @@ public class Databasemanager {
         ps.setInt(2, personalPictures_id);
         // execute the java preparedstatement
         ps.executeUpdate();
-        st.close(); 
+        st.close();
     }
-    
-    
+
     //Change prize of the given picture
     public void changePicturePrice(int photo_id, double price) throws SQLException {
         Statement st = conn.createStatement();
