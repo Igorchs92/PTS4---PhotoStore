@@ -5,6 +5,7 @@
  */
 package client.producer.ui;
 
+import client.producer.ProducerClient;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -35,6 +36,7 @@ public class ProducerClientMainController implements Initializable {
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
+        ProducerClient.client.setSceneRegisterPhotographer();
     }
     
 }

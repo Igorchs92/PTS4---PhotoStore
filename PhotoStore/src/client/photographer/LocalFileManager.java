@@ -25,7 +25,12 @@ public class LocalFileManager {
         // as long as the arraylist is not initialised again the data will also be available in this instance.
         Thread t = new Thread(scanner);
         t.start();
+        
     }
     
+    public ArrayList<Path> getPicture(){
+        return imageFilePaths;
+        
+    }
     
 }

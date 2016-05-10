@@ -60,7 +60,7 @@ public class ProducerServerRunnable implements Observer, Runnable {
                     }
                     case new_photographer: {
                         args = (String[]) socket.readObject();
-                        result = dbm.login(ClientType.producer, args[0], args[1]);
+                        result = dbm.registerPhotographer(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
                         socket.writeObject(result);
                         break;
                     }

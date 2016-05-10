@@ -6,9 +6,12 @@
 package client.photographer;
 
 import client.IClientRunnable;
+import static client.user.UserClientRunnable.clientRunnable;
+import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -26,7 +29,7 @@ import shared.photographer.PhotographerCall;
  */
 public class PhotographerClientRunnable implements IClientRunnable {
 
-    private final SocketConnection socket;
+    private SocketConnection socket;
     public static PhotographerClientRunnable clientRunnable;
     private final LocalDatabase ldb;
     private List<PictureGroup> pgl;
@@ -73,6 +76,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
     @Override
     public boolean login(String email, String password) {
         try {
+            PhotographerInfo.photographerID = email;
             socket.writeObject(PhotographerCall.login);
             socket.writeObject(new String[]{email, password});
             return (boolean) socket.readObject();
@@ -169,6 +173,69 @@ public class PhotographerClientRunnable implements IClientRunnable {
         });
         t.start();
 
+    //create maximum ammount of groups and return the ids as a list.
+    public List<Integer> createGroups(String photographer_id) {
+        List<Integer> groupNumbers = new ArrayList<>();
+        
+        try {
+            socket.writeObject(PhotographerCall.createTonsOfGroups);
+            socket.writeObject(photographer_id);
+            
+            Object obj = socket.readObject();
+            groupNumbers = (ArrayList) obj;
+            
+        } catch (IOException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return groupNumbers;
+    }
+
+    //add groups to the given personal(unique)number
+    public void addGroupToUniqueNumber(int group_id, int personalPictures_id) {
+        try {
+            socket.writeObject(PhotographerCall.addUniqueNumberToGroup);
+            socket.writeObject (group_id);
+            socket.writeObject(personalPictures_id);
+            
+            System.out.println("We sended the call");
+        } catch (IOException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+
+        }
+    }
+
+    //get all uniquelist
+    public List<Integer> getUniqueNumbers(String photographer_id) {
+        List<Integer> uniqueNumbers = new ArrayList<>();
+        try {
+            socket.writeObject(PhotographerCall.getUniqueNumbers);
+            socket.writeObject(photographer_id);
+            Object obj = socket.readObject();
+            uniqueNumbers = (ArrayList) obj;
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return uniqueNumbers;
+    }
+    
+    
+    //change prize
+    public void changePicturePrice(int pictureID, double price){
+        try {
+            socket.writeObject(PhotographerCall.changePicturePrice);
+            socket.writeObject(pictureID);
+            socket.writeObject(price);
+        } catch (IOException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

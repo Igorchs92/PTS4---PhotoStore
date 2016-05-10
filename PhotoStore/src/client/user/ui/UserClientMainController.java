@@ -5,6 +5,8 @@
  */
 package client.user.ui;
 
+import client.user.ClientInfo;
+import client.user.UserClientRunnable;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -12,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 /**
  * FXML Controller class
@@ -21,9 +24,9 @@ import javafx.scene.control.Label;
 public class UserClientMainController implements Initializable {
 
     @FXML
-    private Button button;
+    private Button btAccept;
     @FXML
-    private Label label;
+    private TextField tfPersonalCode;
 
     /**
      * Initializes the controller class.
@@ -37,4 +40,8 @@ public class UserClientMainController implements Initializable {
     private void handleButtonAction(ActionEvent event) {
     }
     
+    @FXML
+    public void attachCodeToAccount(){
+        UserClientRunnable.clientRunnable.attachCode(ClientInfo.clientID, Integer.valueOf(tfPersonalCode.getText()));
+    }
 }

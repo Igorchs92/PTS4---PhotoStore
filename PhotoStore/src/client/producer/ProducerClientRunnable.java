@@ -6,6 +6,7 @@
 package client.producer;
 
 import client.IClientRunnable;
+import client.photographer.PhotographerClientRunnable;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +21,7 @@ public class ProducerClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
     public static ProducerClientRunnable clientRunnable;
-    
+
     public ProducerClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         clientRunnable = this;
         this.socket = socket;
@@ -43,6 +44,17 @@ public class ProducerClientRunnable implements IClientRunnable {
             return (boolean) socket.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean registerPhotographer(String email, String password, String name, String address, String zipcode, String city, String country, String phone, String kvk) {
+        try {
+            socket.writeObject(ProducerCall.new_photographer);
+            socket.writeObject(new String[]{email, password, name, phone, address, zipcode, city, country, kvk});
+            return (boolean) socket.readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }

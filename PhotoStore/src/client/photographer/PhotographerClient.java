@@ -10,16 +10,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import client.ClientConnector;
 import client.IClient;
-import client.photographer.ui.PhotographerClientRegisterController;
-import client.ui.ClientLoginController;
 import client.ui.InterfaceCall;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shared.ClientType;
 
@@ -34,16 +29,22 @@ public class PhotographerClient extends Application implements IClient {
     private ClientConnector clientConnector;
     private static final String title = "Photostore Photographer";
     private Stage primaryStage;
+    private Scene sceneLogin;
     private Scene sceneMain;
+    public LocalFileManager localfilemanager;
 
     @Override
     public void start(Stage stage) throws Exception {
         client = this;
+        connectToServer();
+        ClientConnector.client = this;
         this.primaryStage = stage;
-        sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/PhotographerClientMain.fxml")));
-        setSceneMain();
+        localfilemanager  = new LocalFileManager("D:\\fotos");
+        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
+        sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/PhotographerClient.fxml")));
+        setSceneLogin();
         stage.show();
-        LocalFileManager l = new LocalFileManager("C:\\hoi");
+        
     }
 
     /**
@@ -71,51 +72,8 @@ public class PhotographerClient extends Application implements IClient {
     }
 
     public void setSceneLogin() {
-        if (connectToServer()) {
-            try {
-                ClientConnector.client = this;
-                // Load the fxml file and create a new stage for the popup dialog.
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(PhotographerClient.class.getResource("../ui/ClientLogin.fxml"));
-                AnchorPane page = (AnchorPane) loader.load();
-                // Create the dialog Stage.
-                Stage stage = new Stage();
-                stage.initModality(Modality.WINDOW_MODAL);
-                stage.initOwner(primaryStage);
-                Scene scene = new Scene(page);
-                stage.setScene(scene);
-                stage.setTitle(title + " - Register");
-                ClientLoginController controller = loader.getController();
-                controller.setDialogStage(stage);
-                // Show the dialog and wait until the user closes it
-                stage.showAndWait();
-            } catch (IOException ex) {
-                Logger.getLogger(PhotographerClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    @Override
-    public void setSceneRegister() {
-        try {
-            // Load the fxml file and create a new stage for the popup dialog.
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(PhotographerClient.class.getResource("../ui/ClientRegister.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
-            // Create the dialog Stage.
-            Stage stage = new Stage();
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
-            stage.setScene(scene);
-            stage.setTitle(title + " - Register");
-            PhotographerClientRegisterController controller = loader.getController();
-            controller.setDialogStage(stage);
-            // Show the dialog and wait until the user closes it
-            stage.showAndWait();
-        } catch (IOException ex) {
-            Logger.getLogger(PhotographerClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        primaryStage.setScene(sceneLogin);
+        primaryStage.setTitle(title + "Login");
     }
 
     public void setSceneMain() {
@@ -126,10 +84,17 @@ public class PhotographerClient extends Application implements IClient {
     @Override
     public void loggedIn() {
         InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "logged in");
+        PhotographerClient.client.setSceneMain();
     }
 
     @Override
     public boolean login(String username, String password) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    // need to be fixed
+    @Override
+    public void setSceneRegister() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
