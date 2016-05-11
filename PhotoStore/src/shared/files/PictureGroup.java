@@ -15,6 +15,12 @@ import java.util.List;
  */
 public class PictureGroup implements Serializable {
 
+    private static final long serialVersionUID = 6035863739819711135L;
+    @Override
+    public String toString() {
+        return "id=" + id + ", name=" + name;
+    }
+
     private int id;
     private String name;
     private String description;

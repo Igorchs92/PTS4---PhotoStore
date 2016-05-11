@@ -26,6 +26,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import shared.files.PersonalPicture;
+import shared.files.PictureGroup;
 
 /**
  * FXML Controller class
@@ -43,8 +45,8 @@ public class PhotographerClientController implements Initializable {
     @FXML
     private ListView lvGroupNumber = new ListView();
 
-    List<Integer> uniqueNumbers = new ArrayList();
-    List<Integer> groupNumbers = new ArrayList();
+    List<PersonalPicture> uniqueNumbers = new ArrayList();
+    List<PictureGroup> groupNumbers = new ArrayList();
     ObservableList observableUniqueNumbers;
     ObservableList observableGroupNumbers;
 
@@ -54,22 +56,18 @@ public class PhotographerClientController implements Initializable {
     @FXML
     private ImageView ivPictures = new ImageView();
     ArrayList<Path> picturesPath = new ArrayList();
-
-    ObservableList observablePicture;
     //WatchService part  +++++++
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        picturesPath = PhotographerClient.client.localfilemanager.getPicture();
-        System.out.println("Aantal pictures: " + picturesPath.size());
+       
         initviewsEdit();
         initviewsPictures();
 
         lvPictures.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
-
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-
+                System.out.println(lvPictures.getSelectionModel().getSelectedItem().toString());
                 File file = new File(lvPictures.getSelectionModel().getSelectedItem().toString());
                 Image img = new Image(file.toURI().toString());
                 ivPictures.setImage(img);
@@ -90,15 +88,17 @@ public class PhotographerClientController implements Initializable {
     }
 
     public void initviewsPictures() {
-        observablePicture = FXCollections.observableArrayList(this.picturesPath);
-        this.lvPictures.setItems(this.observablePicture);
+        this.lvPictures.setItems(PhotographerClient.client.localfilemanager.getPicture());
     }
 
     public void initviewsEdit() {
         observableUniqueNumbers = FXCollections.observableArrayList(this.uniqueNumbers);
         observableGroupNumbers = FXCollections.observableArrayList(this.groupNumbers);
+        
         this.lvUniqueCodes.setItems(this.observableUniqueNumbers);
         this.lvGroupNumber.setItems(this.observableGroupNumbers);
+        
+        lvGroupNumber.getSelectionModel().selectionModeProperty();
 
         //tfName.setText(lvGroupNumber.getSelectionModel().getSelectedItem());
     }
@@ -119,5 +119,10 @@ public class PhotographerClientController implements Initializable {
         uniqueNumbers = PhotographerClientRunnable.clientRunnable.getUniqueNumbers(PhotographerInfo.photographerID);
         System.out.println(uniqueNumbers.size());
         initviewsEdit();
+    }
+    
+    @FXML
+    public void uploadEverythingToOnline(){
+        PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
     }
 }

@@ -236,7 +236,7 @@ public class Databasemanager {
         ps.close();
 
         //Total list of all Uniquenumbers for the photographer
-        ArrayList uniqueNumberList = new ArrayList<>();
+        ArrayList<PersonalPicture> PersonalPicture = new ArrayList<>();
 
         // Get all the unused unique numbers with the photographer again.
         sql = "SELECT * FROM personalPictures WHERE photographer_id = ? AND group_id is null";
@@ -244,10 +244,12 @@ public class Databasemanager {
         ps.setString(1, photographer);
         srs = ps.executeQuery();
         while (srs.next()) {
-            int unqiueNumber = srs.getInt("id");
-            uniqueNumberList.add(unqiueNumber);
+            
+            int uniqueNumber = srs.getInt("id");
+            PersonalPicture pg = new PersonalPicture(uniqueNumber);
+            PersonalPicture.add(pg);
         }
-        return uniqueNumberList;
+        return PersonalPicture;
     }
 
     //edit the groups
@@ -310,9 +312,9 @@ public class Databasemanager {
     }
 
     // return a list of the groups with the given photographer
-    public List<Integer> getGroups(String photographer) throws SQLException {
+    public List<PictureGroup> getGroups(String photographer) throws SQLException {
         //Total list of all groupNumbers for the photographer
-        ArrayList groupNumberList = new ArrayList<>();
+        ArrayList<PictureGroup> groupNumberList = new ArrayList<>();
 
         // Get all the unused unique numbers with the photographer again.
         String sql = "SELECT * FROM groupPictures WHERE photographer_id = ? ";
@@ -321,7 +323,8 @@ public class Databasemanager {
         ResultSet srs = ps.executeQuery();
         while (srs.next()) {
             int unqiueNumber = srs.getInt("id");
-            groupNumberList.add(unqiueNumber);
+            PictureGroup pg = new PictureGroup(unqiueNumber);
+            groupNumberList.add(pg);
         }
         return groupNumberList;
     }

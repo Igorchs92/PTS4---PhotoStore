@@ -14,9 +14,18 @@ import java.util.List;
  */
 public class PersonalPicture implements Serializable {
 
+    @Override
+    public String toString() {
+        return Integer.toString(id);
+    }
+
     private int id;
     private List<Picture> pictures;
     
+    
+    public PersonalPicture(int idnumber){
+        this.id = idnumber;
+    }
     public int getId() {
         return id;
     }

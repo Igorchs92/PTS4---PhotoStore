@@ -6,9 +6,6 @@
 package client.photographer;
 
 import client.IClientRunnable;
-import static client.user.UserClientRunnable.clientRunnable;
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +84,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
         }
     }
 
-    public boolean uploadPictureGroups(List<PictureGroup> pgl) {
+    public boolean uploadPictureGroups() {
         try {
             boolean saveRequired = false;
             socket.writeObject(PhotographerCall.upload);
@@ -175,9 +172,11 @@ public class PhotographerClientRunnable implements IClientRunnable {
         t.start();
     }
     
+    List<PictureGroup> grps = null;
     //create maximum ammount of groups and return the ids as a list.
-    public List<Integer> createGroups(String photographer_id) {
-        List<Integer> groupNumbers = new ArrayList<>();
+    public List<PictureGroup> createGroups(String photographer_id) {
+       
+        List<PictureGroup> groupNumbers = new ArrayList<>();
         
         try {
             socket.writeObject(PhotographerCall.createTonsOfGroups);
@@ -192,7 +191,15 @@ public class PhotographerClientRunnable implements IClientRunnable {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
+        grps=groupNumbers;
         return groupNumbers;
+    }
+    
+    
+    public void saveAllToLocal(){
+        for(PictureGroup pg : grps) {    
+        ldb.savePictureGroup(pg);
+        }
     }
 
     //add groups to the given personal(unique)number
@@ -208,10 +215,15 @@ public class PhotographerClientRunnable implements IClientRunnable {
 
         }
     }
+    
+    
+    public void addPhotoToPersonalPicture(){
+        
+    }
 
     //get all uniquelist
-    public List<Integer> getUniqueNumbers(String photographer_id) {
-        List<Integer> uniqueNumbers = new ArrayList<>();
+    public List<PersonalPicture> getUniqueNumbers(String photographer_id) {
+        List<PersonalPicture> uniqueNumbers = new ArrayList<>();
         try {
             socket.writeObject(PhotographerCall.getUniqueNumbers);
             socket.writeObject(photographer_id);

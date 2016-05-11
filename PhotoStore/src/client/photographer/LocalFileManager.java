@@ -7,6 +7,8 @@ package client.photographer;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -15,11 +17,11 @@ import java.util.ArrayList;
 public class LocalFileManager {
     
     String path;
-    ArrayList<Path> imageFilePaths;
+    ObservableList<Path> imageFilePaths;
     
     public LocalFileManager(String path) {
         this.path = path;
-        imageFilePaths = new ArrayList<>();
+        imageFilePaths = FXCollections.observableArrayList();
         FileScanner scanner = new FileScanner(path, imageFilePaths);
         // the arraylist in this instance is the same as the arraylist in de scanner.
         // as long as the arraylist is not initialised again the data will also be available in this instance.
@@ -28,7 +30,7 @@ public class LocalFileManager {
         
     }
     
-    public ArrayList<Path> getPicture(){
+    public ObservableList<Path> getPicture(){
         return imageFilePaths;
         
     }

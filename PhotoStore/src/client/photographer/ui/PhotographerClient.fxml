@@ -45,6 +45,7 @@
                               </AnchorPane>
                           </items>
                         </SplitPane>
+                        <Button fx:id="btUpload" layoutX="892.0" layoutY="434.0" mnemonicParsing="false" text="Uploaden" />
                      </children>
                   </AnchorPane>
             </content>
