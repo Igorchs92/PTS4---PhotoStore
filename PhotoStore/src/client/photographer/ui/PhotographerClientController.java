@@ -57,10 +57,12 @@ public class PhotographerClientController implements Initializable {
     private ImageView ivPictures = new ImageView();
     ArrayList<Path> picturesPath = new ArrayList();
     //WatchService part  +++++++
+    PersonalPicture selectedPP;
+    PictureGroup selectedPG;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-       
+
         initviewsEdit();
         initviewsPictures();
 
@@ -68,9 +70,15 @@ public class PhotographerClientController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 System.out.println(lvPictures.getSelectionModel().getSelectedItem().toString());
+
                 File file = new File(lvPictures.getSelectionModel().getSelectedItem().toString());
                 Image img = new Image(file.toURI().toString());
                 ivPictures.setImage(img);
+
+                //todo
+                selectedPG = (PictureGroup) lvPictures.getSelectionModel().getSelectedItem();
+                //
+
             }
         });
     }
@@ -94,13 +102,20 @@ public class PhotographerClientController implements Initializable {
     public void initviewsEdit() {
         observableUniqueNumbers = FXCollections.observableArrayList(this.uniqueNumbers);
         observableGroupNumbers = FXCollections.observableArrayList(this.groupNumbers);
-        
+
         this.lvUniqueCodes.setItems(this.observableUniqueNumbers);
         this.lvGroupNumber.setItems(this.observableGroupNumbers);
-        
+
         lvGroupNumber.getSelectionModel().selectionModeProperty();
 
         //tfName.setText(lvGroupNumber.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    public void bindGroupPicturePersonalPicture() {
+        if (selectedPP != null && selectedPG != null) {
+            selectedPG.addPersonalPicture(selectedPP);
+        }
     }
 
     @FXML
@@ -110,19 +125,14 @@ public class PhotographerClientController implements Initializable {
     }
 
     @FXML
-    public void addGroupToUniqueNumber() {
-        PhotographerClientRunnable.clientRunnable.addGroupToUniqueNumber(Integer.valueOf(lvGroupNumber.getSelectionModel().getSelectedItem().toString()), Integer.valueOf(lvUniqueCodes.getSelectionModel().getSelectedItem().toString()));
-    }
-
-    @FXML
     public void getUniqueNumbers() {
         uniqueNumbers = PhotographerClientRunnable.clientRunnable.getUniqueNumbers(PhotographerInfo.photographerID);
         System.out.println(uniqueNumbers.size());
         initviewsEdit();
     }
-    
+
     @FXML
-    public void uploadEverythingToOnline(){
+    public void uploadEverythingToOnline() {
         PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
     }
 }

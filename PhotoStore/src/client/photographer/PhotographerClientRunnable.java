@@ -31,12 +31,14 @@ public class PhotographerClientRunnable implements IClientRunnable {
     public static PhotographerClientRunnable clientRunnable;
     private final LocalDatabase ldb;
     private List<PictureGroup> pgl;
+    private List<PersonalPicture> AvailablePP;
 
     public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
         clientRunnable = this;
         this.socket = s;
         ldb = new LocalDatabase();
         pgl = ldb.getPictureGroups();
+        AvailablePP = ldb.getPersonalPicture();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
@@ -58,6 +60,10 @@ public class PhotographerClientRunnable implements IClientRunnable {
 
     public List<PictureGroup> getPictureGroupList() {
         return pgl;
+    }
+
+    public List<PersonalPicture> getAvailablePersonalPictureList() {
+        return AvailablePP;
     }
 
     public boolean registerUser(String email, String password, String name, String phone, String address, String zipcode, String city, String country, String kvk, String auth) {
@@ -171,56 +177,38 @@ public class PhotographerClientRunnable implements IClientRunnable {
         });
         t.start();
     }
-    
+
     List<PictureGroup> grps = null;
+
     //create maximum ammount of groups and return the ids as a list.
     public List<PictureGroup> createGroups(String photographer_id) {
-       
+
         List<PictureGroup> groupNumbers = new ArrayList<>();
-        
+
         try {
             socket.writeObject(PhotographerCall.createTonsOfGroups);
             socket.writeObject(photographer_id);
-            
+
             Object obj = socket.readObject();
             groupNumbers = (ArrayList) obj;
-            
-        } catch (IOException ex) {
+
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
-        grps=groupNumbers;
+        grps = groupNumbers;
         savePictureGroupsToLocal();
         return groupNumbers;
     }
-    
-    public void savePictureGroupsToLocal(){
-        for(PictureGroup pg : grps) {    
-        ldb.savePictureGroup(pg);
+
+    public void savePictureGroupsToLocal() {
+        for (PictureGroup pg : grps) {
+            ldb.savePictureGroup(pg);
         }
     }
 
-    //add groups to the given personal(unique)number
-    public void addGroupToUniqueNumber(int group_id, int personalPictures_id) {
-        try {
-            socket.writeObject(PhotographerCall.addUniqueNumberToGroup);
-            socket.writeObject (group_id);
-            socket.writeObject(personalPictures_id);
-            
-            System.out.println("We sended the call");
-        } catch (IOException ex) {
-            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
-
-        }
-    }
-    
-    
-    public void addPhotoToPersonalPicture(){
-        
-    }
     List<PersonalPicture> pp = null;
+
     //get all uniquelist
     public List<PersonalPicture> getUniqueNumbers(String photographer_id) {
         List<PersonalPicture> uniqueNumbers = new ArrayList<>();
@@ -229,34 +217,37 @@ public class PhotographerClientRunnable implements IClientRunnable {
             socket.writeObject(photographer_id);
             Object obj = socket.readObject();
             uniqueNumbers = (ArrayList) obj;
-            
-          
-        } catch (IOException ex) {
+
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
         pp = uniqueNumbers;
         savePersonalPictureToLocal();
         return uniqueNumbers;
     }
-    
-        public void savePersonalPictureToLocal(){
-        for(PersonalPicture ppLocal : pp) {    
-        ldb.savePersonalPicture(ppLocal);
+
+    public void savePersonalPictureToLocal() {
+        for (PersonalPicture ppLocal : pp) {
+            ldb.savePersonalPicture(ppLocal);
         }
     }
-    
-    
+
+    public void addPhotoToPersonalPicture(int personalPictures_id, Picture pic) {
+        for (PersonalPicture ppl : AvailablePP) {
+            if(ppl.getId() == personalPictures_id)
+            ppl.addPicture(pic);
+        }
+    }
+
     //change prize
-    public void changePicturePrice(int pictureID, double price){
-        try {
-            socket.writeObject(PhotographerCall.changePicturePrice);
-            socket.writeObject(pictureID);
-            socket.writeObject(price);
-        } catch (IOException ex) {
-            Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+    public void changePicturePrice(int pictureID, double price) {
+        for (PersonalPicture pp : AvailablePP) {
+            for (Picture pic : pp.getPictures()) {
+                if (pic.getId() == pictureID) {
+                    pic.setPrice(price);
+                }
+            }
         }
     }
 
