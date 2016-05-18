@@ -39,8 +39,11 @@ import shared.files.PictureGroup;
  */
 public class PhotographerClientController implements Initializable {
     //WatchService part  +++++++
-    ArrayList<Path> picturesPath = new ArrayList();
+    ImageView ivImagePreview;
+    ObservableList<Path> picturesPath;
     //WatchService part  +++++++
+    
+    
     PersonalPicture selectedPP;
     PictureGroup selectedPG;
     
