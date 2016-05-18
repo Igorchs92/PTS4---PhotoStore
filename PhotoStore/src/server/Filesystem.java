@@ -75,7 +75,7 @@ public class Filesystem {
     public void upload(List<PictureGroup> pgl) {
         for (PictureGroup pg : pgl) {
             dbsm.modifyGroupPictureInfo(pg);
-            File root_group = new File(Integer.toString(pg.getId()) + "/");
+            File root_group = new File(root + Integer.toString(pg.getId()) + "/");
             //add group pictures
             for (Picture p : pg.getPictures()) {
                 p.setId(dbsm.addOriginalPicture(p));

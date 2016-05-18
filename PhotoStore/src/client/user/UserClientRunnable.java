@@ -86,7 +86,7 @@ public class UserClientRunnable implements IClientRunnable {
                 return;
             }
             for (PictureGroup pg : pgl) {
-                File root_group = new File(Integer.toString(pg.getId()) + "/");
+                File root_group = new File("resources/user/" + Integer.toString(pg.getId()) + "/");
                 for (Picture p : pg.getPictures()) {
                     File root_group_lowres = new File(root_group + p.toString());
                     socket.readFile(root_group_lowres);
