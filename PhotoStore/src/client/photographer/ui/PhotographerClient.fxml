@@ -297,7 +297,7 @@
                      <children>
                         <ImageView fx:id="ivImagePreview" fitHeight="465.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Google%20Drive/PTS4%20photo-shop/Interface/default.png" />
+                              <Image url="@default.png" />
                            </image>
                         </ImageView>
                      </children>
