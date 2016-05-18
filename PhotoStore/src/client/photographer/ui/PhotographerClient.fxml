@@ -120,6 +120,43 @@
             </HBox>
             <HBox fx:id="hbPicture" fillHeight="false" prefHeight="237.0" prefWidth="656.0" spacing="25.0">
                <children>
+                  <GridPane fx:id="gpImageSelect" hgap="10.0" prefHeight="237.0" prefWidth="200.0" vgap="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="182.0" minWidth="10.0" prefWidth="182.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints maxHeight="108.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="324.0" minHeight="10.0" prefHeight="34.5" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="324.0" minHeight="0.0" prefHeight="158.5" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <children>
+                              <Text fill="#00000080" strokeType="OUTSIDE" strokeWidth="0.0" text="Image Selection">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </HBox>
+                        <ListView fx:id="lvImageSelect" prefHeight="151.0" prefWidth="182.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                           <padding>
+                              <Insets bottom="20.0" />
+                           </padding>
+                        </ListView>
+                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <children>
+                              <Label text="Path Location" textFill="#0000004d" />
+                              <TextField fx:id="tfImageSelectPathLocation" editable="false" promptText="Add path" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </GridPane>
                   <GridPane fx:id="gpModifyPictureInfo" hgap="10.0" prefHeight="237.0" prefWidth="200.0" vgap="10.0">
                      <columnConstraints>
                         <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
@@ -180,43 +217,6 @@
                               <Button fx:id="btnAddPicture" minWidth="0.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="111.0" text="Save Picture" />
                            </children>
                         </GridPane>
-                     </children>
-                  </GridPane>
-                  <GridPane fx:id="gpImageSelect" hgap="10.0" prefHeight="237.0" prefWidth="200.0" vgap="10.0">
-                     <columnConstraints>
-                        <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="182.0" minWidth="10.0" prefWidth="182.0" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints maxHeight="108.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="324.0" minHeight="10.0" prefHeight="34.5" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="324.0" minHeight="0.0" prefHeight="158.5" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                     <children>
-                        <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
-                           <children>
-                              <Text fill="#00000080" strokeType="OUTSIDE" strokeWidth="0.0" text="Image Selection">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                              </Text>
-                           </children>
-                        </HBox>
-                        <ListView fx:id="lvImageSelect" prefHeight="151.0" prefWidth="182.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                           <GridPane.margin>
-                              <Insets />
-                           </GridPane.margin>
-                           <padding>
-                              <Insets bottom="20.0" />
-                           </padding>
-                        </ListView>
-                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
-                           <children>
-                              <Label text="Path Location" textFill="#0000004d" />
-                              <TextField fx:id="tfImageSelectPathLocation" editable="false" onMouseClicked="#chooseDirectory" promptText="Add path" />
-                           </children>
-                        </VBox>
                      </children>
                   </GridPane>
                   <GridPane fx:id="gpSavedPictures" hgap="10.0" prefHeight="400.0" prefWidth="200.0" vgap="10.0">
@@ -314,20 +314,45 @@
       </VBox>
       <ToolBar layoutY="565.0" maxWidth="1050.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="35.0" prefWidth="1050.0">
         <items>
-            <GridPane prefHeight="25.0" prefWidth="1005.0">
+            <GridPane hgap="5.0" prefHeight="25.0" prefWidth="1005.0">
                <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="949.0" minWidth="10.0" prefWidth="902.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="889.0" minWidth="10.0" prefWidth="103.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="949.0" minWidth="10.0" prefWidth="827.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="889.0" minWidth="10.0" prefWidth="63.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="889.0" minWidth="10.0" prefWidth="106.0" />
                </columnConstraints>
                <rowConstraints>
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                  <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="800.0" spacing="10.0">
                      <children>
-                      <Button fx:id="btnSync" mnemonicParsing="false" prefHeight="25.0" prefWidth="170.0" text="Sync with server" />
+                        <HBox alignment="CENTER_LEFT">
+                           <children>
+                              <Label fx:id="lblToolBarEmail" text="test@photographer.com" textFill="#00000080" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT">
+                           <children>
+                              <Label text="Groups Remaining: " textFill="#00000066" />
+                              <Label fx:id="lblToolBarGroupsRemaining" text="0" textFill="#00000080" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT">
+                           <children>
+                              <Label text="UID's Remaining: " textFill="#00000066" />
+                              <Label fx:id="lblToolBarUIDRemaining" text="0" textFill="#00000080" />
+                           </children>
+                        </HBox>
                      </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <GridPane.margin>
+                        <Insets left="25.0" />
+                     </GridPane.margin>
                   </HBox>
+                  <Button fx:id="btnSignOut" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Sign out" GridPane.columnIndex="1" />
+                <Button fx:id="btnSync" mnemonicParsing="false" prefHeight="25.0" prefWidth="170.0" text="Sync with server" GridPane.columnIndex="2" />
                </children>
             </GridPane>
         </items>

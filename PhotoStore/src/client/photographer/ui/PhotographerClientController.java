@@ -38,7 +38,12 @@ import shared.files.PictureGroup;
  * @author Robin
  */
 public class PhotographerClientController implements Initializable {
-
+    //WatchService part  +++++++
+    ArrayList<Path> picturesPath = new ArrayList();
+    //WatchService part  +++++++
+    PersonalPicture selectedPP;
+    PictureGroup selectedPG;
+    
     private ListView<PersonalPicture> lvBoundUniqueIDs = new ListView();
     private ListView<PictureGroup> lvGroups = new ListView();
 
@@ -49,24 +54,13 @@ public class PhotographerClientController implements Initializable {
     ObservableList observableUniqueNumbers;
     ObservableList observableGroupNumbers;
     ObservableList observavbleUniqueNumbersSelected;
-
+    
     @FXML
     private TextField tfGroupInfoName = new TextField();
-
     @FXML
     private TextArea taGroupInfoDescription = new TextArea();
-    private Label lblGroupsCount = new Label();
-    private Label lblUniqueIDsCount = new Label();
-
-    //WatchService part  +++++++
     @FXML
     private ListView lvImageSelect = new ListView();
-    private ImageView ivImagePreview = new ImageView();
-    private ObservableList<Path> picturesPath;
-    //WatchService part  +++++++
-
-    PersonalPicture selectedPP;
-    PictureGroup selectedPG;
     @FXML
     private HBox hbGroupPersonalPicture;
     @FXML
@@ -105,6 +99,14 @@ public class PhotographerClientController implements Initializable {
     private Button btnRemovePicture;
     @FXML
     private Button btnSync;
+    @FXML
+    private Label lblToolBarEmail;
+    @FXML
+    private Label lblToolBarGroupsRemaining;
+    @FXML
+    private Label lblToolBarUIDRemaining;
+    @FXML
+    private Button btnSignOut;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -146,8 +148,8 @@ public class PhotographerClientController implements Initializable {
                 selectedPP = lvBoundUniqueIDs.getSelectionModel().getSelectedItem();
             }
         });
-        lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
-        lblGroupsCount.setText(Integer.toString(groupNumbers.size()));
+        //lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
+        //lblGroupsCount.setText(Integer.toString(groupNumbers.size()));
     }
 
     public void refresh() {
@@ -187,7 +189,7 @@ public class PhotographerClientController implements Initializable {
                 }
             }
         }
-        lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
+        //lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
         initviewUniqueID();
     }
 
@@ -196,7 +198,7 @@ public class PhotographerClientController implements Initializable {
             selectedPG.removePersonalPicture(selectedPP);
             uniqueNumbers.add(selectedPP);
         }
-        lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
+        //lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
         initviewUniqueID();
     }
 
