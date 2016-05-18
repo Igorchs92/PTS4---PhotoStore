@@ -26,6 +26,7 @@ public class LocalFileManager {
         // the arraylist in this instance is the same as the arraylist in de scanner.
         // as long as the arraylist is not initialised again the data will also be available in this instance.
         Thread t = new Thread(scanner);
+        t.setDaemon(true);
         t.start();
         
     }

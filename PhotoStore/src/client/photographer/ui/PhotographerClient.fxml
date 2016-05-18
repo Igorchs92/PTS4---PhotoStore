@@ -129,7 +129,7 @@
                         <RowConstraints />
                         <RowConstraints maxHeight="108.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="324.0" minHeight="10.0" prefHeight="34.5" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="324.0" minHeight="0.0" prefHeight="158.5" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="155.0" minHeight="0.0" prefHeight="158.5" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
                         <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -140,8 +140,11 @@
                                  </font>
                               </Text>
                            </children>
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
                         </HBox>
-                        <ListView fx:id="lvImageSelect" prefHeight="151.0" prefWidth="182.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <ListView fx:id="lvImageSelect" prefHeight="445.0" prefWidth="182.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>
