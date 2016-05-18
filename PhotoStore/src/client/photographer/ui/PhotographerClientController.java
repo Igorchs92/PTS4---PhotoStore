@@ -123,11 +123,8 @@ public class PhotographerClientController implements Initializable {
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 System.out.println(lvImageSelect.getSelectionModel().getSelectedItem().toString());
                 File file = new File(lvImageSelect.getSelectionModel().getSelectedItem().toString());
-                System.out.println("First line");
                 Image img = new Image(file.toURI().toString());
-                System.out.println("Second line");
                 ivImagePreview.setImage(img);
-                System.out.println("Third line");
             }
         });
 
@@ -258,7 +255,6 @@ public class PhotographerClientController implements Initializable {
             this.lvImageSelect.setItems(this.picturesPath);
             tfImageSelectPathLocation.setText(PhotographerClient.client.selectedDirectory.toString());
         }
-
     }
 
 }

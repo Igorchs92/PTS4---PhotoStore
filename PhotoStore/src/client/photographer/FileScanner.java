@@ -72,7 +72,7 @@ public class FileScanner implements Runnable {
                             System.out.println(filePaths.size());
                         } else if (kind == ENTRY_MODIFY) {
                             DeleteFromList(fileName);
-                            addToList(new File(dir.toString() + fileName.toString()).toPath());
+                            addToList(new File(dir.toString() + "\\" + fileName.toString()).toPath());
                             System.out.println("My source file has changed!!!");
                             System.out.println(filePaths.size());
                         }
@@ -95,8 +95,9 @@ public class FileScanner implements Runnable {
         //TODO: change this to use the enum with supported path exstentions when it's available
 
         if (matcher.matches(p)) {
-
-            filePaths.add(p);
+            if  (!filePaths.contains(p)){
+                filePaths.add(p);
+            }
             System.out.println("path added to list: " + p);
         }
     }
