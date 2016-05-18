@@ -62,8 +62,10 @@ public class PhotographerClientController implements Initializable {
     @FXML
     private ListView lvImageSelect = new ListView();
     private ImageView ivPictures = new ImageView();
-    ArrayList<Path> picturesPath = new ArrayList();
+    private ObservableList<Path> picturesPath;
     //WatchService part  +++++++
+    
+    
     PersonalPicture selectedPP;
     PictureGroup selectedPG;
     @FXML
@@ -112,7 +114,6 @@ public class PhotographerClientController implements Initializable {
         getGroupNumbersLocal();
         getPersonalUniqueCodeLocal();
         initviewsEdit();
-        initviewsPictures();
 
         lvImageSelect.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
             @Override
@@ -162,10 +163,6 @@ public class PhotographerClientController implements Initializable {
         // reloadPicture();
     }
 
-    public void initviewsPictures() {
-        this.lvImageSelect.setItems(PhotographerClient.client.localfilemanager.getPicture());
-    }
-
     public void initviewsEdit() {
 
         observableUniqueNumbers = FXCollections.observableArrayList(this.uniqueNumbers);
@@ -213,7 +210,7 @@ public class PhotographerClientController implements Initializable {
         /*
         groupNumbers = PhotographerClientRunnable.clientRunnable.createGroups(PhotographerInfo.photographerID);
         initviewsEdit();
-        */
+         */
     }
 
     public void getGroupNumbersLocal() {
@@ -253,4 +250,14 @@ public class PhotographerClientController implements Initializable {
         PhotographerClientRunnable.clientRunnable.getUniqueNumbers(PhotographerInfo.photographerID);
         PhotographerClientRunnable.clientRunnable.createGroups(PhotographerInfo.photographerID);
     }
+
+    public void chooseDirectory() {
+        if (PhotographerClient.client.localfilemanager != null) {
+            PhotographerClient.client.chooseDirectory();
+        }
+        picturesPath =  PhotographerClient.client.localfilemanager.getPicture();
+
+        this.lvImageSelect.setItems(this.picturesPath);
+    }
+
 }

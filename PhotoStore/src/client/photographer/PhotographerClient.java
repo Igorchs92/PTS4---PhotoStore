@@ -12,6 +12,7 @@ import client.ClientConnector;
 import static client.ClientConnector.socket;
 import client.IClient;
 import client.ui.InterfaceCall;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javafx.application.Application;
@@ -21,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressBar;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import shared.ClientType;
 import shared.files.PersonalPicture;
@@ -54,7 +56,6 @@ public class PhotographerClient extends Application implements IClient {
         //connectToServer();
         ClientConnector.client = this;
         this.primaryStage = stage;
-        localfilemanager = new LocalFileManager("D:\\fotos");
         sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
         sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/PhotographerClient.fxml")));
         setSceneMain();
@@ -169,10 +170,17 @@ public class PhotographerClient extends Application implements IClient {
         });
         t.start();
     }
-    
+
     public void savePersonalPictureToLocal(List<PersonalPicture> ppL) {
         for (PersonalPicture pp : ppL) {
             ldb.savePersonalPicture(pp);
         }
+    }
+
+    public void chooseDirectory() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory
+                = directoryChooser.showDialog(primaryStage);
+        localfilemanager = new LocalFileManager(selectedDirectory.toString());
     }
 }
