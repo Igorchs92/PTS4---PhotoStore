@@ -16,8 +16,8 @@ import java.util.Date;
 public class Picture implements Serializable {
 
     private int id;
-    private final String location;
-    private final String extension;
+    private String location;
+    private String extension;
     private String name;
     private double price;
     private final Date created;
@@ -39,6 +39,13 @@ public class Picture implements Serializable {
         this.created = new Date();
         this.uploaded = false;
     }    
+   
+    public Picture(String name, double price, Date created) {
+        this.name = name;
+        this.price = price;
+        this.created = created;
+        this.uploaded = true;
+    }    
 
     public int getId() {
         return id;
@@ -47,7 +54,7 @@ public class Picture implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
+    
     public String getExtension() {
         return extension;
     }
@@ -71,7 +78,17 @@ public class Picture implements Serializable {
     public Date getCreated() {
         return created;
     }
-
+        
+    public void setFile(String location){
+        this.location = location;
+        this.extension = getFileExtension(new File(location));
+    }
+    
+    public void setFile(File file){
+        this.location = file.toString();
+        this.extension = getFileExtension(file);
+    }
+    
     public File getFile() {
         return new File(location);
     }

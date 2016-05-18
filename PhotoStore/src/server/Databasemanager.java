@@ -365,4 +365,68 @@ public class Databasemanager {
         ps.executeUpdate();
         st.close();
     }
+
+    public List<PictureGroup> getUserPictureGroup(String uid) {
+        try {
+            List<PictureGroup> pgl = new ArrayList<>();
+            String sql = "SELECT * FROM personalPictures WHERE user_id = ? GROUP BY group_id";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, uid);
+            ResultSet srs = ps.executeQuery();
+            //create pictureGroups
+            while (srs.next()) {
+                int pg_id = srs.getInt("group_id");
+                if (pg_id != 0) {
+                    PictureGroup pg = new PictureGroup(pg_id);
+
+                    //get description
+                    String sql2 = "SELECT * FROM groupPictures WHERE id = ?";
+                    PreparedStatement ps2 = conn.prepareStatement(sql2);
+                    ps2.setString(1, uid);
+                    ResultSet srs2 = ps.executeQuery();
+                    if (srs2.next()) {
+                        pg.setDescription(srs.getString("description"));
+                    }
+
+                    //add pictures to groupPictures
+                    String sql3 = "SELECT * FROM originalPicture op INNER JOIN groupPictures_picture gpp ON gpp.picture_id = op.id WHERE gpp.group_id = ?";
+                    PreparedStatement ps3 = conn.prepareStatement(sql3);
+                    ps3.setInt(1, pg_id);
+                    ResultSet srs3 = ps.executeQuery();
+                    while (srs3.next()) {
+                        Picture p = new Picture(srs.getString("name"), srs.getDouble("price"), srs.getDate("created"));
+                        pg.addPicture(p);
+                    }
+
+                    //create personalPictures
+                    String sql4 = "SELECT * FROM personalPictures WHERE user_id = ? AND group_id = ?";
+                    PreparedStatement ps4 = conn.prepareStatement(sql4);
+                    ps4.setString(1, uid);
+                    ps4.setInt(2, pg_id);
+                    ResultSet srs4 = ps.executeQuery();
+                    while (srs4.next()) {
+                        int pp_id = srs4.getInt("id");
+                        if (pp_id != 0) {
+                            PersonalPicture pp = new PersonalPicture(pp_id);
+
+                            //add pictures to personalPictures
+                            String sql5 = "SELECT * FROM originalPicture op INNER JOIN personalPictures_picture ppp ON ppp.picture_id = op.id WHERE ppp.personal_id = ?";
+                            PreparedStatement ps5 = conn.prepareStatement(sql5);
+                            ps5.setInt(1, pp_id);
+                            ResultSet srs5 = ps.executeQuery();
+                            while (srs5.next()) {
+                                Picture p = new Picture(srs.getString("name"), srs.getDouble("price"), srs.getDate("created"));
+                                pp.addPicture(p);
+                            }
+                        }
+                    }
+                    pgl.add(pg);
+                }
+            }
+            return pgl;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 }

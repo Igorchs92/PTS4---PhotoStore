@@ -93,13 +93,40 @@ public class Filesystem {
                     p.setId(dbsm.addOriginalPicture(p));
                     if (p.getId() != 0) {
                         dbsm.addPersonalPicturesPicture(pp, p);
-                        File root_group_highres = new File(root_group + Integer.toString(pg.getId()) + this.highres + p.toString());
-                        File root_group_lowres = new File(root_group + Integer.toString(pg.getId()) + this.lowres + p.toString());
+                        File root_group_highres = new File(root_group + Integer.toString(pp.getId()) + this.highres + p.toString());
+                        File root_group_lowres = new File(root_group + Integer.toString(pp.getId()) + this.lowres + p.toString());
                         socket.readFile(root_group_highres);
                         compressPicture(root_group_highres, root_group_lowres);
                     }
                 }
             }
+        }
+
+    }
+
+    public void download(String uid) {
+        try {
+            List<PictureGroup> pgl = dbsm.getUserPictureGroup(uid);
+            if (pgl == null) {
+                socket.writeObject(null);
+                return;
+            }
+            socket.writeObject(pgl);
+            for (PictureGroup pg : pgl) {
+                File root_group = new File(Integer.toString(pg.getId()) + "/");
+                for (Picture p : pg.getPictures()) {
+                    File root_group_lowres = new File(root_group + this.lowres + p.toString());
+                    socket.writeFile(root_group_lowres);
+                }
+                for (PersonalPicture pp : pg.getPersonalPictures()) {
+                    for (Picture p : pp.getPictures()) {
+                        File root_group_lowres = new File(root_group + Integer.toString(pp.getId()) + this.lowres + p.toString());
+                        socket.writeFile(root_group_lowres);
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

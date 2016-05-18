@@ -6,10 +6,15 @@
 package client.user;
 
 import client.IClientRunnable;
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.SocketConnection;
+import shared.files.PersonalPicture;
+import shared.files.Picture;
+import shared.files.PictureGroup;
 import shared.user.UserCall;
 
 /**
@@ -73,5 +78,30 @@ public class UserClientRunnable implements IClientRunnable {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    public void download(){
+        try {
+            List<PictureGroup> pgl = (List<PictureGroup>)socket.readObject();
+            if (pgl == null) {
+                return;
+            }
+            for (PictureGroup pg : pgl) {
+                File root_group = new File(Integer.toString(pg.getId()) + "/");
+                for (Picture p : pg.getPictures()) {
+                    File root_group_lowres = new File(root_group + p.toString());
+                    socket.readFile(root_group_lowres);
+                    p.setFile(root_group_lowres);
+                }
+                for (PersonalPicture pp : pg.getPersonalPictures()) {
+                    for (Picture p : pp.getPictures()) {
+                        File root_group_lowres = new File(root_group + Integer.toString(pp.getId()) + p.toString());
+                        socket.readFile(root_group_lowres);
+                        p.setFile(root_group_lowres);
+                    }
+                }
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

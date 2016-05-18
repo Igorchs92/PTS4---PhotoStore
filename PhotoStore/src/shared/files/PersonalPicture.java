@@ -17,6 +17,10 @@ public class PersonalPicture implements Serializable {
     private int id;
     private List<Picture> pictures;
     
+    public PersonalPicture(int id) {
+        this.id = id;
+    }
+    
     public int getId() {
         return id;
     }

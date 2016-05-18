@@ -12,6 +12,7 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import server.Databasemanager;
+import server.Filesystem;
 import shared.ClientType;
 import shared.SocketConnection;
 import shared.user.UserCall;
@@ -24,7 +25,9 @@ public class UserServerRunnable implements Observer, Runnable {
 
     private SocketConnection socket;
     private Databasemanager dbm;
-
+    private Filesystem fs;
+    private String uid;
+    
     public UserServerRunnable(SocketConnection socket) {
         this.socket = socket;
         dbm = new Databasemanager();
@@ -55,6 +58,7 @@ public class UserServerRunnable implements Observer, Runnable {
                     }
                     case login: {
                         args = (String[]) socket.readObject();
+                        uid = args[0];
                         result = dbm.login(ClientType.user, args[0], args[1]);
                         socket.writeObject(result);
                         break;
@@ -67,6 +71,9 @@ public class UserServerRunnable implements Observer, Runnable {
                         int i = (int) socket.readObject();
                         dbm.attachCodeToAccount(s, i);
                         break;
+                    }
+                    case download: {
+                        fs.download(uid);
                     }
                     
                 }
