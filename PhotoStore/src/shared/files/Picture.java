@@ -15,6 +15,11 @@ import java.util.Date;
  */
 public class Picture implements Serializable {
 
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Location: " + location + ", Price: " + price;
+    }
+
     private int id;
     private final String location;
     private final String extension;
@@ -38,7 +43,7 @@ public class Picture implements Serializable {
         this.price = price;
         this.created = new Date();
         this.uploaded = false;
-    }    
+    }
 
     public int getId() {
         return id;
@@ -84,10 +89,4 @@ public class Picture implements Serializable {
             return "";
         }
     }
-
-    @Override
-    public String toString() {
-        return id + "." + extension.toLowerCase();
-    }
-
 }

@@ -12,6 +12,7 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -30,6 +31,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import shared.files.PersonalPicture;
+import shared.files.Picture;
 import shared.files.PictureGroup;
 
 /**
@@ -38,14 +40,14 @@ import shared.files.PictureGroup;
  * @author Robin
  */
 public class PhotographerClientController implements Initializable {
+
     //WatchService part  +++++++
     ObservableList<Path> picturesPath;
     //WatchService part  +++++++
-    
-    
+
     PersonalPicture selectedPP;
     PictureGroup selectedPG;
-    
+
     private ListView<PersonalPicture> lvBoundUniqueIDs = new ListView();
     private ListView<PictureGroup> lvGroups = new ListView();
 
@@ -56,7 +58,7 @@ public class PhotographerClientController implements Initializable {
     ObservableList observableUniqueNumbers;
     ObservableList observableGroupNumbers;
     ObservableList observavbleUniqueNumbersSelected;
-    
+
     @FXML
     private TextField tfGroupInfoName = new TextField();
     @FXML
@@ -96,7 +98,7 @@ public class PhotographerClientController implements Initializable {
     @FXML
     private GridPane gpSavedPictures;
     @FXML
-    private ListView<?> lvSavedPictures;
+    private ListView<Picture> lvSavedPictures = new ListView();
     @FXML
     private Button btnRemovePicture;
     @FXML
@@ -248,6 +250,7 @@ public class PhotographerClientController implements Initializable {
         PhotographerClientRunnable.clientRunnable.createGroups(PhotographerInfo.photographerID);
     }
 
+    @FXML
     public void chooseDirectory() {
         PhotographerClient.client.chooseDirectory();
         if (PhotographerClient.client.localfilemanager != null) {
@@ -257,4 +260,17 @@ public class PhotographerClientController implements Initializable {
         }
     }
 
+    @FXML
+    public void savePicture() {
+        String location = lvImageSelect.getSelectionModel().getSelectedItems().toString();
+        String name = tfModifyPictureInfoName.getText();
+        double price = Double.valueOf(tfModifyPictureInfoPrice.getText());
+        Picture p = new Picture(location, name, price);
+        selectedPP.addPicture(p);
+    }
+
+    @FXML
+    public void removePicture() {
+        selectedPP.removePicture(lvSavedPictures.getSelectionModel().getSelectedItem());
+    }
 }
