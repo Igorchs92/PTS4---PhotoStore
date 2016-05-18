@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import shared.files.PersonalPicture;
 import shared.files.PictureGroup;
 
 public final class LocalDatabase {
@@ -45,11 +44,13 @@ public final class LocalDatabase {
     public void resetDatabase() {
         ArrayList<String> queries = new ArrayList<>();
         queries.add("DROP TABLE IF EXISTS pictureGroup;");
-        queries.add("CREATE TABLE pictureGroup (id INTEGER PRIMARY KEY, obj BLOB);");
-        queries.add("DROP TABLE IF EXISTS personalPicture;");
-        queries.add("CREATE TABLE personalPicture (id INTEGER PRIMARY KEY, obj BLOB);");
+        queries.add("CREATE TABLE pictureGroup (id INTEGER PRIMARY KEY, obj BLOB, photographer TEXT);");
+        queries.add("DROP TABLE IF EXISTS personalid;");
+        queries.add("CREATE TABLE personalid (id INTEGER PRIMARY KEY, photographer TEXT);");
+        queries.add("DROP TABLE IF EXISTS groupsid");
+        queries.add("CREATE TABLE groupid (id INTEGER PRIMARY KEY, photographer TEXT);");
         queries.add("DROP TABLE IF EXISTS photographer;");
-        queries.add("CREATE TABLE photographer (id VARCHAR PRIMARY KEY,password VARCHAR);");
+        queries.add("CREATE TABLE photographer (id INTEGER PRIMARY KEY, photographerid TEXT, password TEXT);");
 
         for (String q : queries) {
             try {
@@ -63,20 +64,22 @@ public final class LocalDatabase {
 
     public boolean savePhotographer(String photographerid, String password) {
         try {
-            String sql = "SELECT * from photographer WHERE id = ?;";
+            String sql = "SELECT * from photographer WHERE id = 1;";
             PreparedStatement ps = conn.prepareStatement(sql);
             if (ps.executeQuery().next()) {
                 //picturegroup exists, update is required
-                sql = "UPDATE photographer SET password = ? WHERE id = ?;";
+                sql = "UPDATE photographer SET photographerid = ?, password = ? WHERE id = 1";
                 ps = conn.prepareStatement(sql);
                 ps.setString(1, photographerid);
                 ps.setString(2, password);
+                System.out.println("Updating photographer");
                 ps.executeUpdate();
             } else {
-                sql = "INSERT INTO photographer (id, password) VALUES(?, ?);";
+                sql = "INSERT INTO photographer (id, photographerid, password) VALUES(1, ?, ?);";
                 ps = conn.prepareStatement(sql);
                 ps.setString(1, photographerid);
                 ps.setString(2, password);
+                System.out.println("Insert into photographer");
                 ps.executeUpdate();
 
             }
@@ -104,17 +107,18 @@ public final class LocalDatabase {
             ps.setInt(1, pg.getId());
             if (ps.executeQuery().next()) {
                 //picturegroup exists, update is required
-                sql = "UPDATE pictureGroup SET obj = ? WHERE id = ?;";
+                sql = "UPDATE pictureGroup SET obj = ?, photographer = ? WHERE id = ?;";
                 ps = conn.prepareStatement(sql);
                 ps.setObject(1, data);
                 ps.setInt(2, pg.getId());
                 ps.executeUpdate();
             } else {
                 //picturegroup doesnt exist, insert is required
-                sql = "INSERT INTO pictureGroup (id, obj) VALUES(?, ?);";
+                sql = "INSERT INTO pictureGroup (id, obj, photographer) VALUES(?, ?, ?);";
                 ps = conn.prepareStatement(sql);
                 ps.setInt(1, pg.getId());
                 ps.setObject(2, data);
+                ps.setString(3, PhotographerInfo.photographerID);
                 ps.executeUpdate();
             }
         } catch (IOException | SQLException ex) {
@@ -124,36 +128,54 @@ public final class LocalDatabase {
         return true;
     }
 
-    public boolean savePersonalPicture(PersonalPicture pp) {
+    public boolean savePersonalID(int id) {
         try {
-            //create a byte array from the personalPicture object
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(pp);
-            oos.flush();
-            oos.close();
-            bos.close();
-            byte[] data = bos.toByteArray();
-            //check if the personalPicture already exists on the database
-            String sql = "SELECT * from personalPicture WHERE id = ?;";
+
+            /*
+                    try {
+            String sql = "DELETE from personalid WHERE photographer = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, pp.getId());
-            if (ps.executeQuery().next()) {
-                //personalPicture exists, update is required
-                sql = "UPDATE personalPicture SET obj = ? WHERE id = ?;";
-                ps = conn.prepareStatement(sql);
-                ps.setObject(1, data);
-                ps.setInt(2, pp.getId());
-                ps.executeUpdate();
-            } else {
+            ps.setString(1, "test@hotmail.com");
+
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+             */
+            //check if the id already exists on the database
+            String sql = "SELECT * from personalid WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            if (!ps.executeQuery().next()) {
                 //personalPicture doesnt exist, insert is required
-                sql = "INSERT INTO personalPicture (id, obj) VALUES(?, ?);";
+                sql = "INSERT INTO personalid (id, photographer) VALUES(?, ?);";
                 ps = conn.prepareStatement(sql);
-                ps.setInt(1, pp.getId());
-                ps.setObject(2, data);
+                ps.setInt(1, id);
+                ps.setString(2, PhotographerInfo.photographerID);
                 ps.executeUpdate();
             }
-        } catch (IOException | SQLException ex) {
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean saveGroupID(int id) {
+        try {
+            //check if the personalPicture already exists on the database
+            String sql = "SELECT * from groupid WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            if (!ps.executeQuery().next()) {
+                //personalPicture doesnt exist, insert is required
+                sql = "INSERT INTO groupid (id, photographer) VALUES(?, ?);";
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, id);
+                ps.setString(2, PhotographerInfo.photographerID);
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -189,32 +211,56 @@ public final class LocalDatabase {
         }
     }
 
-    public List<PersonalPicture> getPersonalPicture() {
+    public List<Integer> getPersonalID() {
         try {
             //create new list that will contain the picturegroups
-            List<PersonalPicture> PersonalPicture = new ArrayList<>();
-            String sql = "SELECT * FROM personalPicture;";
+            List<Integer> personalid = new ArrayList<>();
+            String sql = "SELECT * FROM personalid;";
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
-                ByteArrayInputStream bais;
-                ObjectInputStream ins;
-                try {
-                    bais = new ByteArrayInputStream(rs.getBytes("obj"));
-                    ins = new ObjectInputStream(bais);
-                    PersonalPicture pp = (PersonalPicture) ins.readObject(); //extract picturegroup object from the database
-                    PersonalPicture.add(pp); //add the picturegroup to the list
-                    System.out.println(Integer.toString(pp.getId()));
-                    //System.out.println(pg.getPictures().get(0).getCreated() + " - " + pg.getPictures().get(0).getExtension()); //this is for testing
-                    ins.close();
-                } catch (SQLException | IOException | ClassNotFoundException ex) {
-                    Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                int s = rs.getInt("id");
+                personalid.add(s);
             }
-            return PersonalPicture;
+            rs.close();
+            return personalid;
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+        }
+    }
+
+    public List<Integer> getGroupID() {
+        try {
+            //create new list that will contain the picturegroups
+            List<Integer> groupID = new ArrayList<>();
+            String sql = "SELECT * FROM groupid;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int s = rs.getInt("id");
+                groupID.add(s);
+            }
+            return groupID;
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public void getPhotographer() {
+        String sql = "SELECT * FROM photographer;";
+        PreparedStatement ps;
+        try {
+            ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                PhotographerInfo.photographerID = rs.getString("photographerid");
+                System.out.println(PhotographerInfo.photographerID);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

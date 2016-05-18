@@ -207,7 +207,7 @@ public class Databasemanager {
     }
 
     //Make new unique numbers with the given photographer and return the list.
-    public List getUniqueNumbers(String photographer) throws SQLException {
+    public List<Integer> getUniqueNumbers(String photographer) throws SQLException {
         int count = 0;
         String sql = "SELECT * FROM personalPictures WHERE photographer_id = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -236,7 +236,7 @@ public class Databasemanager {
         ps.close();
 
         //Total list of all Uniquenumbers for the photographer
-        ArrayList<PersonalPicture> PersonalPicture = new ArrayList<>();
+        ArrayList<Integer> PersonalPicture = new ArrayList<>();
 
         // Get all the unused unique numbers with the photographer again.
         sql = "SELECT * FROM personalPictures WHERE photographer_id = ? AND group_id is null";
@@ -246,8 +246,7 @@ public class Databasemanager {
         while (srs.next()) {
             
             int uniqueNumber = srs.getInt("id");
-            PersonalPicture pg = new PersonalPicture(uniqueNumber);
-            PersonalPicture.add(pg);
+            PersonalPicture.add(uniqueNumber);
         }
         return PersonalPicture;
     }
@@ -312,9 +311,9 @@ public class Databasemanager {
     }
 
     // return a list of the groups with the given photographer
-    public List<PictureGroup> getGroups(String photographer) throws SQLException {
+    public List<Integer> getGroups(String photographer) throws SQLException {
         //Total list of all groupNumbers for the photographer
-        ArrayList<PictureGroup> groupNumberList = new ArrayList<>();
+        ArrayList<Integer> groupNumberList = new ArrayList<>();
 
         // Get all the unused unique numbers with the photographer again.
         String sql = "SELECT * FROM groupPictures WHERE photographer_id = ? ";
@@ -323,8 +322,7 @@ public class Databasemanager {
         ResultSet srs = ps.executeQuery();
         while (srs.next()) {
             int unqiueNumber = srs.getInt("id");
-            PictureGroup pg = new PictureGroup(unqiueNumber);
-            groupNumberList.add(pg);
+            groupNumberList.add(unqiueNumber);
         }
         return groupNumberList;
     }

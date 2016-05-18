@@ -28,19 +28,28 @@ public class LocalDatabaseTest {
         ldbm.savePictureGroup(pg);
         ldbm.savePictureGroup(new PictureGroup(1));
         List<PictureGroup> pglist = new ArrayList<>();
-        List<PersonalPicture> pplist = new ArrayList<>();
+        List<Integer> pplist = new ArrayList<>();
+        List<Integer> gplist = new ArrayList();
 
         pglist = ldbm.getPictureGroups();
-        pplist = ldbm.getPersonalPicture();
+        pplist = ldbm.getPersonalID();
+        gplist = ldbm.getGroupID();
+        ldbm.savePhotographer("test@hotmail.com", "test");
         //ldbm.resetDatabase();
 
+        System.out.println("List of PictureGroups");
         for (PictureGroup pgs : pglist) {
             System.out.println("Picturegroup: " + pgs.toString());
         }
 
-        System.out.println("hij komt hier");
-        for (PersonalPicture pps : pplist) {
-            System.out.println("PersonalPicture: " + pps.toString());
+        System.out.println("List of Personal Id's: ");
+        for (int pps : pplist) {
+            System.out.println("PersonalPicture: " + pps);
+        }
+
+        System.out.println("List of Group Id's: ");
+        for (int gps : gplist) {
+            System.out.println("PersonalPicture: " + gps);
         }
 
     }

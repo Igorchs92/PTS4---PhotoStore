@@ -25,8 +25,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import shared.ClientType;
-import shared.files.PersonalPicture;
-import shared.files.Picture;
 import shared.files.PictureGroup;
 
 /**
@@ -45,7 +43,8 @@ public class PhotographerClient extends Application implements IClient {
     public LocalFileManager localfilemanager;
     private LocalDatabase ldb;
     private List<PictureGroup> pgl;
-    private List<PersonalPicture> AvailablePP;
+    private List<Integer> AvailableGroupID;
+    private List<Integer> AvailablePersonalID;
     public File selectedDirectory;
 
     @Override
@@ -53,17 +52,15 @@ public class PhotographerClient extends Application implements IClient {
         client = this;
         ldb = new LocalDatabase();
         pgl = ldb.getPictureGroups();
-        AvailablePP = ldb.getPersonalPicture();
-        //connectToServer();
+        AvailablePersonalID = ldb.getPersonalID();
+        AvailableGroupID = ldb.getGroupID();
+        ldb.getPhotographer();
         ClientConnector.client = this;
         this.primaryStage = stage;
-        sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
         sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/PhotographerClient.fxml")));
         setSceneMain();
         stage.show();
-
     }
-
 
     /**
      * @param args the command line arguments
@@ -90,8 +87,15 @@ public class PhotographerClient extends Application implements IClient {
     }
 
     public void setSceneLogin() {
-        primaryStage.setScene(sceneLogin);
-        primaryStage.setTitle(title + "Login");
+        try {
+            if (connectToServer()) {
+                sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
+                primaryStage.setScene(sceneLogin);
+                primaryStage.setTitle(title + "Login");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(PhotographerClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void setSceneMain() {
@@ -110,7 +114,6 @@ public class PhotographerClient extends Application implements IClient {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    // need to be fixed
     @Override
     public void setSceneRegister() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -119,40 +122,17 @@ public class PhotographerClient extends Application implements IClient {
     public LocalDatabase getLocalDatabase() {
         return ldb;
     }
-
     public List<PictureGroup> getPictureGroupList() {
         return pgl;
     }
-
-    public List<PersonalPicture> getAvailablePersonalPictureList() {
-        return AvailablePP;
+    public List<Integer> getAvailablGroupIDList(){
+        return AvailableGroupID;
     }
-
-    public void addPhotoToPersonalPicture(int personalPictures_id, Picture pic) {
-        for (PersonalPicture ppl : AvailablePP) {
-            if (ppl.getId() == personalPictures_id) {
-                ppl.addPicture(pic);
-            }
-        }
+    public List<Integer> getAvailablePersonalIDList() {
+        return AvailablePersonalID;
     }
-
-    //change prize
-    public void changePicturePrice(int pictureID, double price) {
-        for (PersonalPicture pp : AvailablePP) {
-            for (Picture pic : pp.getPictures()) {
-                if (pic.getId() == pictureID) {
-                    pic.setPrice(price);
-                }
-            }
-        }
-    }
-
-    public void savePictureGroupsToLocal(List<PictureGroup> pgg) {
-        for (PictureGroup pg : pgg) {
-            ldb.savePictureGroup(pg);
-        }
-    }
-
+    
+    
     public void CallFileUploader() {
         Task<List<PictureGroup>> tPgl = new FileUploader(socket, PhotographerClient.client.getPictureGroupList());
         ProgressBar pb = new ProgressBar(); //just for the idea
@@ -173,15 +153,28 @@ public class PhotographerClient extends Application implements IClient {
         t.start();
     }
 
-    public void savePersonalPictureToLocal(List<PersonalPicture> ppL) {
-        for (PersonalPicture pp : ppL) {
-            ldb.savePersonalPicture(pp);
+    public void savePersonalPictureToLocal(List<Integer> ppL) {
+        for (int pp : ppL) {
+            ldb.savePersonalID(pp);
+        }
+    }
+
+    public void saveGroupIDToLocal(List<Integer> gpL) {
+        for (int gp : gpL) {
+            ldb.saveGroupID(gp);
+        }
+    }
+
+    public void savePictureGroupsToLocal(List<PictureGroup> pgg) {
+        for (PictureGroup pg : pgg) {
+            ldb.savePictureGroup(pg);
         }
     }
 
     public void chooseDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         selectedDirectory = directoryChooser.showDialog(primaryStage);
+        if(selectedDirectory !=null)
         localfilemanager = new LocalFileManager(selectedDirectory.toString());
     }
 }

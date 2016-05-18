@@ -7,7 +7,6 @@ package server.photographer;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -56,7 +55,7 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                     case createTonsOfGroups: {
                         String s = socket.readObject().toString();
                         dbm.makeTonsOfGroup(s);
-                        List groupNumbers = dbm.getGroups(s);
+                        List<Integer> groupNumbers = dbm.getGroups(s);
                         socket.writeObject(groupNumbers);
                         break;
                     }
@@ -69,7 +68,7 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                     }
                     case getUniqueNumbers: {
                         String s = socket.readObject().toString();
-                        List uniqueNumbersList = dbm.getUniqueNumbers(s);
+                        List<Integer> uniqueNumbersList = dbm.getUniqueNumbers(s);
                         socket.writeObject(uniqueNumbersList);
                         break;
                     }

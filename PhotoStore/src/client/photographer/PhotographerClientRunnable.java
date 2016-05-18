@@ -29,6 +29,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
     public static PhotographerClientRunnable clientRunnable;
+    private List<PictureGroup> grps = null;
 
     public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
         clientRunnable = this;
@@ -63,6 +64,8 @@ public class PhotographerClientRunnable implements IClientRunnable {
     public boolean login(String email, String password) {
         try {
             PhotographerInfo.photographerID = email;
+            LocalDatabase ldb = new LocalDatabase();
+            ldb.savePhotographer(email, password);
             socket.writeObject(PhotographerCall.login);
             socket.writeObject(new String[]{email, password});
             return (boolean) socket.readObject();
@@ -140,46 +143,38 @@ public class PhotographerClientRunnable implements IClientRunnable {
         }
     }
 
-
-    List<PictureGroup> grps = null;
-
     //create maximum ammount of groups and return the ids as a list.
-    public List<PictureGroup> createGroups(String photographer_id) {
+    //save it to the local database.
+    public void getGroupIDs(String photographer_id) {
 
-        List<PictureGroup> groupNumbers = new ArrayList<>();
+        List<Integer> groupID = new ArrayList<>();
 
         try {
             socket.writeObject(PhotographerCall.createTonsOfGroups);
             socket.writeObject(photographer_id);
 
             Object obj = socket.readObject();
-            groupNumbers = (ArrayList) obj;
+            groupID = (ArrayList) obj;
 
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
 
         }
-        grps = groupNumbers;
-        PhotographerClient.client.savePictureGroupsToLocal(grps);
-        return groupNumbers;
+        PhotographerClient.client.saveGroupIDToLocal(groupID);
     }
 
-    
-    //get all uniquelist
-    public void getUniqueNumbers(String photographer_id) {
-        List<PersonalPicture> pp = null;
-        List<PersonalPicture> uniqueNumbers = new ArrayList<>();
+    //create maximum ammount of personal unique codes and return the ids as list
+    //save it to the local database
+    public void getPersonalIDs(String photographer_id) {
+        List<Integer> personalID = new ArrayList<>();
         try {
             socket.writeObject(PhotographerCall.getUniqueNumbers);
             socket.writeObject(photographer_id);
-            uniqueNumbers = (ArrayList) socket.readObject();
+            personalID = (ArrayList) socket.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
-
         }
-        pp = uniqueNumbers;
-        PhotographerClient.client.savePersonalPictureToLocal(uniqueNumbers);
+        PhotographerClient.client.savePersonalPictureToLocal(personalID);
     }
-
 
 }

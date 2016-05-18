@@ -6,6 +6,7 @@
 package shared.files;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ public class PersonalPicture implements Serializable {
     
     public PersonalPicture(int idnumber){
         this.id = idnumber;
+        pictures = new ArrayList();
     }
     public int getId() {
         return id;
