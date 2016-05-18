@@ -46,6 +46,7 @@ public class PhotographerClient extends Application implements IClient {
     private LocalDatabase ldb;
     private List<PictureGroup> pgl;
     private List<PersonalPicture> AvailablePP;
+    public File selectedDirectory;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -179,8 +180,7 @@ public class PhotographerClient extends Application implements IClient {
 
     public void chooseDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        File selectedDirectory
-                = directoryChooser.showDialog(primaryStage);
+        selectedDirectory = directoryChooser.showDialog(primaryStage);
         localfilemanager = new LocalFileManager(selectedDirectory.toString());
     }
 }

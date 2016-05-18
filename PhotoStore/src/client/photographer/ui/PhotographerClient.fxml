@@ -214,7 +214,7 @@
                         <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <children>
                               <Label text="Path Location" textFill="#0000004d" />
-                              <TextField fx:id="tfImageSelectPathLocation" editable="false" promptText="Add path" />
+                              <TextField fx:id="tfImageSelectPathLocation" editable="false" onMouseClicked="#chooseDirectory" promptText="Add path" />
                            </children>
                         </VBox>
                      </children>

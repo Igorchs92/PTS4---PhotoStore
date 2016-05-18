@@ -61,11 +61,10 @@ public class PhotographerClientController implements Initializable {
     //WatchService part  +++++++
     @FXML
     private ListView lvImageSelect = new ListView();
-    private ImageView ivPictures = new ImageView();
+    private ImageView ivImagePreview = new ImageView();
     private ObservableList<Path> picturesPath;
     //WatchService part  +++++++
-    
-    
+
     PersonalPicture selectedPP;
     PictureGroup selectedPG;
     @FXML
@@ -105,8 +104,6 @@ public class PhotographerClientController implements Initializable {
     @FXML
     private Button btnRemovePicture;
     @FXML
-    private ImageView ivImagePreview;
-    @FXML
     private Button btnSync;
 
     @Override
@@ -120,8 +117,11 @@ public class PhotographerClientController implements Initializable {
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 System.out.println(lvImageSelect.getSelectionModel().getSelectedItem().toString());
                 File file = new File(lvImageSelect.getSelectionModel().getSelectedItem().toString());
+                System.out.println("First line");
                 Image img = new Image(file.toURI().toString());
-                ivPictures.setImage(img);
+                System.out.println("Second line");
+                ivImagePreview.setImage(img);
+                System.out.println("Third line");
             }
         });
 
@@ -148,12 +148,6 @@ public class PhotographerClientController implements Initializable {
         });
         lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
         lblGroupsCount.setText(Integer.toString(groupNumbers.size()));
-    }
-
-    public void reloadPicture() {
-        File file = new File(lvImageSelect.getSelectionModel().getSelectedItem().toString());
-        Image img = new Image(file.toURI().toString());
-        ivPictures.setImage(img);
     }
 
     public void refresh() {
@@ -252,12 +246,13 @@ public class PhotographerClientController implements Initializable {
     }
 
     public void chooseDirectory() {
+        PhotographerClient.client.chooseDirectory();
         if (PhotographerClient.client.localfilemanager != null) {
-            PhotographerClient.client.chooseDirectory();
+            picturesPath = PhotographerClient.client.localfilemanager.getPicture();
+            this.lvImageSelect.setItems(this.picturesPath);
+            tfImageSelectPathLocation.setText(PhotographerClient.client.selectedDirectory.toString());
         }
-        picturesPath =  PhotographerClient.client.localfilemanager.getPicture();
 
-        this.lvImageSelect.setItems(this.picturesPath);
     }
 
 }
