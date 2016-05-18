@@ -107,6 +107,8 @@ public class PhotographerClientController implements Initializable {
     private Label lblToolBarUIDRemaining;
     @FXML
     private Button btnSignOut;
+    @FXML
+    private ImageView ivImagePreview;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
