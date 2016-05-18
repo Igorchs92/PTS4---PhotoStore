@@ -293,7 +293,7 @@
                         </Text>
                      </children>
                   </HBox>
-                  <HBox prefHeight="515.0" prefWidth="301.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <HBox alignment="CENTER" prefHeight="515.0" prefWidth="301.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <children>
                         <ImageView fx:id="ivImagePreview" fitHeight="465.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
                            <image>
