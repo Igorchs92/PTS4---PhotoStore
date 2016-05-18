@@ -42,6 +42,10 @@ public class PersonalPicture implements Serializable {
         this.pictures = pictures;
     }
     
+    public void removePicture(Picture picture){
+        this.pictures.remove(picture);
+    }
+    
     public void addPicture(Picture picture){
         this.pictures.add(picture);
     }

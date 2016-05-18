@@ -217,7 +217,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Button fx:id="btnAddPicture" minWidth="0.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="111.0" text="Save Picture" />
+                              <Button fx:id="btnAddPicture" minWidth="0.0" mnemonicParsing="false" onAction="#savePicture" prefHeight="25.0" prefWidth="111.0" text="Save Picture" />
                            </children>
                         </GridPane>
                      </children>
@@ -261,7 +261,7 @@
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                  </rowConstraints>
                                  <children>
-                                    <Button fx:id="btnRemovePicture" minWidth="0.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="107.0" text="Remove Picture" />
+                                    <Button fx:id="btnRemovePicture" minWidth="0.0" mnemonicParsing="false" onAction="#removePicture" prefHeight="25.0" prefWidth="107.0" text="Remove Picture" />
                                  </children>
                               </GridPane>
                            </children>

@@ -64,6 +64,7 @@ public class PhotographerClient extends Application implements IClient {
 
     }
 
+
     /**
      * @param args the command line arguments
      */
