@@ -48,6 +48,9 @@ public final class LocalDatabase {
         queries.add("CREATE TABLE pictureGroup (id INTEGER PRIMARY KEY, obj BLOB);");
         queries.add("DROP TABLE IF EXISTS personalPicture;");
         queries.add("CREATE TABLE personalPicture (id INTEGER PRIMARY KEY, obj BLOB);");
+        queries.add("DROP TABLE IF EXISTS photographer;");
+        queries.add("CREATE TABLE photographer (id VARCHAR PRIMARY KEY,password VARCHAR);");
+
         for (String q : queries) {
             try {
                 Statement st = conn.createStatement();
@@ -56,6 +59,33 @@ public final class LocalDatabase {
                 System.out.print(ex.toString());
             }
         }
+    }
+
+    public boolean savePhotographer(String photographerid, String password) {
+        try {
+            String sql = "SELECT * from photographer WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            if (ps.executeQuery().next()) {
+                //picturegroup exists, update is required
+                sql = "UPDATE photographer SET password = ? WHERE id = ?;";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, photographerid);
+                ps.setString(2, password);
+                ps.executeUpdate();
+            } else {
+                sql = "INSERT INTO photographer (id, password) VALUES(?, ?);";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, photographerid);
+                ps.setString(2, password);
+                ps.executeUpdate();
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+
     }
 
     public boolean savePictureGroup(PictureGroup pg) {
@@ -158,8 +188,8 @@ public final class LocalDatabase {
             return null;
         }
     }
-    
-        public List<PersonalPicture> getPersonalPicture() {
+
+    public List<PersonalPicture> getPersonalPicture() {
         try {
             //create new list that will contain the picturegroups
             List<PersonalPicture> PersonalPicture = new ArrayList<>();
