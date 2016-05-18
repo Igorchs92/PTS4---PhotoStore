@@ -29,16 +29,10 @@ public class PhotographerClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
     public static PhotographerClientRunnable clientRunnable;
-    private final LocalDatabase ldb;
-    private List<PictureGroup> pgl;
-    private List<PersonalPicture> AvailablePP;
 
     public PhotographerClientRunnable(SocketConnection s) throws IOException, ClassNotFoundException {
         clientRunnable = this;
         this.socket = s;
-        ldb = new LocalDatabase();
-        pgl = ldb.getPictureGroups();
-        AvailablePP = ldb.getPersonalPicture();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
@@ -52,18 +46,6 @@ public class PhotographerClientRunnable implements IClientRunnable {
 
     public SocketConnection getSocket() {
         return socket;
-    }
-
-    public LocalDatabase getLocalDatabase() {
-        return ldb;
-    }
-
-    public List<PictureGroup> getPictureGroupList() {
-        return pgl;
-    }
-
-    public List<PersonalPicture> getAvailablePersonalPictureList() {
-        return AvailablePP;
     }
 
     public boolean registerUser(String email, String password, String name, String phone, String address, String zipcode, String city, String country, String kvk, String auth) {
@@ -95,7 +77,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
             boolean saveRequired = false;
             socket.writeObject(PhotographerCall.upload);
             //filter picturegroup list on images that havent been uploaded yet and send this to the server.
-            List<PictureGroup> fPgl = pgl;
+            List<PictureGroup> fPgl = PhotographerClient.client.getPictureGroupList();
             for (PictureGroup pg : fPgl) {
                 for (Picture p : pg.getPictures()) {
                     if (p.isUploaded() || !p.getFile().exists()) {
@@ -123,7 +105,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
             }
             //send the filtered list to the server
             socket.writeObject(fPgl);
-            for (PictureGroup pg : pgl) {
+            for (PictureGroup pg : PhotographerClient.client.getPictureGroupList()) {
 
                 for (Picture p : pg.getPictures()) {
                     if (!p.isUploaded() || p.getFile().exists()) {
@@ -147,7 +129,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
                 }
                 if (saveRequired) {
                     //save is required, save the new picturegroup on the local database
-                    ldb.savePictureGroup(pg);
+                    PhotographerClient.client.getLocalDatabase().savePictureGroup(pg);
                 }
 
             }
@@ -158,25 +140,6 @@ public class PhotographerClientRunnable implements IClientRunnable {
         }
     }
 
-    public void CallFileUploader() {
-        Task<List<PictureGroup>> tPgl = new FileUploader(socket, pgl);
-        ProgressBar pb = new ProgressBar(); //just for the idea
-        pb.progressProperty().bind(tPgl.progressProperty());
-        new Thread(tPgl).start();
-        Thread t = new Thread(() -> {
-            {
-                try {
-                    pgl = tPgl.get();
-                    Platform.runLater(() -> {
-                        //PhotographerClient.client //Continue whatever we were doing
-                    });
-                } catch (InterruptedException | ExecutionException ex) {
-                    Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        t.start();
-    }
 
     List<PictureGroup> grps = null;
 
@@ -197,57 +160,26 @@ public class PhotographerClientRunnable implements IClientRunnable {
 
         }
         grps = groupNumbers;
-        savePictureGroupsToLocal(grps);
+        PhotographerClient.client.savePictureGroupsToLocal(grps);
         return groupNumbers;
     }
 
-    public void savePictureGroupsToLocal(List<PictureGroup> pgg) {
-        for (PictureGroup pg : pgg) {
-            ldb.savePictureGroup(pg);
-        }
-    }
-
-    List<PersonalPicture> pp = null;
+    
     //get all uniquelist
-    public List<PersonalPicture> getUniqueNumbers(String photographer_id) {
+    public void getUniqueNumbers(String photographer_id) {
+        List<PersonalPicture> pp = null;
         List<PersonalPicture> uniqueNumbers = new ArrayList<>();
         try {
             socket.writeObject(PhotographerCall.getUniqueNumbers);
             socket.writeObject(photographer_id);
-            Object obj = socket.readObject();
-            uniqueNumbers = (ArrayList) obj;
-
+            uniqueNumbers = (ArrayList) socket.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
 
         }
         pp = uniqueNumbers;
-        savePersonalPictureToLocal();
-        return uniqueNumbers;
+        PhotographerClient.client.savePersonalPictureToLocal(uniqueNumbers);
     }
 
-    public void savePersonalPictureToLocal() {
-        for (PersonalPicture ppLocal : pp) {
-            ldb.savePersonalPicture(ppLocal);
-        }
-    }
-
-    public void addPhotoToPersonalPicture(int personalPictures_id, Picture pic) {
-        for (PersonalPicture ppl : AvailablePP) {
-            if(ppl.getId() == personalPictures_id)
-            ppl.addPicture(pic);
-        }
-    }
-
-    //change prize
-    public void changePicturePrice(int pictureID, double price) {
-        for (PersonalPicture pp : AvailablePP) {
-            for (Picture pic : pp.getPictures()) {
-                if (pic.getId() == pictureID) {
-                    pic.setPrice(price);
-                }
-            }
-        }
-    }
 
 }

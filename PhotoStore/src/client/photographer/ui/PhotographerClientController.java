@@ -20,12 +20,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import shared.files.PersonalPicture;
 import shared.files.PictureGroup;
 
@@ -36,9 +39,7 @@ import shared.files.PictureGroup;
  */
 public class PhotographerClientController implements Initializable {
 
-    @FXML
     private ListView<PersonalPicture> lvBoundUniqueIDs = new ListView();
-    @FXML
     private ListView<PictureGroup> lvGroups = new ListView();
 
     List<PersonalPicture> uniqueNumbers = new ArrayList();
@@ -54,20 +55,57 @@ public class PhotographerClientController implements Initializable {
 
     @FXML
     private TextArea taGroupInfoDescription = new TextArea();
-    @FXML
     private Label lblGroupsCount = new Label();
-    @FXML
     private Label lblUniqueIDsCount = new Label();
 
     //WatchService part  +++++++
     @FXML
     private ListView lvImageSelect = new ListView();
-    @FXML
     private ImageView ivPictures = new ImageView();
     ArrayList<Path> picturesPath = new ArrayList();
     //WatchService part  +++++++
     PersonalPicture selectedPP;
     PictureGroup selectedPG;
+    @FXML
+    private HBox hbGroupPersonalPicture;
+    @FXML
+    private GridPane gpGroupInfo;
+    @FXML
+    private Button btnAddGroup;
+    @FXML
+    private GridPane gpGroups;
+    @FXML
+    private Button btnAddID;
+    @FXML
+    private Button btnRemoveID;
+    @FXML
+    private HBox hbPicture;
+    @FXML
+    private GridPane gpModifyPictureInfo;
+    @FXML
+    private TextField tfModifyPictureInfoName;
+    @FXML
+    private TextField tfModifyPictureInfoPrice;
+    @FXML
+    private TextField tfModifyPictureInfoFileLocation;
+    @FXML
+    private TextField tfModifyPictureInfoCreatedOn;
+    @FXML
+    private Button btnAddPicture;
+    @FXML
+    private GridPane gpImageSelect;
+    @FXML
+    private TextField tfImageSelectPathLocation;
+    @FXML
+    private GridPane gpSavedPictures;
+    @FXML
+    private ListView<?> lvSavedPictures;
+    @FXML
+    private Button btnRemovePicture;
+    @FXML
+    private ImageView ivImagePreview;
+    @FXML
+    private Button btnSync;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -143,7 +181,6 @@ public class PhotographerClientController implements Initializable {
         this.lvBoundUniqueIDs.setItems(observavbleUniqueNumbersSelected);
     }
 
-    @FXML
     public void bindGroupPicturePersonalPicture() {
         PersonalPicture pp = null;
         if (selectedPG != null) {
@@ -163,7 +200,6 @@ public class PhotographerClientController implements Initializable {
         initviewUniqueID();
     }
 
-    @FXML
     public void removeBindGroupPicturePersonalPicture() {
         if (selectedPG != null && selectedPP != null) {
             selectedPG.removePersonalPicture(selectedPP);
@@ -173,36 +209,32 @@ public class PhotographerClientController implements Initializable {
         initviewUniqueID();
     }
 
-    @FXML
     public void createGroups() {
+        /*
         groupNumbers = PhotographerClientRunnable.clientRunnable.createGroups(PhotographerInfo.photographerID);
         initviewsEdit();
+        */
     }
 
-    @FXML
     public void getGroupNumbersLocal() {
-        groupNumbers = PhotographerClientRunnable.clientRunnable.getPictureGroupList();
+        groupNumbers = PhotographerClient.client.getPictureGroupList();
     }
 
-    @FXML
     public void getPersonalUniqueCodeLocal() {
-        uniqueNumbers = PhotographerClientRunnable.clientRunnable.getAvailablePersonalPictureList();
+        uniqueNumbers = PhotographerClient.client.getAvailablePersonalPictureList();
     }
 
     //get UniqueNumbers from online servers
-    @FXML
     public void getUniqueNumbersOnline() {
 
         System.out.println(uniqueNumbers.size());
         initviewsEdit();
     }
 
-    @FXML
     public void uploadEverythingToOnline() {
         PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
     }
 
-    @FXML
     public void changeGroupInfo() {
         selectedPG = lvGroups.getSelectionModel().getSelectedItem();
         selectedPG.setName(tfGroupInfoName.getText());
@@ -212,13 +244,11 @@ public class PhotographerClientController implements Initializable {
 
     }
 
-    @FXML
     public void saveAllLocal() {
-        PhotographerClientRunnable.clientRunnable.savePictureGroupsToLocal(groupNumbers);
+        PhotographerClient.client.savePictureGroupsToLocal(groupNumbers);
 
     }
 
-    @FXML
     public void getStuffOnline() {
         PhotographerClientRunnable.clientRunnable.getUniqueNumbers(PhotographerInfo.photographerID);
         PhotographerClientRunnable.clientRunnable.createGroups(PhotographerInfo.photographerID);

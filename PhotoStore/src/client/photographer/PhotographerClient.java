@@ -9,14 +9,23 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import client.ClientConnector;
+import static client.ClientConnector.socket;
 import client.IClient;
 import client.ui.InterfaceCall;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
 import shared.ClientType;
+import shared.files.PersonalPicture;
+import shared.files.Picture;
+import shared.files.PictureGroup;
 
 /**
  *
@@ -32,19 +41,25 @@ public class PhotographerClient extends Application implements IClient {
     private Scene sceneLogin;
     private Scene sceneMain;
     public LocalFileManager localfilemanager;
+    private LocalDatabase ldb;
+    private List<PictureGroup> pgl;
+    private List<PersonalPicture> AvailablePP;
 
     @Override
     public void start(Stage stage) throws Exception {
         client = this;
-        connectToServer();
+        ldb = new LocalDatabase();
+        pgl = ldb.getPictureGroups();
+        AvailablePP = ldb.getPersonalPicture();
+        //connectToServer();
         ClientConnector.client = this;
         this.primaryStage = stage;
-        localfilemanager  = new LocalFileManager("D:\\fotos");
+        localfilemanager = new LocalFileManager("D:\\fotos");
         sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
         sceneMain = new Scene(FXMLLoader.load(getClass().getResource("ui/PhotographerClient.fxml")));
         setSceneMain();
         stage.show();
-        
+
     }
 
     /**
@@ -98,4 +113,66 @@ public class PhotographerClient extends Application implements IClient {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public LocalDatabase getLocalDatabase() {
+        return ldb;
+    }
+
+    public List<PictureGroup> getPictureGroupList() {
+        return pgl;
+    }
+
+    public List<PersonalPicture> getAvailablePersonalPictureList() {
+        return AvailablePP;
+    }
+
+    public void addPhotoToPersonalPicture(int personalPictures_id, Picture pic) {
+        for (PersonalPicture ppl : AvailablePP) {
+            if (ppl.getId() == personalPictures_id) {
+                ppl.addPicture(pic);
+            }
+        }
+    }
+
+    //change prize
+    public void changePicturePrice(int pictureID, double price) {
+        for (PersonalPicture pp : AvailablePP) {
+            for (Picture pic : pp.getPictures()) {
+                if (pic.getId() == pictureID) {
+                    pic.setPrice(price);
+                }
+            }
+        }
+    }
+
+    public void savePictureGroupsToLocal(List<PictureGroup> pgg) {
+        for (PictureGroup pg : pgg) {
+            ldb.savePictureGroup(pg);
+        }
+    }
+
+    public void CallFileUploader() {
+        Task<List<PictureGroup>> tPgl = new FileUploader(socket, PhotographerClient.client.getPictureGroupList());
+        ProgressBar pb = new ProgressBar(); //just for the idea
+        pb.progressProperty().bind(tPgl.progressProperty());
+        new Thread(tPgl).start();
+        Thread t = new Thread(() -> {
+            {
+                try {
+                    pgl = tPgl.get();
+                    Platform.runLater(() -> {
+                        //PhotographerClient.client //Continue whatever we were doing
+                    });
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        t.start();
+    }
+    
+    public void savePersonalPictureToLocal(List<PersonalPicture> ppL) {
+        for (PersonalPicture pp : ppL) {
+            ldb.savePersonalPicture(pp);
+        }
+    }
 }
