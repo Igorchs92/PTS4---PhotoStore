@@ -5,7 +5,6 @@
  */
 package client.photographer.ui;
 
-import client.photographer.FileScanner;
 import client.photographer.PhotographerClient;
 import client.photographer.PhotographerClientRunnable;
 import client.photographer.PhotographerInfo;
@@ -21,6 +20,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -37,22 +37,31 @@ import shared.files.PictureGroup;
 public class PhotographerClientController implements Initializable {
 
     @FXML
-    private TextField tfName;
+    private ListView<PersonalPicture> lvBoundUniqueIDs = new ListView();
     @FXML
-    private TextArea tfDescription;
-    @FXML
-    private ListView lvUniqueCodes = new ListView();
-    @FXML
-    private ListView lvGroupNumber = new ListView();
+    private ListView<PictureGroup> lvGroups = new ListView();
 
     List<PersonalPicture> uniqueNumbers = new ArrayList();
     List<PictureGroup> groupNumbers = new ArrayList();
+    List<PersonalPicture> uniqueNumbersSelected = new ArrayList();
+
     ObservableList observableUniqueNumbers;
     ObservableList observableGroupNumbers;
+    ObservableList observavbleUniqueNumbersSelected;
+
+    @FXML
+    private TextField tfGroupInfoName = new TextField();
+
+    @FXML
+    private TextArea taGroupInfoDescription = new TextArea();
+    @FXML
+    private Label lblGroupsCount = new Label();
+    @FXML
+    private Label lblUniqueIDsCount = new Label();
 
     //WatchService part  +++++++
     @FXML
-    private ListView lvPictures = new ListView();
+    private ListView lvImageSelect = new ListView();
     @FXML
     private ImageView ivPictures = new ImageView();
     ArrayList<Path> picturesPath = new ArrayList();
@@ -62,60 +71,106 @@ public class PhotographerClientController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+        getGroupNumbersLocal();
+        getPersonalUniqueCodeLocal();
         initviewsEdit();
         initviewsPictures();
 
-        lvPictures.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+        lvImageSelect.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-                System.out.println(lvPictures.getSelectionModel().getSelectedItem().toString());
-
-                File file = new File(lvPictures.getSelectionModel().getSelectedItem().toString());
+                System.out.println(lvImageSelect.getSelectionModel().getSelectedItem().toString());
+                File file = new File(lvImageSelect.getSelectionModel().getSelectedItem().toString());
                 Image img = new Image(file.toURI().toString());
                 ivPictures.setImage(img);
-
-                //todo
-                selectedPG = (PictureGroup) lvPictures.getSelectionModel().getSelectedItem();
-                //
-
             }
         });
+
+        //on click change textfield name and description of selected group number
+        lvGroups.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                if (lvGroups.getSelectionModel().getSelectedItem() != null) {
+                    tfGroupInfoName.setText(lvGroups.getSelectionModel().getSelectedItem().getName());
+                    taGroupInfoDescription.setText(lvGroups.getSelectionModel().getSelectedItem().getDescription());
+                    selectedPG = lvGroups.getSelectionModel().getSelectedItem();
+                    uniqueNumbersSelected = selectedPG.getPersonalPictures();
+                }
+                initviewUniqueID();
+            }
+        });
+
+        lvBoundUniqueIDs.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                //lvUniqueLocalIDS
+                selectedPP = lvBoundUniqueIDs.getSelectionModel().getSelectedItem();
+            }
+        });
+        lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
+        lblGroupsCount.setText(Integer.toString(groupNumbers.size()));
     }
 
     public void reloadPicture() {
-        File file = new File(lvPictures.getSelectionModel().getSelectedItem().toString());
+        File file = new File(lvImageSelect.getSelectionModel().getSelectedItem().toString());
         Image img = new Image(file.toURI().toString());
         ivPictures.setImage(img);
     }
 
     public void refresh() {
-        initviewsPictures();
+        // initviewsPictures();
         initviewsEdit();
-        reloadPicture();
+
+        // reloadPicture();
     }
 
     public void initviewsPictures() {
-        this.lvPictures.setItems(PhotographerClient.client.localfilemanager.getPicture());
+        this.lvImageSelect.setItems(PhotographerClient.client.localfilemanager.getPicture());
     }
 
     public void initviewsEdit() {
+
         observableUniqueNumbers = FXCollections.observableArrayList(this.uniqueNumbers);
         observableGroupNumbers = FXCollections.observableArrayList(this.groupNumbers);
+        observavbleUniqueNumbersSelected = FXCollections.observableArrayList(this.uniqueNumbersSelected);
 
-        this.lvUniqueCodes.setItems(this.observableUniqueNumbers);
-        this.lvGroupNumber.setItems(this.observableGroupNumbers);
+        this.lvGroups.setItems(this.observableGroupNumbers);
+        this.lvBoundUniqueIDs.setItems(observavbleUniqueNumbersSelected);
+    }
 
-        lvGroupNumber.getSelectionModel().selectionModeProperty();
-
-        //tfName.setText(lvGroupNumber.getSelectionModel().getSelectedItem());
+    public void initviewUniqueID() {
+        observavbleUniqueNumbersSelected = FXCollections.observableArrayList(this.uniqueNumbersSelected);
+        this.lvBoundUniqueIDs.setItems(observavbleUniqueNumbersSelected);
     }
 
     @FXML
     public void bindGroupPicturePersonalPicture() {
-        if (selectedPP != null && selectedPG != null) {
-            selectedPG.addPersonalPicture(selectedPP);
+        PersonalPicture pp = null;
+        if (selectedPG != null) {
+            if (uniqueNumbers.size() > 0) {
+                int i = 0;
+                while (i < 1) {
+                    pp = uniqueNumbers.get(i);
+                    uniqueNumbers.remove(i);
+                    i++;
+                }
+                if (pp != null) {
+                    selectedPG.addPersonalPicture(pp);
+                }
+            }
         }
+        lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
+        initviewUniqueID();
+    }
+
+    @FXML
+    public void removeBindGroupPicturePersonalPicture() {
+        if (selectedPG != null && selectedPP != null) {
+            selectedPG.removePersonalPicture(selectedPP);
+            uniqueNumbers.add(selectedPP);
+        }
+        lblUniqueIDsCount.setText(Integer.toString(uniqueNumbers.size()));
+        initviewUniqueID();
     }
 
     @FXML
@@ -125,8 +180,19 @@ public class PhotographerClientController implements Initializable {
     }
 
     @FXML
-    public void getUniqueNumbers() {
-        uniqueNumbers = PhotographerClientRunnable.clientRunnable.getUniqueNumbers(PhotographerInfo.photographerID);
+    public void getGroupNumbersLocal() {
+        groupNumbers = PhotographerClientRunnable.clientRunnable.getPictureGroupList();
+    }
+
+    @FXML
+    public void getPersonalUniqueCodeLocal() {
+        uniqueNumbers = PhotographerClientRunnable.clientRunnable.getAvailablePersonalPictureList();
+    }
+
+    //get UniqueNumbers from online servers
+    @FXML
+    public void getUniqueNumbersOnline() {
+
         System.out.println(uniqueNumbers.size());
         initviewsEdit();
     }
@@ -134,5 +200,27 @@ public class PhotographerClientController implements Initializable {
     @FXML
     public void uploadEverythingToOnline() {
         PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
+    }
+
+    @FXML
+    public void changeGroupInfo() {
+        selectedPG = lvGroups.getSelectionModel().getSelectedItem();
+        selectedPG.setName(tfGroupInfoName.getText());
+        lvGroups.getSelectionModel().getSelectedItem().setName(tfGroupInfoName.getText());
+        selectedPG.setDescription(taGroupInfoDescription.getText());
+        lvGroups.getSelectionModel().getSelectedItem().setDescription(taGroupInfoDescription.getText());
+
+    }
+
+    @FXML
+    public void saveAllLocal() {
+        PhotographerClientRunnable.clientRunnable.savePictureGroupsToLocal(groupNumbers);
+
+    }
+
+    @FXML
+    public void getStuffOnline() {
+        PhotographerClientRunnable.clientRunnable.getUniqueNumbers(PhotographerInfo.photographerID);
+        PhotographerClientRunnable.clientRunnable.createGroups(PhotographerInfo.photographerID);
     }
 }

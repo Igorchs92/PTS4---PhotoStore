@@ -15,10 +15,9 @@ import java.util.List;
  */
 public class PictureGroup implements Serializable {
 
-    private static final long serialVersionUID = 6035863739819711135L;
     @Override
     public String toString() {
-        return "id=" + id + ", name=" + name;
+        return "ID: " + id + ", Name: " + name +", UID's: " +personalPictures.size();
     }
 
     private int id;
@@ -27,10 +26,10 @@ public class PictureGroup implements Serializable {
     private List<Picture> pictures;
     private List<PersonalPicture> personalPictures;
 
-
     public PictureGroup(int id) {
         this.id = id;
         pictures = new ArrayList<>();
+        personalPictures = new ArrayList<>();
     }
 
     public int getId() {
@@ -68,7 +67,7 @@ public class PictureGroup implements Serializable {
     public void addPicture(Picture picture) {
         this.pictures.add(picture);
     }
-    
+
     public void removePicture(Picture picture) {
         this.pictures.remove(picture);
     }
@@ -78,14 +77,15 @@ public class PictureGroup implements Serializable {
     }
 
     public void setPersonalPictures(List<PersonalPicture> persons) {
+        
         this.personalPictures = persons;
     }
-    
-    public void addPersonalPicture(PersonalPicture personalPicture){
+
+    public void addPersonalPicture(PersonalPicture personalPicture) {
         this.personalPictures.add(personalPicture);
     }
-    
-    public void removePersonalPicture(PersonalPicture personalPicture){
+
+    public void removePersonalPicture(PersonalPicture personalPicture) {
         this.personalPictures.remove(personalPicture);
     }
 }

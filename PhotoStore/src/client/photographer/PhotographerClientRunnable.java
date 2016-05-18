@@ -197,18 +197,17 @@ public class PhotographerClientRunnable implements IClientRunnable {
 
         }
         grps = groupNumbers;
-        savePictureGroupsToLocal();
+        savePictureGroupsToLocal(grps);
         return groupNumbers;
     }
 
-    public void savePictureGroupsToLocal() {
-        for (PictureGroup pg : grps) {
+    public void savePictureGroupsToLocal(List<PictureGroup> pgg) {
+        for (PictureGroup pg : pgg) {
             ldb.savePictureGroup(pg);
         }
     }
 
     List<PersonalPicture> pp = null;
-
     //get all uniquelist
     public List<PersonalPicture> getUniqueNumbers(String photographer_id) {
         List<PersonalPicture> uniqueNumbers = new ArrayList<>();

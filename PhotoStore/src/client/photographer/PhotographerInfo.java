@@ -10,5 +10,5 @@ package client.photographer;
  * @author Hovsep-Notebook
  */
 public class PhotographerInfo {
-    public static String photographerID;
+    public static String photographerID = "test@hotmail.com";
 }
