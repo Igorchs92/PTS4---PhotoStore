@@ -40,7 +40,9 @@ public class Picture implements Serializable {
         this.uploaded = false;
     }    
    
-    public Picture(String name, double price, Date created) {
+    public Picture(int id, String extension, String name, double price, Date created) {
+        this.id = id;
+        this.extension = extension;
         this.name = name;
         this.price = price;
         this.created = created;

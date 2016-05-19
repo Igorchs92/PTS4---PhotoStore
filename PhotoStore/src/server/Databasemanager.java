@@ -394,7 +394,7 @@ public class Databasemanager {
                     ps3.setInt(1, pg_id);
                     ResultSet srs3 = ps.executeQuery();
                     while (srs3.next()) {
-                        Picture p = new Picture(srs.getString("name"), srs.getDouble("price"), srs.getDate("created"));
+                        Picture p = new Picture(srs.getInt("picture_id"), srs.getString("extension"), srs.getString("name"), srs.getDouble("price"), srs.getDate("created"));
                         pg.addPicture(p);
                     }
 
@@ -415,7 +415,7 @@ public class Databasemanager {
                             ps5.setInt(1, pp_id);
                             ResultSet srs5 = ps.executeQuery();
                             while (srs5.next()) {
-                                Picture p = new Picture(srs.getString("name"), srs.getDouble("price"), srs.getDate("created"));
+                                Picture p = new Picture(srs.getInt("picture_id"), srs.getString("extension"), srs.getString("name"), srs.getDouble("price"), srs.getDate("created"));
                                 pp.addPicture(p);
                             }
                         }
