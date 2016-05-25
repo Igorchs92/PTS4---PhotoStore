@@ -86,7 +86,7 @@ public class Filesystem {
                     root_group_highres.getParentFile().mkdirs();
                     root_group_lowres.getParentFile().mkdirs();
                     socket.readFile(root_group_highres);
-                    compressPicture(root_group_highres, root_group_lowres);
+//                    compressPicture(root_group_highres, root_group_lowres);
                 }
             }
             for (PersonalPicture pp : pg.getPersonalPictures()) {
@@ -100,7 +100,7 @@ public class Filesystem {
                         root_group_highres.getParentFile().mkdirs();
                         root_group_lowres.getParentFile().mkdirs();
                         socket.readFile(root_group_highres);
-                        compressPicture(root_group_highres, root_group_lowres);
+//                        compressPicture(root_group_highres, root_group_lowres);
                     }
                 }
             }

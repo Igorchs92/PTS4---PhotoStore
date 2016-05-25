@@ -107,25 +107,21 @@ public class SocketConnection {
             byte[] byteArray = new byte[(int) file.length()];
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
             bis.read(byteArray, 0, byteArray.length);
-            OutputStream os = socket.getOutputStream();
-            os.write(byteArray, 0, byteArray.length);
-            os.flush();
-        } catch (IOException ex) {
+            writeObject(byteArray);
+            } catch (IOException ex) {
             Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         }
     }
 
     public void readFile(File file) {
         try {
-            byte[] byteArray = new byte[1024];
-            InputStream is = socket.getInputStream();
+            byte[] byteArray = (byte[]) readObject();
             FileOutputStream fos = new FileOutputStream(file);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
-            int bytesRead = is.read(byteArray, 0, byteArray.length);
-            bos.write(byteArray, 0, bytesRead);
+            bos.write(byteArray, 0, byteArray.length);
             bos.close();
-        } catch (IOException ex) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | IOException ex) {
+            Logger.getLogger(SocketConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
