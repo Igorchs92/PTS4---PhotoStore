@@ -131,12 +131,13 @@ public class Databasemanager {
     public int addOriginalPicture(Picture picture) {
         try {
             String sql = "INSERT INTO originalPicture(extension, name, price, created) VALUES (?, ?, ?, ?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, picture.getExtension());
             ps.setString(2, picture.getName());
             ps.setDouble(3, picture.getPrice());
             ps.setDate(4, convertJavaDateToSqlDate(picture.getCreated()));
-            ResultSet rs = ps.executeQuery();
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 return rs.getInt(1);
             } else {

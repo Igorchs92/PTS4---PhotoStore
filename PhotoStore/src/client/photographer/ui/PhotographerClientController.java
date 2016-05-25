@@ -315,8 +315,7 @@ public class PhotographerClientController implements Initializable {
     
     @FXML
     public void sync() {
-        
-        //  PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
+        PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
         PhotographerClientRunnable.clientRunnable.getGroupIDs(PhotographerInfo.photographerID);
         PhotographerClientRunnable.clientRunnable.getPersonalIDs(PhotographerInfo.photographerID);
     }

@@ -83,6 +83,8 @@ public class Filesystem {
                     dbsm.addGroupPicturesPicture(pg, p);
                     File root_group_highres = new File(root_group + this.highres + p.toString());
                     File root_group_lowres = new File(root_group + this.lowres + p.toString());
+                    root_group_highres.getParentFile().mkdirs();
+                    root_group_lowres.getParentFile().mkdirs();
                     socket.readFile(root_group_highres);
                     compressPicture(root_group_highres, root_group_lowres);
                 }
@@ -93,8 +95,10 @@ public class Filesystem {
                     p.setId(dbsm.addOriginalPicture(p));
                     if (p.getId() != 0) {
                         dbsm.addPersonalPicturesPicture(pp, p);
-                        File root_group_highres = new File(root_group + Integer.toString(pg.getId()) + this.highres + p.toString());
-                        File root_group_lowres = new File(root_group + Integer.toString(pg.getId()) + this.lowres + p.toString());
+                        File root_group_highres = new File(root_group + Integer.toString(pg.getId()) + "\\" + this.highres + p.toString());
+                        File root_group_lowres = new File(root_group + Integer.toString(pg.getId()) + "\\" + this.lowres + p.toString());
+                        root_group_highres.getParentFile().mkdirs();
+                        root_group_lowres.getParentFile().mkdirs();
                         socket.readFile(root_group_highres);
                         compressPicture(root_group_highres, root_group_lowres);
                     }

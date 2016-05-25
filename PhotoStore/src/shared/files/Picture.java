@@ -15,11 +15,6 @@ import java.util.Date;
  */
 public class Picture implements Serializable {
 
-    @Override
-    public String toString() {
-        return "ID: " + id + ", Location: " + location + ", Price: " + price;
-    }
-
     private int id;
     private final String location;
     private final String extension;
@@ -88,5 +83,10 @@ public class Picture implements Serializable {
         } else {
             return "";
         }
+    }
+    
+    @Override
+    public String toString() {
+        return id + "." + extension;
     }
 }

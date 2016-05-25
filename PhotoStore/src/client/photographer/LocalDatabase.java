@@ -32,12 +32,26 @@ public final class LocalDatabase {
         try {
             boolean dbExists = db.exists();
             conn = DriverManager.getConnection("jdbc:sqlite:" + db); //set the connection string
+
             if (!dbExists) {
                 //database didnt exist yet
                 resetDatabase(); //create the database before usage
             }
         } catch (Exception ex) {
             System.out.println(ex.toString());
+        }
+    }
+
+    public Connection getConn() {
+        try {
+            if (!conn.isClosed()){
+                conn.close();
+            }
+            conn = DriverManager.getConnection("jdbc:sqlite:" + db);
+            return conn;
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 
@@ -65,18 +79,18 @@ public final class LocalDatabase {
     public boolean savePhotographer(String photographerid, String password) {
         try {
             String sql = "SELECT * from photographer WHERE id = 1;";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = getConn().prepareStatement(sql);
             if (ps.executeQuery().next()) {
                 //picturegroup exists, update is required
                 sql = "UPDATE photographer SET photographerid = ?, password = ? WHERE id = 1";
-                ps = conn.prepareStatement(sql);
+                ps = getConn().prepareStatement(sql);
                 ps.setString(1, photographerid);
                 ps.setString(2, password);
                 System.out.println("Updating photographer");
                 ps.executeUpdate();
             } else {
                 sql = "INSERT INTO photographer (id, photographerid, password) VALUES(1, ?, ?);";
-                ps = conn.prepareStatement(sql);
+                ps = getConn().prepareStatement(sql);
                 ps.setString(1, photographerid);
                 ps.setString(2, password);
                 System.out.println("Insert into photographer");
@@ -103,19 +117,19 @@ public final class LocalDatabase {
             byte[] data = bos.toByteArray();
             //check if the picturegroup already exists on the database
             String sql = "SELECT * from pictureGroup WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = getConn().prepareStatement(sql);
             ps.setInt(1, pg.getId());
             if (ps.executeQuery().next()) {
                 //picturegroup exists, update is required
                 sql = "UPDATE pictureGroup SET obj = ?, photographer = ? WHERE id = ?;";
-                ps = conn.prepareStatement(sql);
+                ps = getConn().prepareStatement(sql);
                 ps.setObject(1, data);
                 ps.setInt(2, pg.getId());
                 ps.executeUpdate();
             } else {
                 //picturegroup doesnt exist, insert is required
                 sql = "INSERT INTO pictureGroup (id, obj, photographer) VALUES(?, ?, ?);";
-                ps = conn.prepareStatement(sql);
+                ps = getConn().prepareStatement(sql);
                 ps.setInt(1, pg.getId());
                 ps.setObject(2, data);
                 ps.setString(3, PhotographerInfo.photographerID);
@@ -132,24 +146,24 @@ public final class LocalDatabase {
         try {
 
             /*
-                    try {
-            String sql = "DELETE from personalid WHERE photographer = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, "test@hotmail.com");
+             try {
+             String sql = "DELETE from personalid WHERE photographer = ?";
+             PreparedStatement ps = getConn().prepareStatement(sql);
+             ps.setString(1, "test@hotmail.com");
 
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
+             ps.executeUpdate();
+             } catch (SQLException ex) {
+             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+             }
              */
             //check if the id already exists on the database
             String sql = "SELECT * from personalid WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = getConn().prepareStatement(sql);
             ps.setInt(1, id);
             if (!ps.executeQuery().next()) {
                 //personalPicture doesnt exist, insert is required
                 sql = "INSERT INTO personalid (id, photographer) VALUES(?, ?);";
-                ps = conn.prepareStatement(sql);
+                ps = getConn().prepareStatement(sql);
                 ps.setInt(1, id);
                 ps.setString(2, PhotographerInfo.photographerID);
                 ps.executeUpdate();
@@ -165,12 +179,12 @@ public final class LocalDatabase {
         try {
             //check if the personalPicture already exists on the database
             String sql = "SELECT * from groupid WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = getConn().prepareStatement(sql);
             ps.setInt(1, id);
             if (!ps.executeQuery().next()) {
                 //personalPicture doesnt exist, insert is required
                 sql = "INSERT INTO groupid (id, photographer) VALUES(?, ?);";
-                ps = conn.prepareStatement(sql);
+                ps = getConn().prepareStatement(sql);
                 ps.setInt(1, id);
                 ps.setString(2, PhotographerInfo.photographerID);
                 ps.executeUpdate();
@@ -187,7 +201,7 @@ public final class LocalDatabase {
             //create new list that will contain the picturegroups
             List<PictureGroup> pictureGroups = new ArrayList<>();
             String sql = "SELECT * FROM pictureGroup;";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = getConn().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 ByteArrayInputStream bais;
@@ -216,7 +230,7 @@ public final class LocalDatabase {
             //create new list that will contain the picturegroups
             List<Integer> personalid = new ArrayList<>();
             String sql = "SELECT * FROM personalid;";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = getConn().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -236,7 +250,7 @@ public final class LocalDatabase {
             //create new list that will contain the picturegroups
             List<Integer> groupID = new ArrayList<>();
             String sql = "SELECT * FROM groupid;";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = getConn().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
@@ -253,7 +267,7 @@ public final class LocalDatabase {
         String sql = "SELECT * FROM photographer;";
         PreparedStatement ps;
         try {
-            ps = conn.prepareStatement(sql);
+            ps = getConn().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 PhotographerInfo.photographerID = rs.getString("photographerid");
@@ -268,8 +282,8 @@ public final class LocalDatabase {
         String sql = "DELETE FROM groupid WHERE id = ?";
         PreparedStatement ps;
         try {
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1,id);
+            ps = getConn().prepareStatement(sql);
+            ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
@@ -280,8 +294,8 @@ public final class LocalDatabase {
         String sql = "DELETE FROM personalid WHERE id = ?";
         PreparedStatement ps;
         try {
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1,id);
+            ps = getConn().prepareStatement(sql);
+            ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
