@@ -76,6 +76,8 @@ public class UserClientMainController implements Initializable {
     @FXML
     public void redownloadPictures() throws FileNotFoundException {
         // first empty the screen
+        paneScrollPane.setContent(null);
+        listViewAlbums.setItems(null);
         
         // then download the pictures
         pictureGroups = UserClientRunnable.clientRunnable.download();
