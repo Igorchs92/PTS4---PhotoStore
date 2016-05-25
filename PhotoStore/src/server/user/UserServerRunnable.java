@@ -31,6 +31,7 @@ public class UserServerRunnable implements Observer, Runnable {
     public UserServerRunnable(SocketConnection socket) {
         this.socket = socket;
         dbm = new Databasemanager();
+        fs = new Filesystem(socket);
     }
 
     @Override

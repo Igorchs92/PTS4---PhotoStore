@@ -382,19 +382,19 @@ public class Databasemanager {
                     //get description
                     String sql2 = "SELECT * FROM groupPictures WHERE id = ?";
                     PreparedStatement ps2 = conn.prepareStatement(sql2);
-                    ps2.setString(1, uid);
-                    ResultSet srs2 = ps.executeQuery();
+                    ps2.setInt(1, pg_id);
+                    ResultSet srs2 = ps2.executeQuery();
                     if (srs2.next()) {
-                        pg.setDescription(srs.getString("description"));
+                        pg.setDescription(srs2.getString("description"));
                     }
 
                     //add pictures to groupPictures
                     String sql3 = "SELECT * FROM originalPicture op INNER JOIN groupPictures_picture gpp ON gpp.picture_id = op.id WHERE gpp.group_id = ?";
                     PreparedStatement ps3 = conn.prepareStatement(sql3);
                     ps3.setInt(1, pg_id);
-                    ResultSet srs3 = ps.executeQuery();
+                    ResultSet srs3 = ps3.executeQuery();
                     while (srs3.next()) {
-                        Picture p = new Picture(srs.getInt("picture_id"), srs.getString("extension"), srs.getString("name"), srs.getDouble("price"), srs.getDate("created"));
+                        Picture p = new Picture(srs3.getInt("picture_id"), srs3.getString("extension"), srs3.getString("name"), srs3.getDouble("price"), srs3.getDate("created"));
                         pg.addPicture(p);
                     }
 
@@ -403,7 +403,7 @@ public class Databasemanager {
                     PreparedStatement ps4 = conn.prepareStatement(sql4);
                     ps4.setString(1, uid);
                     ps4.setInt(2, pg_id);
-                    ResultSet srs4 = ps.executeQuery();
+                    ResultSet srs4 = ps4.executeQuery();
                     while (srs4.next()) {
                         int pp_id = srs4.getInt("id");
                         if (pp_id != 0) {
@@ -413,9 +413,9 @@ public class Databasemanager {
                             String sql5 = "SELECT * FROM originalPicture op INNER JOIN personalPictures_picture ppp ON ppp.picture_id = op.id WHERE ppp.personal_id = ?";
                             PreparedStatement ps5 = conn.prepareStatement(sql5);
                             ps5.setInt(1, pp_id);
-                            ResultSet srs5 = ps.executeQuery();
+                            ResultSet srs5 = ps5.executeQuery();
                             while (srs5.next()) {
-                                Picture p = new Picture(srs.getInt("picture_id"), srs.getString("extension"), srs.getString("name"), srs.getDouble("price"), srs.getDate("created"));
+                                Picture p = new Picture(srs5.getInt("picture_id"), srs5.getString("extension"), srs5.getString("name"), srs5.getDouble("price"), srs5.getDate("created"));
                                 pp.addPicture(p);
                             }
                         }

@@ -25,6 +25,7 @@ public class PictureGroup implements Serializable {
     public PictureGroup(int id) {
         this.id = id;
         pictures = new ArrayList<>();
+        personalPictures = new ArrayList<>();
     }
 
     public int getId() {
@@ -81,5 +82,11 @@ public class PictureGroup implements Serializable {
     
     public void removePersonalPicture(PersonalPicture personalPicture){
         this.personalPictures.remove(personalPicture);
+    }
+    
+    
+    @Override
+    public String toString(){
+        return name + "aseygoaa";
     }
 }

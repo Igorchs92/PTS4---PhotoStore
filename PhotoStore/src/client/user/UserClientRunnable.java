@@ -79,11 +79,12 @@ public class UserClientRunnable implements IClientRunnable {
         }
     }
     
-    public void download(){
+    public  List<PictureGroup> download(){
         try {
+            socket.writeObject(UserCall.download);
             List<PictureGroup> pgl = (List<PictureGroup>)socket.readObject();
             if (pgl == null) {
-                return;
+                return null;
             }
             for (PictureGroup pg : pgl) {
                 File root_group = new File("resources/user/" + Integer.toString(pg.getId()) + "/");
@@ -100,8 +101,11 @@ public class UserClientRunnable implements IClientRunnable {
                     }
                 }
             }
+            System.out.println("Amount of picturegroups: " + pgl.size());
+            return pgl;
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 }
