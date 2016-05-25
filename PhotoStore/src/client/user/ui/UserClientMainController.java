@@ -7,6 +7,7 @@ package client.user.ui;
 
 import client.user.ClientInfo;
 import client.user.UserClientRunnable;
+import client.user.editphoto.EditPicureApplication;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -15,9 +16,11 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -33,6 +36,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import shared.files.Picture;
 import shared.files.PictureGroup;
 
 /**
@@ -93,6 +98,8 @@ public class UserClientMainController implements Initializable {
         PictureGroup pg = (PictureGroup)listViewAlbums.getSelectionModel().getSelectedItem();
         if (pg == null) return;
         showPictures(pg);
+        
+        
     }
     
     public void showPictures(PictureGroup pg) throws FileNotFoundException {
@@ -100,11 +107,26 @@ public class UserClientMainController implements Initializable {
         // THIS IS A DUMMY CODEBLOCK
         List<ImageView> images = new ArrayList<ImageView>();
 
-            for (int a = 0; a < 13; a++) {
-                images.add(new ImageView(new Image(new FileInputStream("C:\\Users\\martijn\\Desktop\\test.png"))));
-            }
-        // END OF DUMMY CODEBLOCK
-       putPicturesOnScreen(13, images);
+        for (int a = 0; a < 13; a++) {
+            Image i = new Image(new FileInputStream("C:\\Users\\martijn\\Desktop\\test.png"));
+                ImageView view = new ImageView(i);
+                images.add(view);
+                Picture p = new Picture("C:\\Users\\martijn\\Desktop\\test.png", "picture_name", 3.50d + a*2d);
+                view.setOnMouseClicked(new EventHandler<MouseEvent>(){
+                    @Override
+                    public void handle(MouseEvent arg0) {
+                        UserClientRunnable.clientRunnable.pictureToEdit = p;
+                        
+                        EditPicureApplication edit = new EditPicureApplication();
+                        Stage stage = new Stage();
+                        edit.start(stage);
+                        stage.show();
+                    }
+            });           
+        }
+                // END OF DUMMY CODEBLOCK
+        
+        putPicturesOnScreen(13, images);
     }
     
     /**
@@ -120,8 +142,8 @@ public class UserClientMainController implements Initializable {
                 List<Node> hBoxNodes = new ArrayList<Node>();
                 for(int j = 0; j < Math.min(4, amountImages-(4d*i)); j++) {
 
-
-                        hBoxNodes.add(images.get(i*4+j));
+                        ImageView view = images.get(i*4+j);
+                        hBoxNodes.add(view);
 
                 }
                 Node[] nodes = new Node[hBoxNodes.size()];

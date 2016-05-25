@@ -1,6 +1,7 @@
 package client.user.editphoto;
 
 
+import client.user.UserClientRunnable;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -30,6 +31,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.Stage;
+import shared.files.Picture;
 
 
 /**
@@ -37,7 +39,7 @@ import javafx.stage.Stage;
  * button for "crop" context menu which then crops the image at the selection
  * rectangle and saves it as jpg.
  */
-public class ImageCropWithRubberBand extends Application {
+public class EditPicureApplication extends Application {
     
     static RubberBandSelection rubberBandSelection;
     static ImageView imageView;
@@ -90,10 +92,10 @@ public class ImageCropWithRubberBand extends Application {
                         specialView.setImage(null);
                         break;
                     case "T-Shirt":
-                        specialView.setImage(new Image("T-Shirt.jpg"));
+                        specialView.setImage(new Image(getClass().getResourceAsStream("T-Shirt.jpg")));
                         break;
                     case "Mok":
-                        specialView.setImage(new Image("Mok.jpg"));
+                        specialView.setImage(new Image(getClass().getResourceAsStream("Mok.jpg")));
                         break;
                 }
             }
@@ -141,12 +143,13 @@ public class ImageCropWithRubberBand extends Application {
         });
 
         // load the image
-        Image image = new Image("cat.jpg");
+        Picture p = UserClientRunnable.clientRunnable.pictureToEdit;
+        Image image = new Image(p.getFile().toURI().toString()); 
 
         // the container for the image as a javafx node
         imageView = new ImageView(image);
         imagePreview = new ImageView(image);
-        specialView = new ImageView("T-Shirt.jpg");
+        specialView = new ImageView();
         imageWidth = imageView.getBoundsInLocal().getMaxX();
         imageHeight = imageView.getBoundsInLocal().getMaxY();
         imageX = imageView.getBoundsInLocal().getMinX();
@@ -321,7 +324,8 @@ public class ImageCropWithRubberBand extends Application {
                 
                 group.getChildren().add(rect);
                 
-                imagePreview.setImage(new Image("cat.jpg"));
+                Picture p = UserClientRunnable.clientRunnable.pictureToEdit;
+                imagePreview.setImage(new Image(p.getFile().toURI().toString()));
                 
             }
         };

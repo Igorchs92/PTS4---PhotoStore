@@ -25,6 +25,7 @@ public class UserClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
     public static UserClientRunnable clientRunnable;
+    public Picture pictureToEdit;
 
     public UserClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         this.socket = socket;
