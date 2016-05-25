@@ -20,6 +20,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
@@ -381,21 +382,27 @@ public class PhotographerClientController implements Initializable {
             @Override
             public Void call() throws Exception {
                 updateProgress(0, 5);
+                System.out.println("autologin");
                 autoLogin();
                 updateProgress(1, 5);
-//   PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
+                System.out.println("uploading picture group");
+                PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
                 updateProgress(2, 5);
+                System.out.println("get group id's");
                 PhotographerClientRunnable.clientRunnable.getGroupIDs(PhotographerInfo.photographerID);
                 updateProgress(3, 4);
+                System.out.println("get personal id's");
                 PhotographerClientRunnable.clientRunnable.getPersonalIDs(PhotographerInfo.photographerID);
                 updateProgress(4, 5);
                 initviews();
                 updateProgress(5, 5);
+                pbProgress.progressProperty().unbind();
                 return null;
             }
         };
         pbProgress.progressProperty().bind(task.progressProperty());
         new Thread(task).start();
+        
     }
 
     public void saveAllLocal() {

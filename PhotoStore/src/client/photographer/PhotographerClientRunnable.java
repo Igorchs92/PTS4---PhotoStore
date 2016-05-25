@@ -81,12 +81,9 @@ public class PhotographerClientRunnable implements IClientRunnable {
             boolean saveRequired = false;
             socket.writeObject(PhotographerCall.upload);
             //filter picturegroup list on images that havent been uploaded yet and send this to the server.
-            List<PictureGroup> fPgl = PhotographerClient.client.getPictureGroupList();
-            List<Picture> delete_pg = new ArrayList<>();
-            /*
+            List<PictureGroup> fPgl = PhotographerClient.client.getPictureGroupList();            
             for (PictureGroup pg : fPgl) {
-                delete_pg.addAll(pg.getPictures());
-                for (Picture p : delete_pg) {
+                for (Picture p : pg.getPictures()) {
                     if (p.isUploaded() || !p.getFile().exists()) {
                         //already uploaded, we can remove it
                         pg.removePicture(p);
@@ -111,7 +108,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
                     fPgl.remove(pg);
                 }
             }
-                    */
+                   
             //send the filtered list to the server
             socket.writeObject(fPgl);
             for (PictureGroup pg : PhotographerClient.client.getPictureGroupList()) {
