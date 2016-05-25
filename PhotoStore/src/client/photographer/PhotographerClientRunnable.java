@@ -64,6 +64,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
     public boolean login(String email, String password) {
         try {
             PhotographerInfo.photographerID = email;
+            PhotographerInfo.photographerPass = password;
             LocalDatabase ldb = new LocalDatabase();
             ldb.savePhotographer(email, password);
             socket.writeObject(PhotographerCall.login);

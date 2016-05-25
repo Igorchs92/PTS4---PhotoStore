@@ -124,7 +124,8 @@ public final class LocalDatabase {
                 sql = "UPDATE pictureGroup SET obj = ?, photographer = ? WHERE id = ?;";
                 ps = getConn().prepareStatement(sql);
                 ps.setObject(1, data);
-                ps.setInt(2, pg.getId());
+                ps.setString(2, PhotographerInfo.photographerID);
+                ps.setInt(3, pg.getId());
                 ps.executeUpdate();
             } else {
                 //picturegroup doesnt exist, insert is required
@@ -271,6 +272,7 @@ public final class LocalDatabase {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 PhotographerInfo.photographerID = rs.getString("photographerid");
+                PhotographerInfo.photographerPass = rs.getString("password");
                 System.out.println(PhotographerInfo.photographerID);
             }
         } catch (SQLException ex) {

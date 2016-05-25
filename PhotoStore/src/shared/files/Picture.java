@@ -43,6 +43,10 @@ public class Picture implements Serializable {
     public int getId() {
         return id;
     }
+    
+    public String getLocation(){
+        return location;
+    }
 
     public void setId(int id) {
         this.id = id;
