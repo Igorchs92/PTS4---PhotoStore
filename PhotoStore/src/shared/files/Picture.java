@@ -34,7 +34,11 @@ public class Picture implements Serializable {
     public Picture(String location, String name, double price) {
         this.location = location;
         this.extension = getFileExtension(new File(location));
-        this.name = name;
+        if (!name.isEmpty()){
+            this.name = name;
+        } else {
+            this.name = "Untitled";
+        }
         this.price = price;
         this.created = new Date();
         this.uploaded = false;
@@ -79,6 +83,10 @@ public class Picture implements Serializable {
     public File getFile() {
         return new File(location);
     }
+    
+    public String getRelativePath() {
+        return id + "." + extension;
+    }
 
     private static String getFileExtension(File file) {
         String fileName = file.getName();
@@ -91,6 +99,6 @@ public class Picture implements Serializable {
     
     @Override
     public String toString() {
-        return id + "." + extension;
+        return name + " - €" + price + "" ;
     }
 }

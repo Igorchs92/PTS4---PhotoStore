@@ -102,10 +102,10 @@ public class SocketConnection {
         }
     }
 
-    public void writeFile(File file) {
+    public void writeFile(File in) {
         try {
-            byte[] byteArray = new byte[(int) file.length()];
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+            byte[] byteArray = new byte[(int) in.length()];
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(in));
             bis.read(byteArray, 0, byteArray.length);
             writeObject(byteArray);
             } catch (IOException ex) {
@@ -113,10 +113,10 @@ public class SocketConnection {
         }
     }
 
-    public void readFile(File file) {
+    public void readFile(File out) {
         try {
             byte[] byteArray = (byte[]) readObject();
-            FileOutputStream fos = new FileOutputStream(file);
+            FileOutputStream fos = new FileOutputStream(out);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             bos.write(byteArray, 0, byteArray.length);
             bos.close();

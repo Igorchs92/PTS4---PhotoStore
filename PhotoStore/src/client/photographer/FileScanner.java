@@ -96,7 +96,7 @@ public class FileScanner implements Runnable {
 
         if (matcher.matches(p)) {
             if  (!filePaths.contains(p)){
-                filePaths.add(p);
+                filePaths.add(p.getFileName());
             }
             System.out.println("path added to list: " + p);
         }

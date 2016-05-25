@@ -209,47 +209,35 @@ public class Databasemanager {
 
     //Make new unique numbers with the given photographer and return the list.
     public List<Integer> getUniqueNumbers(String photographer) throws SQLException {
+        //Total list of all Uniquenumbers for the photographer
+        ArrayList<Integer> ppl = new ArrayList<>();
         int count = 0;
-        String sql = "SELECT * FROM personalPictures WHERE photographer_id = ?";
+        String sql = "SELECT * FROM personalPictures WHERE photographer_id = ? AND group_id is null";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, photographer);
         //select the not used unique numbers where th photographer is equal to the given photographer.
         ResultSet srs = ps.executeQuery();
-
         //count how many unique numbers are not used.
         while (srs.next()) {
             count += 1;
-            System.out.println("test 2: " + count);
+            ppl.add(srs.getInt("id"));
         }
-
+        System.out.println("personalPictures not in use: " + count);
         //make new unique numbers
         sql = "INSERT INTO personalPictures(photographer_id) VALUES (?);";
-        ps = conn.prepareStatement(sql);
-
+        ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         //Make new unique numbers till we have the 10.000 numbers
         while (count < 50) {
             System.out.println(count);
             ps.setString(1, photographer);
             ps.executeUpdate();
             count++;
-            System.out.println();
         }
-        ps.close();
-
-        //Total list of all Uniquenumbers for the photographer
-        ArrayList<Integer> PersonalPicture = new ArrayList<>();
-
-        // Get all the unused unique numbers with the photographer again.
-        sql = "SELECT * FROM personalPictures WHERE photographer_id = ? AND group_id is null";
-        ps = conn.prepareStatement(sql);
-        ps.setString(1, photographer);
-        srs = ps.executeQuery();
-        while (srs.next()) {
-            
-            int uniqueNumber = srs.getInt("id");
-            PersonalPicture.add(uniqueNumber);
+        ResultSet rs = ps.getGeneratedKeys();
+        while (rs.next()) {
+            ppl.add(rs.getInt(1));
         }
-        return PersonalPicture;
+        return ppl;
     }
 
     //edit the groups
@@ -317,7 +305,7 @@ public class Databasemanager {
         ArrayList<Integer> groupNumberList = new ArrayList<>();
 
         // Get all the unused unique numbers with the photographer again.
-        String sql = "SELECT * FROM groupPictures WHERE photographer_id = ? ";
+        String sql = "SELECT * FROM groupPictures WHERE photographer_id = ? AND name = null AND description = null";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, photographer);
         ResultSet srs = ps.executeQuery();
@@ -357,13 +345,13 @@ public class Databasemanager {
         st.close();
     }
 
-    //Change prize of the given picture
-    public void changePicturePrice(int photo_id, double price) throws SQLException {
+    //Change price of the given picture
+    public void changePicturePrice(int id, double price) throws SQLException {
         Statement st = conn.createStatement();
         String query = "UPDATE originalPicture set price = ? where id = ?";
         PreparedStatement ps = conn.prepareStatement(query);
         ps.setDouble(1, price);
-        ps.setInt(2, photo_id);
+        ps.setInt(2, id);
         ps.executeUpdate();
         st.close();
     }

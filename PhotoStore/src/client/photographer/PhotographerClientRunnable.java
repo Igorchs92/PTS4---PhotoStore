@@ -80,40 +80,12 @@ public class PhotographerClientRunnable implements IClientRunnable {
         try {
             boolean saveRequired = false;
             socket.writeObject(PhotographerCall.upload);
-            //filter picturegroup list on images that havent been uploaded yet and send this to the server.
-            List<PictureGroup> fPgl = PhotographerClient.client.getPictureGroupList();            
-            for (PictureGroup pg : fPgl) {
-                for (Picture p : pg.getPictures()) {
-                    if (p.isUploaded() || !p.getFile().exists()) {
-                        //already uploaded, we can remove it
-                        pg.removePicture(p);
-                    }
-                }
-                
-                //select each personalpicture
-                for (PersonalPicture pp : pg.getPersonalPictures()) {
-                    for (Picture p : pg.getPictures()) {
-                        if (p.isUploaded() || !p.getFile().exists()) {
-                            //already uploaded, we can remove it
-                            pg.removePicture(p);
-                        }
-                    }
-                    if (pp.getPictures().isEmpty()) {
-                        //personalpicture doesnt contain any pictures, we can remove it
-                        pg.removePersonalPicture(pp);
-                    }
-                }
-                if (pg.getPersonalPictures().isEmpty() && pg.getPictures().isEmpty()) {
-                    //picturegroup doesnt contain any pictures, we can remove it
-                    fPgl.remove(pg);
-                }
-            }
-                   
             //send the filtered list to the server
-            socket.writeObject(fPgl);
+            System.out.println("Sending filtered picture group");
+            socket.writeObject(PhotographerClient.client.getPictureGroupList());
+            System.out.println("Sent picture group");
             for (PictureGroup pg : PhotographerClient.client.getPictureGroupList()) {
                 for (Picture p : pg.getPictures()) {
-                    System.out.println(p.getFile() + " - Exists: " + p.getFile().exists());
                     if (!p.isUploaded() && p.getFile().exists()) {
                         //picture isnt uploaded, send it to the server
                         socket.writeFile(p.getFile());

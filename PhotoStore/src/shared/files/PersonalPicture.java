@@ -15,19 +15,14 @@ import java.util.List;
  */
 public class PersonalPicture implements Serializable {
 
-    @Override
-    public String toString() {
-        return Integer.toString(id);
-    }
-
     private int id;
     private List<Picture> pictures;
-    
-    
-    public PersonalPicture(int idnumber){
+
+    public PersonalPicture(int idnumber) {
         this.id = idnumber;
         pictures = new ArrayList();
     }
+
     public int getId() {
         return id;
     }
@@ -43,12 +38,18 @@ public class PersonalPicture implements Serializable {
     public void setPictures(List<Picture> pictures) {
         this.pictures = pictures;
     }
-    
-    public void removePicture(Picture picture){
+
+    public void removePicture(Picture picture) {
         this.pictures.remove(picture);
     }
-    
-    public void addPicture(Picture picture){
+
+    public void addPicture(Picture picture) {
         this.pictures.add(picture);
     }
+
+    @Override
+    public String toString() {
+        return id + ", Pictures: " + pictures.size();
+    }
+    
 }

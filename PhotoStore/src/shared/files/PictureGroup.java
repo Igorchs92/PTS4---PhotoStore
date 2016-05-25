@@ -15,11 +15,6 @@ import java.util.List;
  */
 public class PictureGroup implements Serializable {
 
-    @Override
-    public String toString() {
-        return "ID: " + id + ", Name: " + name +", UID's: " +personalPictures.size();
-    }
-
     private int id;
     private String name;
     private String description;
@@ -45,7 +40,11 @@ public class PictureGroup implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (name.isEmpty()) {
+            this.name = "Untitled";
+        } else {
+            this.name = name;
+        }
     }
 
     public String getDescription() {
@@ -53,7 +52,11 @@ public class PictureGroup implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        if (description.isEmpty()) {
+            this.description = "No description available";
+        } else {
+            this.description = description;
+        }
     }
 
     public List<Picture> getPictures() {
@@ -77,7 +80,7 @@ public class PictureGroup implements Serializable {
     }
 
     public void setPersonalPictures(List<PersonalPicture> persons) {
-        
+
         this.personalPictures = persons;
     }
 
@@ -88,4 +91,10 @@ public class PictureGroup implements Serializable {
     public void removePersonalPicture(PersonalPicture personalPicture) {
         this.personalPictures.remove(personalPicture);
     }
+
+    @Override
+    public String toString() {
+        return id + ", " + name + ", Pictures: " + pictures.size() + ", UID's: " + personalPictures.size();
+    }
+
 }

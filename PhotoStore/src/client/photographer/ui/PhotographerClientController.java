@@ -23,6 +23,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -30,6 +31,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -141,8 +143,8 @@ public class PhotographerClientController implements Initializable {
         lvImageSelect.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-                System.out.println(lvImageSelect.getSelectionModel().getSelectedItem().toString());
-                File file = new File(lvImageSelect.getSelectionModel().getSelectedItem().toString());
+                System.out.println(PhotographerClient.client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
+                File file = new File(PhotographerClient.client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
                 Image img = new Image(file.toURI().toString());
                 ivImagePreview.setImage(img);
             }
@@ -177,12 +179,12 @@ public class PhotographerClientController implements Initializable {
         lvImageSelect.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-                tfModifyPictureInfoFileLocation.setText(lvImageSelect.getSelectionModel().getSelectedItem().toString());
+                tfModifyPictureInfoFileLocation.setText(PhotographerClient.client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
 
-                Path file = Paths.get(lvImageSelect.getSelectionModel().getSelectedItem().toString());
+                Path file = Paths.get(PhotographerClient.client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
                 try {
                     BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
-                    tfModifyPictureInfoCreatedOn.setText(attr.creationTime().toString());
+                    tfModifyPictureInfoCreatedOn.setText(new java.util.Date(attr.creationTime().toMillis()).toGMTString());
                 } catch (IOException ex) {
                     Logger.getLogger(PhotographerClientController.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -202,7 +204,7 @@ public class PhotographerClientController implements Initializable {
                     Path filepath = Paths.get(lvSavedPictures.getSelectionModel().getSelectedItem().getLocation());
                     try {
                         BasicFileAttributes attr = Files.readAttributes(filepath, BasicFileAttributes.class);
-                        tfModifyPictureInfoCreatedOn.setText(attr.creationTime().toString());
+                        tfModifyPictureInfoCreatedOn.setText(new java.util.Date(attr.creationTime().toMillis()).toGMTString());
                     } catch (IOException ex) {
                         Logger.getLogger(PhotographerClientController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -222,18 +224,27 @@ public class PhotographerClientController implements Initializable {
     }
 
     public void initviews() {
-        tvGroupsAndUIDs.getRoot().getChildren().clear();
-        observablePictureGroups = FXCollections.observableArrayList(this.pictureGroups);
-        for (PictureGroup pg : pictureGroups) {
-            TreeItem ti = new TreeItem(pg);
-            for (PersonalPicture pp : pg.getPersonalPictures()) {
-                TreeItem cti = new TreeItem(pp);
-                ti.getChildren().add(cti);
+        final Task<Void> task = new Task<Void>() {
+            @Override
+            public Void call() throws Exception {
+                tvGroupsAndUIDs.getRoot().getChildren().clear();
+                observablePictureGroups = FXCollections.observableArrayList(pictureGroups);
+                for (PictureGroup pg : pictureGroups) {
+                    TreeItem ti = new TreeItem(pg);
+                    for (PersonalPicture pp : pg.getPersonalPictures()) {
+                        TreeItem cti = new TreeItem(pp);
+                        ti.getChildren().add(cti);
+                    }
+                    tvGroupsAndUIDs.getRoot().getChildren().add(ti);
+                }
+                Platform.runLater(() -> {
+                    lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
+                    lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
+                });
+                return null;
             }
-            tvGroupsAndUIDs.getRoot().getChildren().add(ti);
-        }
-        lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
-        lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
+        };
+        new Thread(task).start();
     }
 
     public void uploadEverythingToOnline() {
@@ -262,11 +273,18 @@ public class PhotographerClientController implements Initializable {
 
     @FXML
     public void removeUID() {
-        if (selectedPG != null && selectedPP != null) {
-            System.out.println(selectedPP.getId());
-            personalIDS.add(selectedPP.getId());
-            selectedPG.removePersonalPicture(selectedPP);
+        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null) {
+            if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+                System.out.println(selectedPP.getId());
+                personalIDS.add(selectedPP.getId());
+                selectedPG.removePersonalPicture(selectedPP);
+            } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
+                System.out.println(selectedPG.getId());
+                groupIDS.add(selectedPG.getId());
+                pictureGroups.remove(selectedPP);
+            }
         }
+        saveAllLocal();
         initviews();
     }
 
@@ -319,29 +337,23 @@ public class PhotographerClientController implements Initializable {
     @FXML
     public void savePicture() {
 
-        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
-            if (InterfaceCall.isDouble(tfModifyPictureInfoPrice.getText())) {
-                String location = tfModifyPictureInfoFileLocation.getText();
-                String name = tfModifyPictureInfoName.getText();
-                double price = Double.valueOf(tfModifyPictureInfoPrice.getText());
-                Picture p = new Picture(location, name, price);
-                selectedPG.addPicture(p);
-                saveAllLocal();
-            }
-            ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
-            lvSavedPictures.setItems(ob);
-
-        } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
-            if (selectedPP != null) {
-                String location = tfModifyPictureInfoFileLocation.getText();
-                String name = tfModifyPictureInfoName.getText();
-                double price = Double.valueOf(tfModifyPictureInfoPrice.getText());
-                Picture p = new Picture(location, name, price);
+        if (InterfaceCall.isDouble(tfModifyPictureInfoPrice.getText())) {
+            String location = tfModifyPictureInfoFileLocation.getText();
+            String name = tfModifyPictureInfoName.getText();
+            double price = Double.valueOf(tfModifyPictureInfoPrice.getText());
+            Picture p = new Picture(location, name, price);
+            if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
                 selectedPP.addPicture(p);
-                saveAllLocal();
+                ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
+                lvSavedPictures.setItems(ob);
+            } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
+                selectedPG.addPicture(p);
+                ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
+                lvSavedPictures.setItems(ob);
             }
-            ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
-            lvSavedPictures.setItems(ob);
+            saveAllLocal();
+        } else {
+            InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "You have entered an invalid price.");
         }
     }
 
@@ -394,15 +406,16 @@ public class PhotographerClientController implements Initializable {
                 System.out.println("get personal id's");
                 PhotographerClientRunnable.clientRunnable.getPersonalIDs(PhotographerInfo.photographerID);
                 updateProgress(4, 5);
+                System.out.println("initialise views");
+                loadLocalDatabaseInformation();
                 initviews();
                 updateProgress(5, 5);
-                pbProgress.progressProperty().unbind();
                 return null;
             }
         };
         pbProgress.progressProperty().bind(task.progressProperty());
         new Thread(task).start();
-        
+
     }
 
     public void saveAllLocal() {

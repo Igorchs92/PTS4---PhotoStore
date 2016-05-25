@@ -81,6 +81,7 @@ public final class LocalDatabase {
             String sql = "SELECT * from photographer WHERE id = 1;";
             PreparedStatement ps = getConn().prepareStatement(sql);
             if (ps.executeQuery().next()) {
+                ps.close();
                 //picturegroup exists, update is required
                 sql = "UPDATE photographer SET photographerid = ?, password = ? WHERE id = 1";
                 ps = getConn().prepareStatement(sql);
@@ -89,6 +90,7 @@ public final class LocalDatabase {
                 System.out.println("Updating photographer");
                 ps.executeUpdate();
             } else {
+                ps.close();
                 sql = "INSERT INTO photographer (id, photographerid, password) VALUES(1, ?, ?);";
                 ps = getConn().prepareStatement(sql);
                 ps.setString(1, photographerid);
