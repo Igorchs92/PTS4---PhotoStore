@@ -57,6 +57,15 @@ public class InterfaceCall {
         return true;
     }
     
+        public static boolean isDouble(String s) {
+        for (char c : s.toCharArray()) {
+            if (!Character.isDigit(c) || c == '.') {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public static boolean isPhone(String s) {
         for (char c : s.toCharArray()) {
             if (!Character.isDigit(c) || c == '-' || c == '+') {

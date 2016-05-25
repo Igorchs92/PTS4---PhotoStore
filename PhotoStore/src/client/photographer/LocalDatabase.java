@@ -263,4 +263,28 @@ public final class LocalDatabase {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public void deleteGroupID(int id) {
+        String sql = "DELETE FROM groupid WHERE id = ?";
+        PreparedStatement ps;
+        try {
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void deletePersonalID(int id) {
+        String sql = "DELETE FROM personalid WHERE id = ?";
+        PreparedStatement ps;
+        try {
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

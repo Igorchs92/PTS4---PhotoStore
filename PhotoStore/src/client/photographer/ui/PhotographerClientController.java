@@ -8,12 +8,19 @@ package client.photographer.ui;
 import client.photographer.PhotographerClient;
 import client.photographer.PhotographerClientRunnable;
 import client.photographer.PhotographerInfo;
+import client.ui.InterfaceCall;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -161,6 +168,21 @@ public class PhotographerClientController implements Initializable {
             }
         });
 
+        lvImageSelect.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                tfModifyPictureInfoFileLocation.setText(lvImageSelect.getSelectionModel().getSelectedItem().toString());
+
+                Path file = Paths.get(lvImageSelect.getSelectionModel().getSelectedItem().toString());
+                try {
+                    BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
+                    tfModifyPictureInfoCreatedOn.setText(attr.creationTime().toString());
+                } catch (IOException ex) {
+                    Logger.getLogger(PhotographerClientController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
         lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
         initviews();
@@ -223,6 +245,7 @@ public class PhotographerClientController implements Initializable {
                 int i = 0;
                 while (i < 1) {
                     pp = new PersonalPicture(personalIDS.get(i));
+                    PhotographerClient.client.getLocalDatabase().deletePersonalID(personalIDS.get(i));
                     personalIDS.remove(i);
                     i++;
                 }
@@ -232,7 +255,7 @@ public class PhotographerClientController implements Initializable {
             }
         }
         initviews();
-        System.out.println("Working");
+        saveAllLocal();
     }
 
     @FXML
@@ -244,6 +267,7 @@ public class PhotographerClientController implements Initializable {
                 pg = new PictureGroup(groupIDS.get(i));
                 pg.setName(tfGroupInfoName.getText());
                 pg.setDescription(taGroupInfoDescription.getText());
+                PhotographerClient.client.getLocalDatabase().deleteGroupID(groupIDS.get(i));
                 groupIDS.remove(i);
                 i++;
             }
@@ -255,16 +279,21 @@ public class PhotographerClientController implements Initializable {
             }
         }
         initviews();
-
+        saveAllLocal();
     }
 
     @FXML
     public void savePicture() {
-        String location = lvImageSelect.getSelectionModel().getSelectedItems().toString();
-        String name = tfModifyPictureInfoName.getText();
-        double price = Double.valueOf(tfModifyPictureInfoPrice.getText());
-        Picture p = new Picture(location, name, price);
-        selectedPP.addPicture(p);
+
+        if (InterfaceCall.isDouble(tfModifyPictureInfoPrice.getText())) {
+            String location = tfModifyPictureInfoFileLocation.getText();
+            String name = tfModifyPictureInfoName.getText();
+            double price = Double.valueOf(tfModifyPictureInfoPrice.getText());
+            Picture p = new Picture(location, name, price);
+            selectedPP.addPicture(p);
+            saveAllLocal();
+        }
+
     }
 
     @FXML
@@ -279,9 +308,15 @@ public class PhotographerClientController implements Initializable {
         PhotographerClient.client.setSceneLogin();
     }
 
+    
+    public void autoLogin(){
+        
+    }
+    
     @FXML
     public void sync() {
-      //  PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
+        
+        //  PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
         PhotographerClientRunnable.clientRunnable.getGroupIDs(PhotographerInfo.photographerID);
         PhotographerClientRunnable.clientRunnable.getPersonalIDs(PhotographerInfo.photographerID);
     }
