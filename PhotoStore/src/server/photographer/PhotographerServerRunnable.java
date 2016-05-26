@@ -32,7 +32,6 @@ public class PhotographerServerRunnable implements Observer, Runnable {
     public PhotographerServerRunnable(SocketConnection socket) {
         this.socket = socket;
         dbm = new Databasemanager();
-        fs = new Filesystem(socket, dbm);
     }
 
     @Override
@@ -77,6 +76,9 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                         result = dbm.login(ClientType.photographer, args[0], args[1]);
                         System.out.println(args[0] + args[1]);
                         socket.writeObject(result);
+                        if (result){
+                            fs = new Filesystem(socket, dbm);
+                        }
                         break;
                     }
                     case changePicturePrice: {

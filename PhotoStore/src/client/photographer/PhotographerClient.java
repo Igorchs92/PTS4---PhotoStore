@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import client.ClientConnector;
 import static client.ClientConnector.socket;
 import client.IClient;
+import client.ui.ClientLoginController;
 import client.ui.InterfaceCall;
 import java.io.File;
 import java.util.List;
@@ -22,7 +23,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shared.ClientType;
 import shared.files.PictureGroup;
@@ -87,9 +90,27 @@ public class PhotographerClient extends Application implements IClient {
     public void setSceneLogin() {
         try {
             if (connectToServer()) {
+                /*
                 sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
                 primaryStage.setScene(sceneLogin);
                 primaryStage.setTitle(title + "Login");
+                 */
+                // Load the fxml file and create a new stage for the popup dialog.
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(PhotographerClient.class.getResource("../ui/ClientLogin.fxml"));
+                AnchorPane page = (AnchorPane) loader.load();
+                // Create the dialog Stage.
+                Stage stage = new Stage();
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.initOwner(primaryStage);
+                Scene scene = new Scene(page);
+                stage.setScene(scene);
+                stage.setTitle(title + " - Login");
+                ClientLoginController controller = loader.getController();
+                controller.setDialogStage(stage);
+                // Show the dialog and wait until the user closes it
+                controller.disableRegister();
+                stage.showAndWait();
             } else {
                 InterfaceCall.connectionFailed();
             }
@@ -105,8 +126,7 @@ public class PhotographerClient extends Application implements IClient {
 
     @Override
     public void loggedIn() {
-        InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "logged in");
-        PhotographerClient.client.setSceneMain();
+        
     }
 
     @Override
@@ -180,8 +200,8 @@ public class PhotographerClient extends Application implements IClient {
             localfilemanager = new LocalFileManager(selectedDirectory.toString());
         }
     }
-    
-    public void savePhotographer(String email, String password){
+
+    public void savePhotographer(String email, String password) {
         ldb.savePhotographer(email, password);
     }
 }

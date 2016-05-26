@@ -85,6 +85,9 @@ public class ClientLoginController implements Initializable {
             ClientConnector.account_Id = txtUsername.getText();
             ClientConnector.loggedIn = true;
             client.loggedIn();
+            if (stage != null){
+                stage.close();
+            }
         } else {
             InterfaceCall.showAlert(AlertType.INFORMATION, "E-mail does not match the password.");
         }
@@ -97,6 +100,10 @@ public class ClientLoginController implements Initializable {
 
     public void setDialogStage(Stage stage) {
         this.stage = stage;
+    }
+    
+    public void disableRegister(){
+        btnRegister.setDisable(true);
     }
 
 }
