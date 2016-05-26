@@ -37,9 +37,9 @@ public class Filesystem {
     String highres;
     String lowres;
 
-    public Filesystem(SocketConnection socket) {
+    public Filesystem(SocketConnection socket, Databasemanager dbsm) {
         this.socket = socket;
-        this.dbsm = new Databasemanager();
+        this.dbsm = dbsm;
         this.root = new File("resources\\FileSystem\\");
         this.highres = "high\\";
         this.lowres = "low\\";
@@ -82,32 +82,46 @@ public class Filesystem {
             //add group pictures
             for (Picture p : pg.getPictures()) {
                 if (!p.isUploaded()) {
-                    p.setId(dbsm.addOriginalPicture(p));
-                    if (p.getId() != 0) {
-                        dbsm.addGroupPicturesPicture(pg, p);
-                        File root_group_highres = new File(root_group + "\\" + this.highres + p.getRelativePath());
-                        File root_group_lowres = new File(root_group + "\\" + this.lowres + p.getRelativePath());
-                        root_group_highres.getParentFile().mkdirs();
-                        root_group_lowres.getParentFile().mkdirs();
-                        socket.readFile(root_group_highres);
-                        compressPicture(root_group_highres, root_group_lowres);
+                    try {
+                        p.setId(dbsm.addOriginalPicture(p));
+                        socket.writeObject(p.getId());
+                        if (p.getId() != 0) {
+                            dbsm.addGroupPicturesPicture(pg, p);
+                            File root_group_highres = new File(root_group + "\\" + this.highres + p.getRelativePath());
+                            File root_group_lowres = new File(root_group + "\\" + this.lowres + p.getRelativePath());
+                            root_group_highres.getParentFile().mkdirs();
+                            root_group_lowres.getParentFile().mkdirs();
+                            socket.readFile(root_group_highres);
+                            compressPicture(root_group_highres, root_group_lowres);
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                } else if (!p.isUpdated()) {
+                    dbsm.modifyPicture(p);
                 }
             }
             for (PersonalPicture pp : pg.getPersonalPictures()) {
                 dbsm.modifyPersonalPicture(pg, pp);
                 for (Picture p : pp.getPictures()) {
                     if (!p.isUploaded()) {
-                        p.setId(dbsm.addOriginalPicture(p));
-                        if (p.getId() != 0) {
-                            dbsm.addPersonalPicturesPicture(pp, p);
-                            File root_group_highres = new File(root_group + "\\" + Integer.toString(pg.getId()) + "\\" + this.highres + p.getRelativePath());
-                            File root_group_lowres = new File(root_group + "\\" + Integer.toString(pg.getId()) + "\\" + this.lowres + p.getRelativePath());
-                            root_group_highres.getParentFile().mkdirs();
-                            root_group_lowres.getParentFile().mkdirs();
-                            socket.readFile(root_group_highres);
-                            compressPicture(root_group_highres, root_group_lowres);
+                        try {
+                            p.setId(dbsm.addOriginalPicture(p));
+                            socket.writeObject(p.getId());
+                            if (p.getId() != 0) {
+                                dbsm.addPersonalPicturesPicture(pp, p);
+                                File root_group_highres = new File(root_group + "\\" + Integer.toString(pg.getId()) + "\\" + this.highres + p.getRelativePath());
+                                File root_group_lowres = new File(root_group + "\\" + Integer.toString(pg.getId()) + "\\" + this.lowres + p.getRelativePath());
+                                root_group_highres.getParentFile().mkdirs();
+                                root_group_lowres.getParentFile().mkdirs();
+                                socket.readFile(root_group_highres);
+                                compressPicture(root_group_highres, root_group_lowres);
+                            }
+                        } catch (IOException ex) {
+                            Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    } else if (!p.isUpdated()) {
+                        dbsm.modifyPicture(p);
                     }
 
                 }

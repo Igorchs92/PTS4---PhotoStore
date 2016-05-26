@@ -53,7 +53,7 @@ public class PictureGroup implements Serializable {
 
     public void setDescription(String description) {
         if (description.isEmpty()) {
-            this.description = "No description available";
+            this.description = "No description is available.";
         } else {
             this.description = description;
         }
@@ -94,7 +94,7 @@ public class PictureGroup implements Serializable {
 
     @Override
     public String toString() {
-        return id + ", " + name + ", Pictures: " + pictures.size() + ", UID's: " + personalPictures.size();
+        return id + ": " + name + "; Pictures: " + pictures.size() + ", UID's: " + personalPictures.size();
     }
 
 }

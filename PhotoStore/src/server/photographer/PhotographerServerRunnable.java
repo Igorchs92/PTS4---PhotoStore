@@ -32,7 +32,7 @@ public class PhotographerServerRunnable implements Observer, Runnable {
     public PhotographerServerRunnable(SocketConnection socket) {
         this.socket = socket;
         dbm = new Databasemanager();
-        fs = new Filesystem(socket);
+        fs = new Filesystem(socket, dbm);
     }
 
     @Override

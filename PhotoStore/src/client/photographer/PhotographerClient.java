@@ -35,7 +35,6 @@ public class PhotographerClient extends Application implements IClient {
 
     public static PhotographerClient client;
     private static PhotographerClientRunnable clientRunnable;
-    private ClientConnector clientConnector;
     private static final String title = "Photostore Photographer";
     private Stage primaryStage;
     private Scene sceneLogin;
@@ -71,13 +70,12 @@ public class PhotographerClient extends Application implements IClient {
 
     public boolean connectToServer() {
         try {
-            clientConnector = new ClientConnector();
+            ClientConnector clientConnector = new ClientConnector();
             if (clientConnector.connectToServer(ClientType.photographer)) {
                 clientRunnable = new PhotographerClientRunnable(clientConnector.getSocket());
                 ClientConnector.clientRunnable = clientRunnable;
                 return true;
             } else {
-                InterfaceCall.connectionFailed();
                 return false;
             }
         } catch (IOException | ClassNotFoundException ex) {
@@ -92,6 +90,8 @@ public class PhotographerClient extends Application implements IClient {
                 sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
                 primaryStage.setScene(sceneLogin);
                 primaryStage.setTitle(title + "Login");
+            } else {
+                InterfaceCall.connectionFailed();
             }
         } catch (IOException ex) {
             Logger.getLogger(PhotographerClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -122,17 +122,19 @@ public class PhotographerClient extends Application implements IClient {
     public LocalDatabase getLocalDatabase() {
         return ldb;
     }
+
     public List<PictureGroup> getPictureGroupList() {
         return pgl;
     }
-    public List<Integer> getAvailablGroupIDList(){
+
+    public List<Integer> getAvailablGroupIDList() {
         return AvailableGroupID;
     }
+
     public List<Integer> getAvailablePersonalIDList() {
         return AvailablePersonalID;
     }
-    
-    
+
     public void CallFileUploader() {
         Task<List<PictureGroup>> tPgl = new FileUploader(socket, PhotographerClient.client.getPictureGroupList());
         ProgressBar pb = new ProgressBar(); //just for the idea
@@ -174,7 +176,12 @@ public class PhotographerClient extends Application implements IClient {
     public void chooseDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         selectedDirectory = directoryChooser.showDialog(primaryStage);
-        if(selectedDirectory !=null)
-        localfilemanager = new LocalFileManager(selectedDirectory.toString());
+        if (selectedDirectory != null) {
+            localfilemanager = new LocalFileManager(selectedDirectory.toString());
+        }
+    }
+    
+    public void savePhotographer(String email, String password){
+        ldb.savePhotographer(email, password);
     }
 }

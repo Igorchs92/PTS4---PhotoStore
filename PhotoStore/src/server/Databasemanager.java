@@ -201,8 +201,21 @@ public class Databasemanager {
             ps.setInt(3, group.getId());
             return ps.executeUpdate() != 0;
         } catch (SQLException ex) {
-            Logger.getLogger(Databasemanager.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean modifyPicture(Picture picture) {
+        try {
+            String sql = "UPDATE originalPicture SET name = ?, price = ? WHERE id = ?;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, picture.getName());
+            ps.setDouble(2, picture.getPrice());
+            ps.setInt(3, picture.getId());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }
@@ -256,8 +269,7 @@ public class Databasemanager {
             ps.execute();
             ps.close();
         } catch (SQLException ex) {
-            Logger.getLogger(Databasemanager.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -280,20 +292,16 @@ public class Databasemanager {
         st = conn.createStatement();
 
         //select the not used unique numbers where the photographer is equal to the given photographer.
-        String query = ("INSERT INTO groupPictures (photographer_id, name, description)" + " VALUES (?,?,?)");
+        String query = ("INSERT INTO groupPictures (photographer_id, name, description)" + " VALUES (?)");
         ps = conn.prepareStatement(query);
         while (count < 500) {
             try {
-
                 ps.setString(1, photographer_id);
-                ps.setString(2, "");
-                ps.setString(3, "");
                 ps.execute();
 
                 count++;
             } catch (SQLException ex) {
-                Logger.getLogger(Databasemanager.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         ps.close();
@@ -305,7 +313,7 @@ public class Databasemanager {
         ArrayList<Integer> groupNumberList = new ArrayList<>();
 
         // Get all the unused unique numbers with the photographer again.
-        String sql = "SELECT * FROM groupPictures WHERE photographer_id = ? AND name = null AND description = null";
+        String sql = "SELECT * FROM groupPictures WHERE photographer_id = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, photographer);
         ResultSet srs = ps.executeQuery();

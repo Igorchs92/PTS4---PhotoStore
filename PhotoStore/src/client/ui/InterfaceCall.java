@@ -6,7 +6,24 @@
 package client.ui;
 
 import client.strings.Strings;
+import java.awt.Insets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Optional;
+import java.util.TimeZone;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.util.Pair;
 
 /**
  *
@@ -27,6 +44,28 @@ public class InterfaceCall {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    
+    public static void showAlert(String content){
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle(Strings.getString("notification"));
+        alert.setHeaderText("You cannot perform this action.");
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public static String showInputDialog(String title, String header, String content, String input) {
+        TextInputDialog dialog = new TextInputDialog(input);
+        dialog.setGraphic(new ImageView());
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            return result.get();
+        } else {
+            return null;
+        }
     }
 
     public static void connectionFailed() {
@@ -60,6 +99,16 @@ public class InterfaceCall {
     public static boolean isDouble(String s) {
         try {
             Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            //not a double
+            return false;
+        }
+    }
+
+    public static boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
             return true;
         } catch (NumberFormatException e) {
             //not a double

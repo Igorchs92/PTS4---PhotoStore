@@ -11,18 +11,11 @@ import client.photographer.PhotographerClientRunnable;
 import client.photographer.PhotographerInfo;
 import client.ui.InterfaceCall;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.FutureTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -31,8 +24,12 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.FocusModel;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
@@ -44,6 +41,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.util.Pair;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
@@ -132,6 +130,8 @@ public class PhotographerClientController implements Initializable {
     private TreeView<?> tvGroupsAndUIDs;
     @FXML
     private ProgressBar pbProgress;
+    @FXML
+    private Button btnSavePicture;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -171,43 +171,44 @@ public class PhotographerClientController implements Initializable {
                         ObservableList ob = FXCollections.observableArrayList(pp.getPictures());
                         lvSavedPictures.setItems(ob);
                         selectedPP = pp;
+                        PictureGroup pg = (PictureGroup) tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getParent().getValue();
+                        if (selectedPG != pg) {
+                            tfGroupInfoName.setText(pg.getName());
+                            taGroupInfoDescription.setText(pg.getDescription());
+                            selectedPG = pg;
+                        }
                     }
                 }
             }
         });
-
+        /*
         lvImageSelect.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                
+                tfModifyPictureInfoCreatedOn.setText(null);
+                tfModifyPictureInfoName.setText(null);
+                tfModifyPictureInfoPrice.setText(null);
                 tfModifyPictureInfoFileLocation.setText(PhotographerClient.client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
-
                 Path file = Paths.get(PhotographerClient.client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
-                try {
-                    BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
-                    tfModifyPictureInfoCreatedOn.setText(new java.util.Date(attr.creationTime().toMillis()).toGMTString());
-                } catch (IOException ex) {
-                    Logger.getLogger(PhotographerClientController.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
             }
         });
-
+         */
         lvSavedPictures.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 if (lvSavedPictures.getSelectionModel().getSelectedItem() != null) {
-                    tfModifyPictureInfoFileLocation.setText(lvSavedPictures.getSelectionModel().getSelectedItem().getLocation());
 
+                    Picture p = lvSavedPictures.getSelectionModel().getSelectedItem();
+                    tfModifyPictureInfoCreatedOn.setText(p.getCreatedString());
+                    tfModifyPictureInfoFileLocation.setText(p.getLocation());
+                    tfModifyPictureInfoName.setText(p.getName());
+                    tfModifyPictureInfoPrice.setText(Double.toString(p.getPrice()));
                     File file = new File(lvSavedPictures.getSelectionModel().getSelectedItem().getLocation());
                     Image img = new Image(file.toURI().toString());
                     ivImagePreview.setImage(img);
 
-                    Path filepath = Paths.get(lvSavedPictures.getSelectionModel().getSelectedItem().getLocation());
-                    try {
-                        BasicFileAttributes attr = Files.readAttributes(filepath, BasicFileAttributes.class);
-                        tfModifyPictureInfoCreatedOn.setText(new java.util.Date(attr.creationTime().toMillis()).toGMTString());
-                    } catch (IOException ex) {
-                        Logger.getLogger(PhotographerClientController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                 } else {
                     tfModifyPictureInfoName.setText("");
                     tfModifyPictureInfoPrice.setText("");
@@ -224,198 +225,32 @@ public class PhotographerClientController implements Initializable {
     }
 
     public void initviews() {
+        tvGroupsAndUIDs.getRoot().getChildren().clear();
+        FocusModel fm = tvGroupsAndUIDs.getFocusModel();
+        observablePictureGroups = FXCollections.observableArrayList(pictureGroups);
+        for (PictureGroup pg : pictureGroups) {
+            TreeItem ti = new TreeItem(pg);
+            for (PersonalPicture pp : pg.getPersonalPictures()) {
+                TreeItem cti = new TreeItem(pp);
+                ti.getChildren().add(cti);
+            }
+            tvGroupsAndUIDs.getRoot().getChildren().add(ti);
+        }
+        lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
+        lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
+        tvGroupsAndUIDs.setFocusModel(fm);
+        /*
         final Task<Void> task = new Task<Void>() {
             @Override
             public Void call() throws Exception {
-                tvGroupsAndUIDs.getRoot().getChildren().clear();
-                observablePictureGroups = FXCollections.observableArrayList(pictureGroups);
-                for (PictureGroup pg : pictureGroups) {
-                    TreeItem ti = new TreeItem(pg);
-                    for (PersonalPicture pp : pg.getPersonalPictures()) {
-                        TreeItem cti = new TreeItem(pp);
-                        ti.getChildren().add(cti);
-                    }
-                    tvGroupsAndUIDs.getRoot().getChildren().add(ti);
-                }
                 Platform.runLater(() -> {
-                    lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
-                    lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
+
                 });
                 return null;
             }
         };
         new Thread(task).start();
-    }
-
-    public void uploadEverythingToOnline() {
-        PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
-    }
-
-    public void changeGroupInfo() {
-        /*
-         selectedPG = lvGroups.getSelectionModel().getSelectedItem();
-         selectedPG.setName(tfGroupInfoName.getText());
-         lvGroups.getSelectionModel().getSelectedItem().setName(tfGroupInfoName.getText());
-         selectedPG.setDescription(taGroupInfoDescription.getText());
-         lvGroups.getSelectionModel().getSelectedItem().setDescription(taGroupInfoDescription.getText());
          */
-    }
-
-    @FXML
-    public void chooseDirectory() {
-        PhotographerClient.client.chooseDirectory();
-        if (PhotographerClient.client.localfilemanager != null) {
-            picturesPath = PhotographerClient.client.localfilemanager.getPicture();
-            this.lvImageSelect.setItems(this.picturesPath);
-            tfImageSelectPathLocation.setText(PhotographerClient.client.selectedDirectory.toString());
-        }
-    }
-
-    @FXML
-    public void removeUID() {
-        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null) {
-            if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
-                System.out.println(selectedPP.getId());
-                personalIDS.add(selectedPP.getId());
-                selectedPG.removePersonalPicture(selectedPP);
-            } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
-                System.out.println(selectedPG.getId());
-                groupIDS.add(selectedPG.getId());
-                pictureGroups.remove(selectedPP);
-            }
-        }
-        saveAllLocal();
-        initviews();
-    }
-
-    @FXML
-    public void addUID() {
-        PersonalPicture pp = null;
-        if (selectedPG != null) {
-            if (personalIDS.size() > 0) {
-                int i = 0;
-                while (i < 1) {
-                    pp = new PersonalPicture(personalIDS.get(i));
-                    PhotographerClient.client.getLocalDatabase().deletePersonalID(personalIDS.get(i));
-                    personalIDS.remove(i);
-                    i++;
-                }
-                if (pp != null) {
-                    selectedPG.addPersonalPicture(pp);
-                    System.out.println("Add personal id working");
-                }
-            }
-        }
-        initviews();
-        saveAllLocal();
-    }
-
-    @FXML
-    public void addGroup() {
-        PictureGroup pg = null;
-        if (groupIDS.size() > 0) {
-            int i = 0;
-            while (i < 1) {
-                pg = new PictureGroup(groupIDS.get(i));
-                pg.setName(tfGroupInfoName.getText());
-                pg.setDescription(taGroupInfoDescription.getText());
-                PhotographerClient.client.getLocalDatabase().deleteGroupID(groupIDS.get(i));
-                groupIDS.remove(i);
-                i++;
-            }
-            if (pg != null) {
-                pictureGroups.add(pg);
-                tfGroupInfoName.setText("");
-                taGroupInfoDescription.setText("");
-                System.out.println("Add group working");
-            }
-        }
-        initviews();
-        saveAllLocal();
-    }
-
-    @FXML
-    public void savePicture() {
-
-        if (InterfaceCall.isDouble(tfModifyPictureInfoPrice.getText())) {
-            String location = tfModifyPictureInfoFileLocation.getText();
-            String name = tfModifyPictureInfoName.getText();
-            double price = Double.valueOf(tfModifyPictureInfoPrice.getText());
-            Picture p = new Picture(location, name, price);
-            if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
-                selectedPP.addPicture(p);
-                ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
-                lvSavedPictures.setItems(ob);
-            } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
-                selectedPG.addPicture(p);
-                ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
-                lvSavedPictures.setItems(ob);
-            }
-            saveAllLocal();
-        } else {
-            InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "You have entered an invalid price.");
-        }
-    }
-
-    @FXML
-    public void removePicture() {
-        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
-            if (selectedPG != null) {
-                selectedPG.removePicture(lvSavedPictures.getSelectionModel().getSelectedItem());
-            }
-            ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
-            lvSavedPictures.setItems(ob);
-        } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
-            if (selectedPP != null) {
-                selectedPP.removePicture(lvSavedPictures.getSelectionModel().getSelectedItem());
-            }
-            ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
-            lvSavedPictures.setItems(ob);
-        }
-    }
-
-    @FXML
-    public void logout() {
-        PhotographerClient.client.setSceneLogin();
-    }
-
-    public void autoLogin() {
-
-        PhotographerClient.client.connectToServer();
-        IClientRunnable clientRunnable;
-        clientRunnable = PhotographerClientRunnable.clientRunnable;
-        System.out.println(PhotographerInfo.photographerID + PhotographerInfo.photographerPass);
-        clientRunnable.login(PhotographerInfo.photographerID, PhotographerInfo.photographerPass);
-    }
-
-    @FXML
-    public void sync() {
-        final Task<Void> task = new Task<Void>() {
-            @Override
-            public Void call() throws Exception {
-                updateProgress(0, 5);
-                System.out.println("autologin");
-                autoLogin();
-                updateProgress(1, 5);
-                System.out.println("uploading picture group");
-                PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
-                updateProgress(2, 5);
-                System.out.println("get group id's");
-                PhotographerClientRunnable.clientRunnable.getGroupIDs(PhotographerInfo.photographerID);
-                updateProgress(3, 4);
-                System.out.println("get personal id's");
-                PhotographerClientRunnable.clientRunnable.getPersonalIDs(PhotographerInfo.photographerID);
-                updateProgress(4, 5);
-                System.out.println("initialise views");
-                loadLocalDatabaseInformation();
-                initviews();
-                updateProgress(5, 5);
-                return null;
-            }
-        };
-        pbProgress.progressProperty().bind(task.progressProperty());
-        new Thread(task).start();
-
     }
 
     public void saveAllLocal() {
@@ -442,4 +277,300 @@ public class PhotographerClientController implements Initializable {
         groupIDS = PhotographerClient.client.getAvailablGroupIDList();
         personalIDS = PhotographerClient.client.getAvailablePersonalIDList();
     }
+
+    @FXML
+    public void chooseDirectory() {
+        PhotographerClient.client.chooseDirectory();
+        if (PhotographerClient.client.localfilemanager != null) {
+            picturesPath = PhotographerClient.client.localfilemanager.getPicture();
+            this.lvImageSelect.setItems(this.picturesPath);
+            tfImageSelectPathLocation.setText(PhotographerClient.client.selectedDirectory.toString());
+        }
+    }
+
+    @FXML
+    public void removeUID() {
+        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null && tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+            System.out.println(selectedPP.getId());
+            personalIDS.add(selectedPP.getId());
+            selectedPG.removePersonalPicture(selectedPP);
+        } else {
+            InterfaceCall.showAlert("Please select an UID to remove it from the list.");
+        }
+
+        saveAllLocal();
+        initviews();
+    }
+
+    @FXML
+    public void addUID() {
+        String result;
+        if (selectedPG == null) {
+            InterfaceCall.showAlert("Please select a group to add an UID.");
+            return;
+        }
+        result = InterfaceCall.showInputDialog("Add UID's", "Enter the amount of UID's that you would like to add to '" + selectedPG.getName() + "'", "Amount of UID's: ", "1");
+        if (result == null) {
+            return;
+        }
+        if (!InterfaceCall.isInteger(result)) {
+            InterfaceCall.showAlert("'" + result + "' is not a valid amount.");
+            return;
+        }
+        int i = Integer.parseInt(result);
+        if (personalIDS.size() < i) {
+            InterfaceCall.showAlert("Sync with the server to retrieve more UID's.");
+            return;
+        }
+        int count = 0;
+        while (count < i) {
+            PersonalPicture pp = new PersonalPicture(personalIDS.get(0));
+            if (pp != null) {
+                selectedPG.addPersonalPicture(pp);
+                System.out.println("Add personal id working");
+                //PhotographerClient.client.getLocalDatabase().deletePersonalID(personalIDS.get(0));
+                personalIDS.remove(0);
+            }
+            count++;
+        }
+        saveAllLocal();
+        initviews();
+    }
+
+    public Pair<String, String> addGroupDialog() {
+        // Create the custom dialog.
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Add Group");
+        //dialog.setHeaderText("Add a new group.");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(3);
+        grid.setPadding(new Insets(20, 20, 20, 20));
+
+        TextField name = new TextField();
+        name.setPromptText("Name");
+        TextArea description = new TextArea();
+        description.setPromptText("Description");
+
+        double width = 300;
+        double height = 300;
+        //name.setMaxHeight(value);
+        name.setMaxWidth(width);
+        description.setMaxHeight(height);
+        description.setMaxWidth(width);
+
+        Label lblName = new Label("Name");
+        grid.add(lblName, 0, 1);
+        grid.add(name, 0, 2);
+        lblName.setOpacity(.5);
+        Label lblDescription = new Label("Description");
+        lblDescription.setOpacity(.5);
+        grid.add(lblDescription, 0, 4);
+        grid.add(description, 0, 5);
+
+        dialog.getDialogPane().setContent(grid);
+        Platform.runLater(() -> name.requestFocus());
+
+        if (dialog.showAndWait().get() != ButtonType.OK) {
+            return null;
+        } else {
+            return new Pair<>(name.getText(), description.getText());
+        }
+
+    }
+
+    @FXML
+    public void addGroup() {
+        PictureGroup pg = null;
+        if (groupIDS.size() <= 0) {
+            InterfaceCall.showAlert("Sync with the server to retrieve more Groups.");
+            return;
+        }
+        Pair<String, String> result = addGroupDialog();
+        if (result == null) {
+            return;
+        }
+        pg = new PictureGroup(groupIDS.get(0));
+        pg.setName(result.getKey());
+        pg.setDescription(result.getValue());
+        PhotographerClient.client.getLocalDatabase().deleteGroupID(groupIDS.get(0));
+        groupIDS.remove(0);
+        pictureGroups.add(pg);
+        initviews();
+        saveAllLocal();
+    }
+
+    public Pair<String, String> addPictureDialog() {
+        // Create the custom dialog.
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Add Picture");
+        //dialog.setHeaderText("Add a new picture.");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(3);
+        grid.setPadding(new Insets(50, 50, 50, 50));
+
+        TextField name = new TextField();
+        name.setPromptText("Name");
+        TextField price = new TextField();
+        price.setPromptText("Price");
+
+        double width = 300;
+        double height = 300;
+        //name.setMaxHeight(value);
+        name.setMaxWidth(width);
+        //price.setMaxHeight(height);
+        price.setMaxWidth(width);
+
+        Label lblName = new Label("Name");
+        grid.add(lblName, 0, 1);
+        grid.add(name, 0, 2);
+        lblName.setOpacity(.5);
+        Label lblPrice = new Label("Price");
+        lblPrice.setOpacity(.5);
+        grid.add(lblPrice, 0, 4);
+        grid.add(price, 0, 5);
+
+        dialog.getDialogPane().setContent(grid);
+        Platform.runLater(() -> name.requestFocus());
+
+        if (dialog.showAndWait().get() != ButtonType.OK) {
+            return null;
+        } else {
+            return new Pair<>(name.getText(), price.getText());
+        }
+
+    }
+
+    @FXML
+    public void addPicture() {
+        if (lvImageSelect.getSelectionModel().isEmpty()) {
+            InterfaceCall.showAlert("Please select an image from the list to add it as a picture.");
+            return;
+        }
+        Pair<String, String> result = addPictureDialog();
+        if (result == null) {
+            return;
+        }
+        if (InterfaceCall.isDouble(result.getValue())) {
+            String location = PhotographerClient.client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString();
+            Picture p = new Picture(location, result.getKey(), Double.parseDouble(result.getValue()));
+            if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+                selectedPP.addPicture(p);
+                ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
+                lvSavedPictures.setItems(ob);
+            } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
+                selectedPG.addPicture(p);
+                ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
+                lvSavedPictures.setItems(ob);
+            }
+            saveAllLocal();
+        } else {
+            InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "You have entered an invalid price.");
+        }
+    }
+
+    @FXML
+    private void savePicture() {
+        if (lvSavedPictures.getSelectionModel().isEmpty()) {
+            InterfaceCall.showAlert("Please select an picture from the list.");
+            return;
+        }
+        if (!InterfaceCall.isDouble(tfModifyPictureInfoPrice.getText())) {
+            InterfaceCall.showAlert("You have entered an invalid price.");
+            return;
+        }
+        Picture p = lvSavedPictures.getSelectionModel().getSelectedItem();
+        p.setName(tfModifyPictureInfoName.getText());
+        p.setPrice(Double.parseDouble(tfModifyPictureInfoPrice.getText()));
+    }
+
+    @FXML
+    public void removePicture() {
+        if (lvSavedPictures.getSelectionModel().isEmpty()) {
+            InterfaceCall.showAlert("Please select an picture to remove it from the list.");
+            return;
+        }
+        if (tvGroupsAndUIDs.getSelectionModel().isEmpty()) {
+            InterfaceCall.showAlert("Please select an group or UID and a picture to remove it from the list.");
+            return;
+        }
+        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
+            if (selectedPG != null) {
+                selectedPG.removePicture(lvSavedPictures.getSelectionModel().getSelectedItem());
+            }
+            ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
+            lvSavedPictures.setItems(ob);
+        } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+            if (selectedPP != null) {
+                selectedPP.removePicture(lvSavedPictures.getSelectionModel().getSelectedItem());
+            }
+            ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
+            lvSavedPictures.setItems(ob);
+        }
+    }
+
+    @FXML
+    public void logout() {
+        PhotographerClient.client.setSceneLogin();
+    }
+
+    public boolean autoLogin() {
+        if (!PhotographerClient.client.connectToServer()) {
+            Platform.runLater(() -> {
+                InterfaceCall.connectionFailed();
+            });
+            return false;
+        }
+        if (PhotographerInfo.photographerID.isEmpty() || PhotographerInfo.photographerPass.isEmpty()) {
+            PhotographerClient.client.setSceneLogin();
+            return false;
+        }
+        IClientRunnable clientRunnable = PhotographerClientRunnable.clientRunnable;
+        System.out.println(PhotographerInfo.photographerID + " - " + PhotographerInfo.photographerPass);
+        clientRunnable.login(PhotographerInfo.photographerID, PhotographerInfo.photographerPass);
+        return true;
+
+    }
+
+    @FXML
+    public void sync() {
+        final Task<Void> task = new Task<Void>() {
+            @Override
+            public Void call() throws Exception {
+                updateProgress(0, 5);
+                if (PhotographerClientRunnable.clientRunnable == null || PhotographerClientRunnable.clientRunnable.getSocket().isClosed()) {
+                    System.out.println("autologin");
+                    if (!autoLogin()) {
+                        updateProgress(5, 5);
+                        return null;
+                    }
+                }
+                updateProgress(1, 5);
+                System.out.println("uploading picture group");
+                PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
+                updateProgress(2, 5);
+                System.out.println("get group id's");
+                PhotographerClientRunnable.clientRunnable.getGroupIDs(PhotographerInfo.photographerID);
+                updateProgress(3, 4);
+                System.out.println("get personal id's");
+                PhotographerClientRunnable.clientRunnable.getPersonalIDs(PhotographerInfo.photographerID);
+                updateProgress(4, 5);
+                System.out.println("initialise views");
+                Platform.runLater(() -> {
+                    loadLocalDatabaseInformation();
+                    initviews();
+                });
+                updateProgress(5, 5);
+                return null;
+            }
+        };
+        pbProgress.progressProperty().bind(task.progressProperty());
+        new Thread(task).start();
+    }
+
 }

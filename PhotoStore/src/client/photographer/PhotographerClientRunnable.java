@@ -65,8 +65,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
         try {
             PhotographerInfo.photographerID = email;
             PhotographerInfo.photographerPass = password;
-            LocalDatabase ldb = new LocalDatabase();
-            ldb.savePhotographer(email, password);
+            PhotographerClient.client.savePhotographer(email, password);
             socket.writeObject(PhotographerCall.login);
             socket.writeObject(new String[]{email, password});
             return (boolean) socket.readObject();
@@ -88,6 +87,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
                 for (Picture p : pg.getPictures()) {
                     if (!p.isUploaded() && p.getFile().exists()) {
                         //picture isnt uploaded, send it to the server
+                        p.setId((int) socket.readObject());
                         socket.writeFile(p.getFile());
                         //update the uploaded status on the picture
                         p.setUploaded(true);
@@ -98,6 +98,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
                     for (Picture p : pp.getPictures()) {
                         if (!p.isUploaded() && p.getFile().exists()) {
                             //picture isnt uploaded, send it to the server
+                            p.setId((int) socket.readObject());
                             socket.writeFile(p.getFile());
                             //update the uploaded status on the picture
                             p.setUploaded(true);
@@ -112,7 +113,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
 
             }
             return saveRequired;
-        } catch (IOException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -127,13 +128,10 @@ public class PhotographerClientRunnable implements IClientRunnable {
         try {
             socket.writeObject(PhotographerCall.createTonsOfGroups);
             socket.writeObject(photographer_id);
-
             Object obj = socket.readObject();
             groupID = (ArrayList) obj;
-
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
-
         }
         PhotographerClient.client.saveGroupIDToLocal(groupID);
     }

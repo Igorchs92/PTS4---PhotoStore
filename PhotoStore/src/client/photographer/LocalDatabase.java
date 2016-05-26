@@ -24,15 +24,13 @@ import shared.files.PictureGroup;
 
 public final class LocalDatabase {
 
-    Connection conn;
+    private static Connection conn;
     File db;
 
     public LocalDatabase() {
         db = new File("local.dat"); //database location
         try {
             boolean dbExists = db.exists();
-            conn = DriverManager.getConnection("jdbc:sqlite:" + db); //set the connection string
-
             if (!dbExists) {
                 //database didnt exist yet
                 resetDatabase(); //create the database before usage
@@ -43,16 +41,14 @@ public final class LocalDatabase {
     }
 
     public Connection getConn() {
-        try {
-            if (!conn.isClosed()){
-                conn.close();
+        if (conn == null) {
+            try {
+                conn = DriverManager.getConnection("jdbc:sqlite:" + db); //set the connection string
+            } catch (SQLException ex) {
+                Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
             }
-            conn = DriverManager.getConnection("jdbc:sqlite:" + db);
-            return conn;
-        } catch (SQLException ex) {
-            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         }
+        return conn;
     }
 
     public void resetDatabase() {
@@ -61,14 +57,13 @@ public final class LocalDatabase {
         queries.add("CREATE TABLE pictureGroup (id INTEGER PRIMARY KEY, obj BLOB, photographer TEXT);");
         queries.add("DROP TABLE IF EXISTS personalid;");
         queries.add("CREATE TABLE personalid (id INTEGER PRIMARY KEY, photographer TEXT);");
-        queries.add("DROP TABLE IF EXISTS groupsid");
+        queries.add("DROP TABLE IF EXISTS groupsid;");
         queries.add("CREATE TABLE groupid (id INTEGER PRIMARY KEY, photographer TEXT);");
         queries.add("DROP TABLE IF EXISTS photographer;");
         queries.add("CREATE TABLE photographer (id INTEGER PRIMARY KEY, photographerid TEXT, password TEXT);");
-
         for (String q : queries) {
             try {
-                Statement st = conn.createStatement();
+                Statement st = getConn().createStatement();
                 st.executeUpdate(q);
             } catch (SQLException ex) {
                 System.out.print(ex.toString());
@@ -81,7 +76,6 @@ public final class LocalDatabase {
             String sql = "SELECT * from photographer WHERE id = 1;";
             PreparedStatement ps = getConn().prepareStatement(sql);
             if (ps.executeQuery().next()) {
-                ps.close();
                 //picturegroup exists, update is required
                 sql = "UPDATE photographer SET photographerid = ?, password = ? WHERE id = 1";
                 ps = getConn().prepareStatement(sql);
@@ -90,7 +84,6 @@ public final class LocalDatabase {
                 System.out.println("Updating photographer");
                 ps.executeUpdate();
             } else {
-                ps.close();
                 sql = "INSERT INTO photographer (id, photographerid, password) VALUES(1, ?, ?);";
                 ps = getConn().prepareStatement(sql);
                 ps.setString(1, photographerid);
