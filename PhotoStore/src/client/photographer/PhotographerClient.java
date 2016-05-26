@@ -126,7 +126,7 @@ public class PhotographerClient extends Application implements IClient {
 
     @Override
     public void loggedIn() {
-        
+
     }
 
     @Override
@@ -175,22 +175,42 @@ public class PhotographerClient extends Application implements IClient {
         t.start();
     }
 
-    public void savePersonalPictureToLocal(List<Integer> ppL) {
-        for (int pp : ppL) {
-            ldb.savePersonalID(pp);
+    public void savePersonalPictureIdList(List<Integer> ppl) {
+        for (int pp : ppl) {
+            ldb.savePersonalPictureId(pp);
         }
     }
 
-    public void saveGroupIDToLocal(List<Integer> gpL) {
-        for (int gp : gpL) {
-            ldb.saveGroupID(gp);
+    public void savePersonalPictureId(int pp) {
+        ldb.savePersonalPictureId(pp);
+    }
+    
+    public void removePersonalPictureId(int pp){
+        ldb.removePersonalPictureId(pp);
+    }
+
+    public void savePictureGroupIdList(List<Integer> pgl) {
+        for (int pg : pgl) {
+            ldb.savePictureGroupId(pg);
         }
     }
 
-    public void savePictureGroupsToLocal(List<PictureGroup> pgg) {
+    public void savePictureGroupId(int pg) {
+        ldb.savePictureGroupId(pg);
+    }
+    
+    public void removePictureGroupId(int pg){
+        ldb.removePictureGroupId(pg);
+    }
+
+    public void savePictureGroupList(List<PictureGroup> pgg) {
         for (PictureGroup pg : pgg) {
             ldb.savePictureGroup(pg);
         }
+    }
+
+    public void savePictureGroup(PictureGroup pg) {
+        ldb.savePictureGroup(pg);
     }
 
     public void chooseDirectory() {

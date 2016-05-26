@@ -138,7 +138,7 @@ public final class LocalDatabase {
         return true;
     }
 
-    public boolean savePersonalID(int id) {
+    public boolean savePersonalPictureId(int id) {
         try {
 
             /*
@@ -171,7 +171,7 @@ public final class LocalDatabase {
         return true;
     }
 
-    public boolean saveGroupID(int id) {
+    public boolean savePictureGroupId(int id) {
         try {
             //check if the personalPicture already exists on the database
             String sql = "SELECT * from groupid WHERE id = ?;";
@@ -275,7 +275,7 @@ public final class LocalDatabase {
         }
     }
 
-    public void deleteGroupID(int id) {
+    public void removePictureGroupId(int id) {
         String sql = "DELETE FROM groupid WHERE id = ?";
         PreparedStatement ps;
         try {
@@ -287,7 +287,7 @@ public final class LocalDatabase {
         }
     }
 
-    public void deletePersonalID(int id) {
+    public void removePersonalPictureId(int id) {
         String sql = "DELETE FROM personalid WHERE id = ?";
         PreparedStatement ps;
         try {

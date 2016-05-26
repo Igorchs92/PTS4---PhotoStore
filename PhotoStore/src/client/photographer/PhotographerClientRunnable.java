@@ -88,6 +88,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
                     if (!p.isUploaded() && p.getFile().exists()) {
                         //picture isnt uploaded, send it to the server
                         p.setId((int) socket.readObject());
+                        System.out.println(p.getId());
                         socket.writeFile(p.getFile());
                         //update the uploaded status on the picture
                         p.setUploaded(true);
@@ -133,7 +134,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
-        PhotographerClient.client.saveGroupIDToLocal(groupID);
+        PhotographerClient.client.savePictureGroupIdList(groupID);
     }
 
     //create maximum ammount of personal unique codes and return the ids as list
@@ -147,7 +148,7 @@ public class PhotographerClientRunnable implements IClientRunnable {
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
-        PhotographerClient.client.savePersonalPictureToLocal(personalID);
+        PhotographerClient.client.savePersonalPictureIdList(personalID);
     }
 
 }
