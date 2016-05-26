@@ -103,12 +103,6 @@
                   <PasswordField fx:id="bConfirmPassword" promptText="************" />
                </children>
             </VBox>
-            <VBox>
-               <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Authentication code" />
-                  <TextField fx:id="bAuth" promptText="5CED4CC3" />
-               </children>
-            </VBox>
          </children>
       </TilePane>
       <ToolBar layoutY="465.0" maxHeight="-Infinity" maxWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="35.0" prefWidth="450.0">
