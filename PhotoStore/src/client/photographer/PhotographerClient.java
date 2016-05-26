@@ -175,32 +175,36 @@ public class PhotographerClient extends Application implements IClient {
         t.start();
     }
 
-    public void savePersonalPictureIdList(List<Integer> ppl) {
-        for (int pp : ppl) {
-            ldb.savePersonalPictureId(pp);
+    public void savePersonalPictureIdList(List<Integer> idl) {
+        for (int id : idl) {
+            ldb.savePersonalPictureId(id);
         }
     }
 
-    public void savePersonalPictureId(int pp) {
-        ldb.savePersonalPictureId(pp);
+    public void savePersonalPictureId(int id) {
+        ldb.savePersonalPictureId(id);
     }
     
-    public void removePersonalPictureId(int pp){
-        ldb.removePersonalPictureId(pp);
+    public void removePersonalPictureId(int id){
+        ldb.removePersonalPictureId(id);
     }
 
-    public void savePictureGroupIdList(List<Integer> pgl) {
-        for (int pg : pgl) {
-            ldb.savePictureGroupId(pg);
+    public void savePictureGroupIdList(List<Integer> idl) {
+        for (int id : idl) {
+            ldb.savePictureGroupId(id);
         }
     }
 
-    public void savePictureGroupId(int pg) {
-        ldb.savePictureGroupId(pg);
+    public void savePictureGroupId(int id) {
+        ldb.savePictureGroupId(id);
     }
     
-    public void removePictureGroupId(int pg){
-        ldb.removePictureGroupId(pg);
+    public void removePictureGroupId(int id){
+        ldb.removePictureGroupId(id);
+    }
+    
+    public void removePictureGroup(int id) {
+        ldb.removePictureGroup(id);
     }
 
     public void savePictureGroupList(List<PictureGroup> pgg) {

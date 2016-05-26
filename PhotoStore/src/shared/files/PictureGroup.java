@@ -20,6 +20,7 @@ public class PictureGroup implements Serializable {
     private String description;
     private List<Picture> pictures;
     private List<PersonalPicture> personalPictures;
+    private boolean uploaded;
 
     public PictureGroup(int id) {
         this.id = id;
@@ -90,6 +91,14 @@ public class PictureGroup implements Serializable {
 
     public void removePersonalPicture(PersonalPicture personalPicture) {
         this.personalPictures.remove(personalPicture);
+    }
+    
+    public boolean getUploaded(){
+        return uploaded;
+    }
+    
+    public void setUploaded(){
+        uploaded = true;
     }
 
     @Override

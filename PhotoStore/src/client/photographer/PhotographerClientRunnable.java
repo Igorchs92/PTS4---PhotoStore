@@ -75,9 +75,8 @@ public class PhotographerClientRunnable implements IClientRunnable {
         }
     }
 
-    public boolean uploadPictureGroups() {
+    public void uploadPictureGroups() {
         try {
-            boolean saveRequired = false;
             socket.writeObject(PhotographerCall.upload);
             //send the filtered list to the server
             socket.writeObject(PhotographerClient.client.getPictureGroupList());
@@ -89,7 +88,6 @@ public class PhotographerClientRunnable implements IClientRunnable {
                         socket.writeFile(p.getFile());
                         //update the uploaded status on the picture
                         p.setUploaded(true);
-                        saveRequired = true;
                     }
                 }
                 for (PersonalPicture pp : pg.getPersonalPictures()) {
@@ -100,20 +98,18 @@ public class PhotographerClientRunnable implements IClientRunnable {
                             socket.writeFile(p.getFile());
                             //update the uploaded status on the picture
                             p.setUploaded(true);
-                            saveRequired = true;
                         }
                     }
+                    pp.setUploaded();
                 }
-                if (saveRequired) {
+                if (pg.getPictures().size() >= 1 || pg.getPersonalPictures().size() >= 1) {
                     //save is required, save the new picturegroup on the local database
+                    pg.setUploaded();
                     PhotographerClient.client.getLocalDatabase().savePictureGroup(pg);
                 }
-
             }
-            return saveRequired;
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
     }
 

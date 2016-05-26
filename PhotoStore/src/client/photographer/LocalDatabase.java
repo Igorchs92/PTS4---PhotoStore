@@ -140,18 +140,6 @@ public final class LocalDatabase {
 
     public boolean savePersonalPictureId(int id) {
         try {
-
-            /*
-             try {
-             String sql = "DELETE from personalid WHERE photographer = ?";
-             PreparedStatement ps = getConn().prepareStatement(sql);
-             ps.setString(1, "test@hotmail.com");
-
-             ps.executeUpdate();
-             } catch (SQLException ex) {
-             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
-             }
-             */
             //check if the id already exists on the database
             String sql = "SELECT * from personalid WHERE id = ?;";
             PreparedStatement ps = getConn().prepareStatement(sql);
@@ -178,12 +166,17 @@ public final class LocalDatabase {
             PreparedStatement ps = getConn().prepareStatement(sql);
             ps.setInt(1, id);
             if (!ps.executeQuery().next()) {
-                //personalPicture doesnt exist, insert is required
-                sql = "INSERT INTO groupid (id, photographer) VALUES(?, ?);";
+                sql = "SELECT * from pictureGroup WHERE id = ?;";
                 ps = getConn().prepareStatement(sql);
                 ps.setInt(1, id);
-                ps.setString(2, PhotographerInfo.photographerID);
-                ps.executeUpdate();
+                if (!ps.executeQuery().next()) {
+                    //personalPicture doesnt exist, insert is required
+                    sql = "INSERT INTO groupid (id, photographer) VALUES(?, ?);";
+                    ps = getConn().prepareStatement(sql);
+                    ps.setInt(1, id);
+                    ps.setString(2, PhotographerInfo.photographerID);
+                    ps.executeUpdate();
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
@@ -268,6 +261,18 @@ public final class LocalDatabase {
                 PhotographerInfo.photographerPass = rs.getString("password");
                 System.out.println(PhotographerInfo.photographerID);
             }
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void removePictureGroup(int id) {
+        String sql = "DELETE FROM pictureGroup WHERE id = ?";
+        PreparedStatement ps;
+        try {
+            ps = getConn().prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }

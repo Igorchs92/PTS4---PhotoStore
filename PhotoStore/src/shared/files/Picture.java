@@ -128,6 +128,11 @@ public class Picture implements Serializable {
     
     @Override
     public String toString() {
-        return name + " - €" + price + "";
+        String s = name + " - €" + price + "";
+        if (id != 0){
+            return id + ": " + s;
+        } else {
+            return s;
+        }
     }
 }

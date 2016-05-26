@@ -17,10 +17,12 @@ public class PersonalPicture implements Serializable {
 
     private int id;
     private List<Picture> pictures;
+    private boolean uploaded;
 
     public PersonalPicture(int idnumber) {
         this.id = idnumber;
         pictures = new ArrayList();
+        uploaded = false;
     }
 
     public int getId() {
@@ -46,10 +48,18 @@ public class PersonalPicture implements Serializable {
     public void addPicture(Picture picture) {
         this.pictures.add(picture);
     }
+    
+    public boolean getUploaded(){
+        return uploaded;
+    }
+    
+    public void setUploaded(){
+        uploaded = true;
+    }
 
     @Override
     public String toString() {
-        return id + ", Pictures: " + pictures.size();
+        return id + ": Pictures: " + pictures.size();
     }
     
 }

@@ -14,6 +14,7 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -22,6 +23,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -132,6 +134,8 @@ public class PhotographerClientController implements Initializable {
     private ProgressBar pbProgress;
     @FXML
     private Button btnSavePicture;
+    @FXML
+    private Button btnRemoveGroup;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -290,21 +294,6 @@ public class PhotographerClientController implements Initializable {
             picturesPath = client.localfilemanager.getPicture();
             this.lvImageSelect.setItems(this.picturesPath);
             tfImageSelectPathLocation.setText(client.selectedDirectory.toString());
-        }
-    }
-
-    @FXML
-    public void removeUID() {
-        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null && tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
-            System.out.println(selectedPP.getId());
-            personalIDS.add(selectedPP.getId());
-            selectedPG.removePersonalPicture(selectedPP);
-            client.savePictureGroup(selectedPG);
-            client.savePersonalPictureId(selectedPP.getId());
-            tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getParent().getChildren().remove(tvGroupsAndUIDs.getSelectionModel().getSelectedItem());
-            tvGroupsAndUIDs.getSelectionModel().selectNext();
-        } else {
-            InterfaceCall.showAlert("Please select an UID to remove it from the list.");
         }
     }
 
@@ -495,7 +484,7 @@ public class PhotographerClientController implements Initializable {
         p.setName(tfModifyPictureInfoName.getText());
         p.setPrice(Double.parseDouble(tfModifyPictureInfoPrice.getText()));
         client.savePictureGroup(selectedPG);
-        initviews();
+        lvSavedPictures.refresh();
     }
 
     @FXML
@@ -508,11 +497,14 @@ public class PhotographerClientController implements Initializable {
             InterfaceCall.showAlert("Please select an group or UID and a picture to remove it from the list.");
             return;
         }
+
         if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
-            if (selectedPG != null) {
-                selectedPG.removePicture(lvSavedPictures.getSelectionModel().getSelectedItem());
-                client.savePictureGroup(selectedPG);
+            if (lvSavedPictures.getSelectionModel().getSelectedItem().isUploaded()) {
+                InterfaceCall.showAlert("Picture cannot be removed once it has been uploaded.");
+                return;
             }
+            selectedPG.removePicture(lvSavedPictures.getSelectionModel().getSelectedItem());
+            client.savePictureGroup(selectedPG);
             ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
             lvSavedPictures.setItems(ob);
         } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
@@ -524,6 +516,57 @@ public class PhotographerClientController implements Initializable {
             lvSavedPictures.setItems(ob);
         }
         tvGroupsAndUIDs.refresh();
+        lvSavedPictures.refresh();
+    }
+
+    @FXML
+    public void removeUID() {
+        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null && tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+            if (selectedPP.getUploaded()) {
+                InterfaceCall.showAlert("UID cannot be removed once it has been uploaded.");
+                return;
+            }
+            System.out.println(selectedPP.getId());
+            personalIDS.add(selectedPP.getId());
+            Collections.sort(personalIDS);
+            selectedPG.removePersonalPicture(selectedPP);
+            client.savePictureGroup(selectedPG);
+            client.savePersonalPictureId(selectedPP.getId());
+            tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getParent().getChildren().remove(tvGroupsAndUIDs.getSelectionModel().getSelectedItem());
+            tvGroupsAndUIDs.getSelectionModel().selectNext();
+            lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
+        } else {
+            InterfaceCall.showAlert("Please select an UID to remove it from the list.");
+        }
+    }
+
+    @FXML
+    private void removeGroup() {
+        if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null && tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
+            if (selectedPG.getUploaded()) {
+                InterfaceCall.showAlert("Group cannot be removed once it has been uploaded.");
+                return;
+            }
+            System.out.println(selectedPG.getId());
+            groupIDS.add(selectedPG.getId());
+            Collections.sort(groupIDS);
+            client.removePictureGroup(selectedPG.getId());
+            client.savePictureGroupId(selectedPG.getId());
+            pictureGroups.remove(selectedPG);
+            List<PersonalPicture> ppl = new ArrayList();
+            ppl.addAll(selectedPG.getPersonalPictures());
+            for (PersonalPicture pp : ppl) {
+                client.savePersonalPictureId(pp.getId());
+                personalIDS.add(pp.getId());
+                Collections.sort(personalIDS);
+            }
+            tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getParent().getChildren().remove(tvGroupsAndUIDs.getSelectionModel().getSelectedItem());
+            tvGroupsAndUIDs.getSelectionModel().selectNext();
+            lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
+            lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
+        } else {
+            InterfaceCall.showAlert("Please select an Group to remove it from the list.");
+        }
     }
 
     @FXML
@@ -563,19 +606,22 @@ public class PhotographerClientController implements Initializable {
                         return null;
                     }
                 }
-                updateProgress(1, 5);
+                updateProgress(1, 4);
                 System.out.println("uploading picture group");
                 PhotographerClientRunnable.clientRunnable.uploadPictureGroups();
-                updateProgress(2, 5);
+                updateProgress(2, 4);
                 System.out.println("get group id's");
                 PhotographerClientRunnable.clientRunnable.getGroupIDs(PhotographerInfo.photographerID);
                 updateProgress(3, 4);
                 System.out.println("get personal id's");
                 PhotographerClientRunnable.clientRunnable.getPersonalIDs(PhotographerInfo.photographerID);
-                updateProgress(4, 5);
+                updateProgress(4, 4);
                 System.out.println("reload from local database");
-                Platform.runLater(() -> loadLocalDatabaseInformation());
-                updateProgress(5, 5);
+                Platform.runLater(() -> {
+                    loadLocalDatabaseInformation();
+                    lvSavedPictures.refresh();
+                });
+                updateProgress(0, 4);
                 return null;
             }
         };

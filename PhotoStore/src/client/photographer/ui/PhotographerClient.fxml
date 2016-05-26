@@ -52,6 +52,7 @@
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="0.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="0.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="0.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="100.0" />
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -60,6 +61,7 @@
                               <Button fx:id="btnAddID" minWidth="0.0" mnemonicParsing="false" onAction="#addUID" prefHeight="25.0" prefWidth="100.0" text="Add UID" GridPane.columnIndex="1" />
                               <Button fx:id="btnRemoveID" minWidth="0.0" mnemonicParsing="false" onAction="#removeUID" prefHeight="25.0" prefWidth="100.0" text="Remove UID" GridPane.columnIndex="2" />
                               <Button fx:id="btnAddGroup" minWidth="0.0" mnemonicParsing="false" onAction="#addGroup" prefHeight="25.0" prefWidth="100.0" text="Add Group" />
+                              <Button fx:id="btnRemoveGroup" minWidth="0.0" mnemonicParsing="false" onAction="#removeGroup" prefHeight="25.0" prefWidth="100.0" text="Remove Group" GridPane.columnIndex="3" />
                            </children>
                         </GridPane>
                         <TreeView fx:id="tvGroupsAndUIDs" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
