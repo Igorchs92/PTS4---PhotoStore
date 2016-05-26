@@ -148,11 +148,11 @@ public class PhotographerClient extends Application implements IClient {
     }
 
     public List<Integer> getAvailablGroupIDList() {
-        return AvailableGroupID;
+        return ldb.getGroupID();
     }
 
     public List<Integer> getAvailablePersonalIDList() {
-        return AvailablePersonalID;
+        return ldb.getPersonalID();
     }
 
     public void CallFileUploader() {

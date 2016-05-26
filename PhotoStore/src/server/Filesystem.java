@@ -110,8 +110,8 @@ public class Filesystem {
                             socket.writeObject(p.getId());
                             if (p.getId() != 0) {
                                 dbsm.addPersonalPicturesPicture(pp, p);
-                                File root_group_highres = new File(root_group + "\\" + Integer.toString(pg.getId()) + "\\" + this.highres + p.getRelativePath());
-                                File root_group_lowres = new File(root_group + "\\" + Integer.toString(pg.getId()) + "\\" + this.lowres + p.getRelativePath());
+                                File root_group_highres = new File(root_group + "\\" + Integer.toString(pp.getId()) + "\\" + this.highres + p.getRelativePath());
+                                File root_group_lowres = new File(root_group + "\\" + Integer.toString(pp.getId()) + "\\" + this.lowres + p.getRelativePath());
                                 root_group_highres.getParentFile().mkdirs();
                                 root_group_lowres.getParentFile().mkdirs();
                                 socket.readFile(root_group_highres);

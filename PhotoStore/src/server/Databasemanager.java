@@ -240,12 +240,12 @@ public class Databasemanager {
         sql = "INSERT INTO personalPictures(photographer_id) VALUES (?);";
         ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         //Make new unique numbers till we have the 10.000 numbers
-        while (count < 50) {
-            System.out.println(count);
+        while (count < 1000) {
             ps.setString(1, photographer);
-            ps.executeUpdate();
+            ps.addBatch();
             count++;
         }
+        ps.executeBatch();
         ResultSet rs = ps.getGeneratedKeys();
         while (rs.next()) {
             ppl.add(rs.getInt(1));
@@ -277,7 +277,7 @@ public class Databasemanager {
     public void makeTonsOfGroup(String photographer_id) throws SQLException {
 
         int count = 0;
-
+        //
         Statement st = conn.createStatement();
         //
         ResultSet srs = st.executeQuery("SELECT * FROM groupPictures WHERE photographer_id = '" + photographer_id + "'");
@@ -292,7 +292,7 @@ public class Databasemanager {
         st = conn.createStatement();
 
         //select the not used unique numbers where the photographer is equal to the given photographer.
-        String query = ("INSERT INTO groupPictures (photographer_id, name, description)" + " VALUES (?)");
+        String query = ("INSERT INTO groupPictures (photographer_id)" + " VALUES (?)");
         ps = conn.prepareStatement(query);
         while (count < 500) {
             try {
@@ -307,21 +307,40 @@ public class Databasemanager {
         ps.close();
     }
 
-    // return a list of the groups with the given photographer
     public List<Integer> getGroups(String photographer) throws SQLException {
-        //Total list of all groupNumbers for the photographer
-        ArrayList<Integer> groupNumberList = new ArrayList<>();
-
-        // Get all the unused unique numbers with the photographer again.
-        String sql = "SELECT * FROM groupPictures WHERE photographer_id = ?";
+        //Total list of all groupnumbers for the photographer
+        ArrayList<Integer> gpl = new ArrayList<>();
+        int count = 0;
+        String sql = "SELECT gp.id, COUNT(pp.id) + COUNT(gpp.id) AS amount FROM groupPictures gp "
+                + "LEFT JOIN personalPictures pp ON gp.id = pp.group_id "
+                + "LEFT JOIN groupPictures_picture gpp ON gp.id = gpp.group_id "
+                + "WHERE gp.photographer_id = ? "
+                + "GROUP BY gp.id HAVING amount <= 0;";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, photographer);
+        //select the not used group numbers where th photographer is equal to the given photographer.
         ResultSet srs = ps.executeQuery();
+        //count how many group numbers are not used.
         while (srs.next()) {
-            int unqiueNumber = srs.getInt("id");
-            groupNumberList.add(unqiueNumber);
+            count += 1;
+            gpl.add(srs.getInt("id"));
         }
-        return groupNumberList;
+        System.out.println("groupPictures not in use: " + count);
+        //make new group numbers
+        sql = "INSERT INTO groupPictures(photographer_id, name, description) VALUES (?, '', '');";
+        ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        //Make new group numbers till we have the 500 numbers
+        while (count < 500) {
+            ps.setString(1, photographer);
+            ps.addBatch();
+            count++;
+        }
+        ps.executeBatch();
+        ResultSet rs = ps.getGeneratedKeys();
+        while (rs.next()) {
+            gpl.add(rs.getInt(1));
+        }
+        return gpl;
     }
 
     //add groups to the personal unique number

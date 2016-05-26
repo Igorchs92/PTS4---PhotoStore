@@ -137,7 +137,7 @@ public class PhotographerClientController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         client = PhotographerClient.client;
         loadLocalDatabaseInformation();
-        if (PhotographerInfo.photographerID != null){
+        if (PhotographerInfo.photographerID != null) {
             lblToolBarEmail.setText(PhotographerInfo.photographerID);
         }
         TreeItem ti = new TreeItem();
@@ -279,6 +279,8 @@ public class PhotographerClientController implements Initializable {
         pictureGroups = client.getPictureGroupList();
         groupIDS = client.getAvailablGroupIDList();
         personalIDS = client.getAvailablePersonalIDList();
+        lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
+        lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
     }
 
     @FXML
@@ -521,7 +523,7 @@ public class PhotographerClientController implements Initializable {
             ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
             lvSavedPictures.setItems(ob);
         }
-        initviews();
+        tvGroupsAndUIDs.refresh();
     }
 
     @FXML
@@ -571,11 +573,8 @@ public class PhotographerClientController implements Initializable {
                 System.out.println("get personal id's");
                 PhotographerClientRunnable.clientRunnable.getPersonalIDs(PhotographerInfo.photographerID);
                 updateProgress(4, 5);
-                System.out.println("initialise views");
-                Platform.runLater(() -> {
-                    loadLocalDatabaseInformation();
-                    initviews();
-                });
+                System.out.println("reload from local database");
+                Platform.runLater(() -> loadLocalDatabaseInformation());
                 updateProgress(5, 5);
                 return null;
             }
