@@ -207,8 +207,6 @@ public final class LocalDatabase {
                     ins = new ObjectInputStream(bais);
                     PictureGroup pg = (PictureGroup) ins.readObject(); //extract picturegroup object from the database
                     pictureGroups.add(pg); //add the picturegroup to the list
-                    System.out.println(Integer.toString(pg.getId()));
-                    //System.out.println(pg.getPictures().get(0).getCreated() + " - " + pg.getPictures().get(0).getExtension()); //this is for testing
                     ins.close();
                 } catch (SQLException | IOException | ClassNotFoundException ex) {
                     Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);

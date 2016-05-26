@@ -109,7 +109,7 @@ public class PhotographerClient extends Application implements IClient {
                 ClientLoginController controller = loader.getController();
                 controller.setDialogStage(stage);
                 // Show the dialog and wait until the user closes it
-                controller.disableRegister();
+                controller.dialogMode();
                 stage.showAndWait();
             } else {
                 InterfaceCall.connectionFailed();

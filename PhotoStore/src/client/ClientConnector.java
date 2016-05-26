@@ -35,11 +35,9 @@ public class ClientConnector {
         try {
             socket = new SocketConnection(new Socket("localhost", 8189));
             socket.writeObject(client);
-            System.out.println("return true");
             return true;
         } catch (IOException ex) {
             Logger.getLogger(ClientConnector.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("return false");
             return false;
         }
     }

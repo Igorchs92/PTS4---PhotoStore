@@ -80,15 +80,12 @@ public class PhotographerClientRunnable implements IClientRunnable {
             boolean saveRequired = false;
             socket.writeObject(PhotographerCall.upload);
             //send the filtered list to the server
-            System.out.println("Sending filtered picture group");
             socket.writeObject(PhotographerClient.client.getPictureGroupList());
-            System.out.println("Sent picture group");
             for (PictureGroup pg : PhotographerClient.client.getPictureGroupList()) {
                 for (Picture p : pg.getPictures()) {
                     if (!p.isUploaded() && p.getFile().exists()) {
                         //picture isnt uploaded, send it to the server
                         p.setId((int) socket.readObject());
-                        System.out.println(p.getId());
                         socket.writeFile(p.getFile());
                         //update the uploaded status on the picture
                         p.setUploaded(true);

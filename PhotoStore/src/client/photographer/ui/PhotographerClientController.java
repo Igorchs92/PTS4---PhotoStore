@@ -137,7 +137,9 @@ public class PhotographerClientController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         client = PhotographerClient.client;
         loadLocalDatabaseInformation();
-        lblToolBarEmail.setText(PhotographerInfo.photographerID);
+        if (PhotographerInfo.photographerID != null){
+            lblToolBarEmail.setText(PhotographerInfo.photographerID);
+        }
         TreeItem ti = new TreeItem();
         tvGroupsAndUIDs.setRoot(ti);
         tvGroupsAndUIDs.setShowRoot(false);
@@ -226,8 +228,8 @@ public class PhotographerClientController implements Initializable {
     }
 
     public void initviews() {
+        int selectedIndex = tvGroupsAndUIDs.getSelectionModel().getSelectedIndex();
         tvGroupsAndUIDs.getRoot().getChildren().clear();
-        FocusModel fm = tvGroupsAndUIDs.getFocusModel();
         observablePictureGroups = FXCollections.observableArrayList(pictureGroups);
         for (PictureGroup pg : pictureGroups) {
             TreeItem ti = new TreeItem(pg);
@@ -239,7 +241,7 @@ public class PhotographerClientController implements Initializable {
         }
         lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
         lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
-        tvGroupsAndUIDs.setFocusModel(fm);
+        tvGroupsAndUIDs.getSelectionModel().clearAndSelect(selectedIndex);
         /*
         final Task<Void> task = new Task<Void>() {
             @Override
@@ -297,7 +299,8 @@ public class PhotographerClientController implements Initializable {
             selectedPG.removePersonalPicture(selectedPP);
             client.savePictureGroup(selectedPG);
             client.savePersonalPictureId(selectedPP.getId());
-            initviews();
+            tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getParent().getChildren().remove(tvGroupsAndUIDs.getSelectionModel().getSelectedItem());
+            tvGroupsAndUIDs.getSelectionModel().selectNext();
         } else {
             InterfaceCall.showAlert("Please select an UID to remove it from the list.");
         }
@@ -328,8 +331,6 @@ public class PhotographerClientController implements Initializable {
             PersonalPicture pp = new PersonalPicture(personalIDS.get(0));
             if (pp != null) {
                 selectedPG.addPersonalPicture(pp);
-                System.out.println("Add personal id working");
-                //client.getLocalDatabase().removePersonalPictureId(personalIDS.get(0));
                 client.removePersonalPictureId(personalIDS.get(0));
                 personalIDS.remove(0);
                 client.savePictureGroup(selectedPG);
@@ -471,6 +472,8 @@ public class PhotographerClientController implements Initializable {
                 lvSavedPictures.setItems(ob);
             }
             client.savePictureGroup(selectedPG);
+            //initviews();
+            tvGroupsAndUIDs.refresh();
         } else {
             InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "You have entered an invalid price.");
         }
@@ -490,6 +493,7 @@ public class PhotographerClientController implements Initializable {
         p.setName(tfModifyPictureInfoName.getText());
         p.setPrice(Double.parseDouble(tfModifyPictureInfoPrice.getText()));
         client.savePictureGroup(selectedPG);
+        initviews();
     }
 
     @FXML
@@ -517,11 +521,13 @@ public class PhotographerClientController implements Initializable {
             ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
             lvSavedPictures.setItems(ob);
         }
+        initviews();
     }
 
     @FXML
     public void logout() {
         client.setSceneLogin();
+        lblToolBarEmail.setText(PhotographerInfo.photographerID);
     }
 
     public boolean autoLogin() {

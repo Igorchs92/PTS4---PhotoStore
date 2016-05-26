@@ -95,15 +95,19 @@ public class ClientLoginController implements Initializable {
 
     @FXML
     private void handleBtnRegisterOnClick(ActionEvent event) throws IOException, ClassNotFoundException {
-        ClientConnector.client.setSceneRegister();
+        if (stage != null){
+            stage.close();
+        } else {
+            ClientConnector.client.setSceneRegister();
+        }
     }
 
     public void setDialogStage(Stage stage) {
         this.stage = stage;
     }
     
-    public void disableRegister(){
-        btnRegister.setDisable(true);
+    public void dialogMode(){
+        btnRegister.setText(getString("cancel"));
     }
 
 }
