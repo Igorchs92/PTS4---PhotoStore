@@ -18,11 +18,11 @@ import java.util.TimeZone;
 public class Picture implements Serializable {
 
     private int id;
-    private final String location;
-    private final String extension;
+    private String location;
+    private String extension;
     private String name;
     private double price;
-    private final Date created;
+    private Date created;
     private boolean uploaded;
     private boolean updated;
 
@@ -90,12 +90,22 @@ public class Picture implements Serializable {
         return df.format(created);
     }
 
+    public void setFile(String location) {
+        this.location = location;
+        this.extension = getFileExtension(new File(location));
+    }
+
+    public void setFile(File file) {
+        this.location = file.toString();
+        this.extension = getFileExtension(file);
+    }
+
     public File getFile() {
         return new File(location);
     }
 
     public String getRelativePath() {
-        return id + "." + extension;
+        return id + "." + extension.toLowerCase();
     }
 
     public boolean isUploaded() {

@@ -11,12 +11,17 @@ import client.photographer.PhotographerClientRunnable;
 import client.photographer.PhotographerInfo;
 import client.ui.InterfaceCall;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -457,7 +462,9 @@ public class PhotographerClientController implements Initializable {
         if (InterfaceCall.isDouble(result.getValue())) {
             String location = client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString();
             Picture p = new Picture(location, result.getKey(), Double.parseDouble(result.getValue()));
+            File path = new File("resources\\pictures\\" + selectedPG.getId() + "\\");
             if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+                path = new File(path + "\\" + Integer.toString(selectedPP.getId()) + "\\");
                 selectedPP.addPicture(p);
                 ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
                 lvSavedPictures.setItems(ob);
@@ -466,6 +473,18 @@ public class PhotographerClientController implements Initializable {
                 ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
                 lvSavedPictures.setItems(ob);
             }
+            int prefix = 0;
+            path.mkdirs();
+            File newFile = new File(path + "\\" + Integer.toString(prefix) + "." + p.getExtension().toLowerCase());
+            while (newFile.exists()) {
+                newFile = new File(path + "\\" + Integer.toString(++prefix) + "." + p.getExtension().toLowerCase());
+            }
+            try {
+                Files.move(p.getFile().toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException ex) {
+                Logger.getLogger(PhotographerClientController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            p.setFile(newFile);
             client.savePictureGroup(selectedPG);
             //initviews();
             tvGroupsAndUIDs.refresh();
@@ -489,6 +508,7 @@ public class PhotographerClientController implements Initializable {
         p.setPrice(Double.parseDouble(tfModifyPictureInfoPrice.getText()));
         client.savePictureGroup(selectedPG);
         lvSavedPictures.refresh();
+
     }
 
     @FXML
