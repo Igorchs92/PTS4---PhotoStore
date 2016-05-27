@@ -139,6 +139,49 @@ public final class LocalDatabase {
         return true;
     }
 
+    public boolean savePictureGroupList(List<PictureGroup> pgl) {
+        try {
+            getConn().setAutoCommit(false);
+            for (PictureGroup pg : pgl) {
+                //create a byte array from the picturegroup object
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(pg);
+                oos.flush();
+                oos.close();
+                bos.close();
+                byte[] data = bos.toByteArray();
+                //check if the picturegroup already exists on the database
+                String sql = "SELECT * from pictureGroup WHERE id = ?;";
+                PreparedStatement ps = getConn().prepareStatement(sql);
+                ps.setInt(1, pg.getId());
+                if (ps.executeQuery().next()) {
+                    //picturegroup exists, update is required
+                    sql = "UPDATE pictureGroup SET obj = ?, photographer = ? WHERE id = ?;";
+                    ps = getConn().prepareStatement(sql);
+                    ps.setObject(1, data);
+                    ps.setString(2, PhotographerInfo.photographerID);
+                    ps.setInt(3, pg.getId());
+                    ps.executeUpdate();
+                } else {
+                    //picturegroup doesnt exist, insert is required
+                    sql = "INSERT INTO pictureGroup (id, obj, photographer) VALUES(?, ?, ?);";
+                    ps = getConn().prepareStatement(sql);
+                    ps.setInt(1, pg.getId());
+                    ps.setObject(2, data);
+                    ps.setString(3, PhotographerInfo.photographerID);
+                    ps.executeUpdate();
+                }
+            }
+            getConn().commit();
+            getConn().setAutoCommit(true);
+        } catch (IOException | SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+
     public boolean savePersonalPictureId(int id) {
         try {
             //check if the id already exists on the database
@@ -153,6 +196,32 @@ public final class LocalDatabase {
                 ps.setString(2, PhotographerInfo.photographerID);
                 ps.executeUpdate();
             }
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean savePersonalPictureIdList(List<Integer> idl) {
+        try {
+            getConn().setAutoCommit(false);
+            //check if the personalPicture already exists on the database
+            String bsql = "INSERT INTO personalid (id, photographer) VALUES(?, ?);";
+            PreparedStatement bps = getConn().prepareStatement(bsql);
+            for (int id : idl) {
+                String sql = "SELECT * from personalid WHERE id = ?;";
+                PreparedStatement ps = getConn().prepareStatement(sql);
+                ps.setInt(1, id);
+                if (!ps.executeQuery().next()) {
+                    bps.setInt(1, id);
+                    bps.setString(2, PhotographerInfo.photographerID);
+                    bps.addBatch();
+                }
+            }
+            bps.executeBatch();
+            getConn().commit();
+            getConn().setAutoCommit(true);
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -179,6 +248,38 @@ public final class LocalDatabase {
                     ps.executeUpdate();
                 }
             }
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean savePictureGroupIdList(List<Integer> idl) {
+        try {
+            getConn().setAutoCommit(false);
+            //check if the personalPicture already exists on the database
+            String bsql = "INSERT INTO groupid (id, photographer) VALUES(?, ?);";
+            PreparedStatement bps = getConn().prepareStatement(bsql);
+            for (int id : idl) {
+                String sql = "SELECT * from groupid WHERE id = ?;";
+                PreparedStatement ps = getConn().prepareStatement(sql);
+                ps.setInt(1, id);
+                if (!ps.executeQuery().next()) {
+                    sql = "SELECT * from pictureGroup WHERE id = ?;";
+                    ps = getConn().prepareStatement(sql);
+                    ps.setInt(1, id);
+                    if (!ps.executeQuery().next()) {
+                        //personalPicture doesnt exist, insert is required
+                        bps.setInt(1, id);
+                        bps.setString(2, PhotographerInfo.photographerID);
+                        bps.addBatch();
+                    }
+                }
+            }
+            bps.executeBatch();
+            getConn().commit();
+            getConn().setAutoCommit(true);
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -334,6 +435,23 @@ public final class LocalDatabase {
             ps = getConn().prepareStatement(sql);
             ps.setInt(1, id);
             ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void removePersonalPictureIdList(List<Integer> idl) {  
+        try {
+            getConn().setAutoCommit(false);
+            String sql = "DELETE FROM personalid WHERE id = ?";
+            PreparedStatement ps = getConn().prepareStatement(sql);
+            for(int id : idl){
+                ps.setInt(1, id);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+            getConn().commit();
+            getConn().setAutoCommit(true);
         } catch (SQLException ex) {
             Logger.getLogger(LocalDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }

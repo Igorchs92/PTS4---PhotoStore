@@ -79,16 +79,18 @@ public class PhotographerClientRunnable implements IClientRunnable {
         try {
             socket.writeObject(PhotographerCall.upload);
             //send the filtered list to the server
-            socket.writeObject(PhotographerClient.client.getPictureGroupList());
-            for (PictureGroup pg : PhotographerClient.client.getPictureGroupList()) {
+            List<PictureGroup> pgl = new ArrayList<>();
+            pgl.addAll(PhotographerClient.client.getPictureGroupList());
+            socket.writeObject(pgl);
+            for (PictureGroup pg : pgl) {
                 for (Picture p : pg.getPictures()) {
                     if (!p.isUploaded() && p.getFile().exists()) {
                         //picture isnt uploaded, send it to the server
                         p.setId((int) socket.readObject());
                         socket.writeFile(p.getFile());
                         //update the uploaded status on the picture
-                        p.setUploaded(true);
                     }
+                    p.setUploaded();
                 }
                 for (PersonalPicture pp : pg.getPersonalPictures()) {
                     for (Picture p : pp.getPictures()) {
@@ -97,17 +99,17 @@ public class PhotographerClientRunnable implements IClientRunnable {
                             p.setId((int) socket.readObject());
                             socket.writeFile(p.getFile());
                             //update the uploaded status on the picture
-                            p.setUploaded(true);
                         }
+                         p.setUploaded();
                     }
                     pp.setUploaded();
                 }
                 if (pg.getPictures().size() >= 1 || pg.getPersonalPictures().size() >= 1) {
                     //save is required, save the new picturegroup on the local database
                     pg.setUploaded();
-                    PhotographerClient.client.getLocalDatabase().savePictureGroup(pg);
                 }
             }
+            PhotographerClient.client.savePictureGroupList(pgl);
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PhotographerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }

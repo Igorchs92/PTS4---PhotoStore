@@ -91,9 +91,9 @@ public class PhotographerClient extends Application implements IClient {
         try {
             if (connectToServer()) {
                 /*
-                sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
-                primaryStage.setScene(sceneLogin);
-                primaryStage.setTitle(title + "Login");
+                 sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
+                 primaryStage.setScene(sceneLogin);
+                 primaryStage.setTitle(title + "Login");
                  */
                 // Load the fxml file and create a new stage for the popup dialog.
                 FXMLLoader loader = new FXMLLoader();
@@ -176,41 +176,39 @@ public class PhotographerClient extends Application implements IClient {
     }
 
     public void savePersonalPictureIdList(List<Integer> idl) {
-        for (int id : idl) {
-            ldb.savePersonalPictureId(id);
-        }
+        ldb.savePersonalPictureIdList(idl);
     }
 
     public void savePersonalPictureId(int id) {
         ldb.savePersonalPictureId(id);
     }
-    
-    public void removePersonalPictureId(int id){
+
+    public void removePersonalPictureId(int id) {
         ldb.removePersonalPictureId(id);
+    }
+    
+    public void removePersonalPictureIdList(List<Integer> idl) {
+        ldb.removePersonalPictureIdList(idl);
     }
 
     public void savePictureGroupIdList(List<Integer> idl) {
-        for (int id : idl) {
-            ldb.savePictureGroupId(id);
-        }
+        ldb.savePictureGroupIdList(idl);
     }
 
     public void savePictureGroupId(int id) {
         ldb.savePictureGroupId(id);
     }
-    
-    public void removePictureGroupId(int id){
+
+    public void removePictureGroupId(int id) {
         ldb.removePictureGroupId(id);
     }
-    
+
     public void removePictureGroup(int id) {
         ldb.removePictureGroup(id);
     }
 
-    public void savePictureGroupList(List<PictureGroup> pgg) {
-        for (PictureGroup pg : pgg) {
-            ldb.savePictureGroup(pg);
-        }
+    public void savePictureGroupList(List<PictureGroup> pgl) {
+        ldb.savePictureGroupList(pgl);
     }
 
     public void savePictureGroup(PictureGroup pg) {

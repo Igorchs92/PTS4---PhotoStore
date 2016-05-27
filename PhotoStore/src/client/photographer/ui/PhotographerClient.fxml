@@ -59,9 +59,9 @@
                            </rowConstraints>
                            <children>
                               <Button fx:id="btnAddID" minWidth="0.0" mnemonicParsing="false" onAction="#addUID" prefHeight="25.0" prefWidth="100.0" text="Add UID" GridPane.columnIndex="1" />
-                              <Button fx:id="btnRemoveID" minWidth="0.0" mnemonicParsing="false" onAction="#removeUID" prefHeight="25.0" prefWidth="100.0" text="Remove UID" GridPane.columnIndex="2" />
+                              <Button fx:id="btnRemoveID" minWidth="0.0" mnemonicParsing="false" onAction="#removeUID" prefHeight="25.0" prefWidth="100.0" text="Remove UID" GridPane.columnIndex="3" />
                               <Button fx:id="btnAddGroup" minWidth="0.0" mnemonicParsing="false" onAction="#addGroup" prefHeight="25.0" prefWidth="100.0" text="Add Group" />
-                              <Button fx:id="btnRemoveGroup" minWidth="0.0" mnemonicParsing="false" onAction="#removeGroup" prefHeight="25.0" prefWidth="100.0" text="Remove Group" GridPane.columnIndex="3" />
+                              <Button fx:id="btnRemoveGroup" minWidth="0.0" mnemonicParsing="false" onAction="#removeGroup" prefHeight="25.0" prefWidth="100.0" text="Remove Group" GridPane.columnIndex="2" />
                            </children>
                         </GridPane>
                         <TreeView fx:id="tvGroupsAndUIDs" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -333,18 +333,18 @@
       </VBox>
       <ToolBar layoutY="565.0" maxWidth="1050.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="35.0" prefWidth="1050.0">
         <items>
-            <GridPane hgap="5.0" prefHeight="25.0" prefWidth="1027.0">
+            <GridPane hgap="5.0" prefHeight="25.0" prefWidth="1038.0">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="949.0" minWidth="10.0" prefWidth="629.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="889.0" minWidth="10.0" prefWidth="120.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="889.0" minWidth="10.0" prefWidth="103.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="889.0" minWidth="10.0" prefWidth="130.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
                </columnConstraints>
                <rowConstraints>
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="763.0" spacing="10.0">
+                  <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="763.0" spacing="20.0">
                      <children>
                         <HBox alignment="CENTER_LEFT">
                            <children>
@@ -368,16 +368,19 @@
                         <Insets />
                      </opaqueInsets>
                      <GridPane.margin>
-                        <Insets left="25.0" />
+                        <Insets />
                      </GridPane.margin>
                   </HBox>
-                  <Button fx:id="btnSignOut" mnemonicParsing="false" onAction="#logout" prefHeight="31.0" prefWidth="117.0" text="Sign in with user" GridPane.columnIndex="2" />
+                  <Button fx:id="btnSignOut" mnemonicParsing="false" onAction="#logout" prefHeight="31.0" prefWidth="120.0" text="Sign in with user" GridPane.columnIndex="2" />
                 <Button fx:id="btnSync" mnemonicParsing="false" onAction="#sync" prefHeight="31.0" prefWidth="163.0" text="Sync with server" GridPane.columnIndex="3" />
                   <ProgressBar fx:id="pbProgress" prefHeight="23.0" prefWidth="147.0" progress="0.0" GridPane.columnIndex="1">
                      <padding>
                         <Insets left="5.0" right="5.0" />
                      </padding></ProgressBar>
                </children>
+               <padding>
+                  <Insets left="30.0" right="30.0" />
+               </padding>
             </GridPane>
         </items>
       </ToolBar>

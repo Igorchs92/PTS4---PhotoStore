@@ -48,18 +48,22 @@ public class PersonalPicture implements Serializable {
     public void addPicture(Picture picture) {
         this.pictures.add(picture);
     }
-    
-    public boolean getUploaded(){
+
+    public boolean getUploaded() {
         return uploaded;
     }
-    
-    public void setUploaded(){
+
+    public void setUploaded() {
         uploaded = true;
     }
 
     @Override
     public String toString() {
-        return id + ": Pictures: " + pictures.size();
+        String t = "";
+        if (!uploaded) {
+            t = "[U] ";
+        }
+        return t + id + ": Pictures: " + pictures.size();
     }
-    
+
 }

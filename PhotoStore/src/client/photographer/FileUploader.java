@@ -79,7 +79,7 @@ public class FileUploader extends Task<List<PictureGroup>> {
                         //picture isnt uploaded, send it to the server
                         socket.writeFile(p.getFile());
                         //update the uploaded status on the picture
-                        p.setUploaded(true);
+                        p.setUploaded();
                         updateProgress(pTotal, ++pUploaded);
                     }
                 }
@@ -89,7 +89,7 @@ public class FileUploader extends Task<List<PictureGroup>> {
                             //picture isnt uploaded, send it to the server
                             socket.writeFile(p.getFile());
                             //update the uploaded status on the picture
-                            p.setUploaded(true);
+                            p.setUploaded();
                             updateProgress(pTotal, ++pUploaded);
                         }
                     }

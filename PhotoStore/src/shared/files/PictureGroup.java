@@ -92,18 +92,22 @@ public class PictureGroup implements Serializable {
     public void removePersonalPicture(PersonalPicture personalPicture) {
         this.personalPictures.remove(personalPicture);
     }
-    
-    public boolean getUploaded(){
+
+    public boolean getUploaded() {
         return uploaded;
     }
-    
-    public void setUploaded(){
+
+    public void setUploaded() {
         uploaded = true;
     }
 
     @Override
     public String toString() {
-        return id + ": " + name + "; Pictures: " + pictures.size() + ", UID's: " + personalPictures.size();
+        String t = "";
+        if (!uploaded) {
+            t = "[U] ";
+        }
+        return t + id + ": " + name + "; Pictures: " + pictures.size() + ", UID's: " + personalPictures.size();
     }
 
 }

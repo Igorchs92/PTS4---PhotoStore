@@ -318,16 +318,18 @@ public class PhotographerClientController implements Initializable {
             return;
         }
         int count = 0;
+        List<Integer> idl = new ArrayList<>();
         while (count < i) {
             PersonalPicture pp = new PersonalPicture(personalIDS.get(0));
             if (pp != null) {
                 selectedPG.addPersonalPicture(pp);
-                client.removePersonalPictureId(personalIDS.get(0));
+                idl.add(personalIDS.get(0));
                 personalIDS.remove(0);
-                client.savePictureGroup(selectedPG);
             }
             count++;
         }
+        client.removePersonalPictureIdList(idl);
+        client.savePictureGroup(selectedPG);
         initviews();
     }
 
@@ -335,7 +337,7 @@ public class PhotographerClientController implements Initializable {
         // Create the custom dialog.
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Add Group");
-        //dialog.setHeaderText("Add a new group.");
+        dialog.setHeaderText("Add a new group.");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         GridPane grid = new GridPane();
@@ -400,34 +402,36 @@ public class PhotographerClientController implements Initializable {
         // Create the custom dialog.
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Add Picture");
-        //dialog.setHeaderText("Add a new picture.");
+        dialog.setHeaderText("Add a new picture.");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(3);
-        grid.setPadding(new Insets(50, 50, 50, 50));
+        grid.setPadding(new Insets(20, 20, 20, 20));
 
         TextField name = new TextField();
         name.setPromptText("Name");
         TextField price = new TextField();
         price.setPromptText("Price");
 
-        double width = 300;
+        double width = 200;
         double height = 300;
         //name.setMaxHeight(value);
         name.setMaxWidth(width);
+        name.setPrefWidth(width);
         //price.setMaxHeight(height);
         price.setMaxWidth(width);
+        price.setPrefWidth(width);
 
         Label lblName = new Label("Name");
-        grid.add(lblName, 0, 1);
-        grid.add(name, 0, 2);
+        grid.add(lblName, 0, 0);
+        grid.add(name, 1, 0);
         lblName.setOpacity(.5);
         Label lblPrice = new Label("Price");
         lblPrice.setOpacity(.5);
-        grid.add(lblPrice, 0, 4);
-        grid.add(price, 0, 5);
+        grid.add(lblPrice, 0, 2);
+        grid.add(price, 1, 2);
 
         dialog.getDialogPane().setContent(grid);
         Platform.runLater(() -> name.requestFocus());
@@ -555,11 +559,13 @@ public class PhotographerClientController implements Initializable {
             pictureGroups.remove(selectedPG);
             List<PersonalPicture> ppl = new ArrayList();
             ppl.addAll(selectedPG.getPersonalPictures());
+            List<Integer> idl = new ArrayList<>();
             for (PersonalPicture pp : ppl) {
-                client.savePersonalPictureId(pp.getId());
+                idl.add(pp.getId());
                 personalIDS.add(pp.getId());
                 Collections.sort(personalIDS);
             }
+            client.savePersonalPictureIdList(idl);
             tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getParent().getChildren().remove(tvGroupsAndUIDs.getSelectionModel().getSelectedItem());
             tvGroupsAndUIDs.getSelectionModel().selectNext();
             lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
@@ -598,11 +604,10 @@ public class PhotographerClientController implements Initializable {
         final Task<Void> task = new Task<Void>() {
             @Override
             public Void call() throws Exception {
-                updateProgress(0, 5);
+                updateProgress(0, 4);
                 if (PhotographerClientRunnable.clientRunnable == null || PhotographerClientRunnable.clientRunnable.getSocket().isClosed()) {
                     System.out.println("autologin");
                     if (!autoLogin()) {
-                        updateProgress(5, 5);
                         return null;
                     }
                 }
@@ -620,6 +625,7 @@ public class PhotographerClientController implements Initializable {
                 Platform.runLater(() -> {
                     loadLocalDatabaseInformation();
                     lvSavedPictures.refresh();
+                    tvGroupsAndUIDs.refresh();
                 });
                 updateProgress(0, 4);
                 return null;
