@@ -469,34 +469,35 @@ public class PhotographerClientController implements Initializable {
             return;
         }
         if (InterfaceCall.isDouble(result.getValue())) {
-            String location = client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString();
-            Picture p = new Picture(location, result.getKey(), Double.parseDouble(result.getValue()));
-            File path = new File("resources\\pictures\\" + selectedPG.getId() + "\\");
-            if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
-                path = new File(path + "\\" + Integer.toString(selectedPP.getId()) + "\\");
-                selectedPP.addPicture(p);
-                ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
-                lvSavedPictures.setItems(ob);
-            } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
-                selectedPG.addPicture(p);
-                ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
-                lvSavedPictures.setItems(ob);
-            }
-            int prefix = 0;
-            path.mkdirs();
-            File newFile = new File(path + "\\" + Integer.toString(prefix) + "." + p.getExtension().toLowerCase());
-            while (newFile.exists()) {
-                newFile = new File(path + "\\" + Integer.toString(++prefix) + "." + p.getExtension().toLowerCase());
-            }
-            try {
-                Files.move(p.getFile().toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException ex) {
-                Logger.getLogger(PhotographerClientController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            p.setFile(newFile);
-            client.savePictureGroup(selectedPG);
-            //initviews();
-            tvGroupsAndUIDs.refresh();
+            new Thread(() -> {
+                String location = client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString();
+                Picture p = new Picture(location, result.getKey(), Double.parseDouble(result.getValue()));
+                File path = new File("resources\\pictures\\" + selectedPG.getId() + "\\");
+                if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+                    path = new File(path + "\\" + Integer.toString(selectedPP.getId()) + "\\");
+                    selectedPP.addPicture(p);
+                    ObservableList ob = FXCollections.observableArrayList(selectedPP.getPictures());
+                    Platform.runLater(() -> lvSavedPictures.setItems(ob));
+                } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
+                    selectedPG.addPicture(p);
+                    ObservableList ob = FXCollections.observableArrayList(selectedPG.getPictures());
+                    Platform.runLater(() -> lvSavedPictures.setItems(ob));
+                }
+                int prefix = 0;
+                path.mkdirs();
+                File newFile = new File(path + "\\" + Integer.toString(prefix) + "." + p.getExtension().toLowerCase());
+                while (newFile.exists()) {
+                    newFile = new File(path + "\\" + Integer.toString(++prefix) + "." + p.getExtension().toLowerCase());
+                }
+                try {
+                    Files.move(p.getFile().toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException ex) {
+                    Logger.getLogger(PhotographerClientController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                p.setFile(newFile);
+                client.savePictureGroup(selectedPG);
+                Platform.runLater(() -> tvGroupsAndUIDs.refresh());
+            }).start();
         } else {
             InterfaceCall.showAlert(Alert.AlertType.INFORMATION, "You have entered an invalid price.");
         }
@@ -633,10 +634,12 @@ public class PhotographerClientController implements Initializable {
         final Task<Void> task = new Task<Void>() {
             @Override
             public Void call() throws Exception {
+                btnSync.setDisable(true);
                 updateProgress(0, 4);
                 if (PhotographerClientRunnable.clientRunnable == null || PhotographerClientRunnable.clientRunnable.getSocket().isClosed()) {
                     System.out.println("autologin");
                     if (!autoLogin()) {
+                        btnSync.setDisable(false);
                         return null;
                     }
                 }
@@ -657,6 +660,7 @@ public class PhotographerClientController implements Initializable {
                     tvGroupsAndUIDs.refresh();
                 });
                 updateProgress(0, 4);
+                btnSync.setDisable(false);
                 return null;
             }
         };
