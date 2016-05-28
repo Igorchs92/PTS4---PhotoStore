@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import client.ClientConnector;
 import static client.ClientConnector.socket;
 import client.IClient;
+import client.photographer.ui.PhotographerClientController;
 import client.ui.ClientLoginController;
 import client.ui.InterfaceCall;
 import java.io.File;
@@ -53,6 +54,11 @@ public class PhotographerClient extends Application implements IClient {
     public void start(Stage stage) throws Exception {
         client = this;
         ldb = new LocalDatabase();
+        String location = getLocation();
+        if (!location.isEmpty()) {
+            selectedDirectory = new File(location);
+            localfilemanager = new LocalFileManager(location);
+        }
         pgl = ldb.getPictureGroups();
         AvailablePersonalID = ldb.getPersonalID();
         AvailableGroupID = ldb.getGroupID();
@@ -87,35 +93,32 @@ public class PhotographerClient extends Application implements IClient {
         }
     }
 
-    public void setSceneLogin() {
-        new Thread(() -> {
-
-            if (connectToServer()) {
-                Platform.runLater(() -> {
-                    try {
-                        FXMLLoader loader = new FXMLLoader();
-                        loader.setLocation(PhotographerClient.class.getResource("../ui/ClientLogin.fxml"));
-                        AnchorPane page = (AnchorPane) loader.load();
-                        // Create the dialog Stage.
-                        Stage stage = new Stage();
-                        stage.initModality(Modality.WINDOW_MODAL);
-                        stage.initOwner(primaryStage);
-                        Scene scene = new Scene(page);
-                        stage.setScene(scene);
-                        stage.setTitle(title + " - Login");
-                        ClientLoginController controller = loader.getController();
-                        controller.setDialogStage(stage);
-                        // Show the dialog and wait until the user closes it
-                        controller.dialogMode();
-                        stage.showAndWait();
-                    } catch (IOException ex) {
-                        Logger.getLogger(PhotographerClient.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                });
-            } else {
-                Platform.runLater(() ->(InterfaceCall.connectionFailed()));
-            }
-        }).start();
+    public void showLogin() {
+        if (connectToServer()) {
+            Platform.runLater(() -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(PhotographerClient.class.getResource("../ui/ClientLogin.fxml"));
+                    AnchorPane page = (AnchorPane) loader.load();
+                    // Create the dialog Stage.
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.WINDOW_MODAL);
+                    stage.initOwner(primaryStage);
+                    Scene scene = new Scene(page);
+                    stage.setScene(scene);
+                    stage.setTitle(title + " - Login");
+                    ClientLoginController controller = loader.getController();
+                    controller.setDialogStage(stage);
+                    // Show the dialog and wait until the user closes it
+                    controller.dialogMode();
+                    stage.showAndWait();
+                } catch (IOException ex) {
+                    Logger.getLogger(PhotographerClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+        } else {
+            Platform.runLater(() -> (InterfaceCall.connectionFailed()));
+        }
     }
 
     public void setSceneMain() {
@@ -125,7 +128,7 @@ public class PhotographerClient extends Application implements IClient {
 
     @Override
     public void loggedIn() {
-
+        PhotographerClientController.controller.sync();
     }
 
     @Override
@@ -143,7 +146,7 @@ public class PhotographerClient extends Application implements IClient {
     }
 
     public List<PictureGroup> getPictureGroupList() {
-        return pgl;
+        return ldb.getPictureGroups();
     }
 
     public List<Integer> getAvailablGroupIDList() {
@@ -212,6 +215,14 @@ public class PhotographerClient extends Application implements IClient {
 
     public void savePictureGroup(PictureGroup pg) {
         ldb.savePictureGroup(pg);
+    }
+
+    public void saveLocation(String location) {
+        ldb.saveLocation(location);
+    }
+
+    public String getLocation() {
+        return ldb.getLocation();
     }
 
     public void chooseDirectory() {

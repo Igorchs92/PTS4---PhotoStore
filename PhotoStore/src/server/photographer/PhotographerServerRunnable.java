@@ -53,7 +53,6 @@ public class PhotographerServerRunnable implements Observer, Runnable {
                     }
                     case createTonsOfGroups: {
                         String s = socket.readObject().toString();
-                        dbm.makeTonsOfGroup(s);
                         List<Integer> groupNumbers = dbm.getGroups(s);
                         socket.writeObject(groupNumbers);
                         break;

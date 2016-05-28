@@ -16,6 +16,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +61,7 @@ import shared.files.PictureGroup;
  */
 public class PhotographerClientController implements Initializable {
 
+    public static PhotographerClientController controller;
     //WatchService part  +++++++
     ObservableList<Path> picturesPath;
     //WatchService part  +++++++
@@ -145,16 +147,21 @@ public class PhotographerClientController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        controller = this;
         client = PhotographerClient.client;
         loadLocalDatabaseInformation();
-        if (PhotographerInfo.photographerID != null) {
-            lblToolBarEmail.setText(PhotographerInfo.photographerID);
+        if (client.localfilemanager != null) {
+            picturesPath = client.localfilemanager.getPicture();
+            this.lvImageSelect.setItems(this.picturesPath);
+            tfImageSelectPathLocation.setText(client.selectedDirectory.toString());
         }
+        pbProgress.setVisible(false);
         defaultImage = ivImagePreview.getImage();
         TreeItem ti = new TreeItem();
         tvGroupsAndUIDs.setRoot(ti);
         tvGroupsAndUIDs.setShowRoot(false);
-        lvImageSelect.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+
+        ChangeListener clImageSelect = new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 System.out.println(client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
@@ -163,10 +170,12 @@ public class PhotographerClientController implements Initializable {
                 Image img = new Image(file.toURI().toString(), ivImagePreview.getFitWidth(), ivImagePreview.getFitHeight(), true, false, true);
                 ivImagePreview.setImage(img);
             }
-        });
+        };
+        lvImageSelect.getSelectionModel().selectedItemProperty().addListener(clImageSelect);
+        lvImageSelect.focusedProperty().addListener(clImageSelect);
 
         //on click change textfield name and description of selected group number
-        tvGroupsAndUIDs.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+        ChangeListener clGroupsAndUIDs = new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 ivImagePreview.setImage(defaultImage);
@@ -196,22 +205,11 @@ public class PhotographerClientController implements Initializable {
                     }
                 }
             }
-        });
-        /*
-        lvImageSelect.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
-            @Override
-            public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-                
-                tfModifyPictureInfoCreatedOn.setText(null);
-                tfModifyPictureInfoName.setText(null);
-                tfModifyPictureInfoPrice.setText(null);
-                tfModifyPictureInfoFileLocation.setText(client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
-                Path file = Paths.get(client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
-                
-            }
-        });
-         */
-        lvSavedPictures.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+        };
+        tvGroupsAndUIDs.getSelectionModel().selectedItemProperty().addListener(clGroupsAndUIDs);
+        tvGroupsAndUIDs.focusedProperty().addListener(clGroupsAndUIDs);
+        
+        ChangeListener clSavedPictures = new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 if (lvSavedPictures.getSelectionModel().getSelectedItem() != null) {
@@ -220,7 +218,7 @@ public class PhotographerClientController implements Initializable {
                     tfModifyPictureInfoCreatedOn.setText(p.getCreatedString());
                     tfModifyPictureInfoFileLocation.setText(p.getLocation());
                     tfModifyPictureInfoName.setText(p.getName());
-                    tfModifyPictureInfoPrice.setText(Double.toString(p.getPrice()));
+                    tfModifyPictureInfoPrice.setText(new DecimalFormat("0.00").format(p.getPrice()));
                     File file = new File(lvSavedPictures.getSelectionModel().getSelectedItem().getLocation());
                     Image img = new Image(file.toURI().toString(), ivImagePreview.getFitWidth(), ivImagePreview.getFitHeight(), true, false, true);
                     ivImagePreview.setImage(img);
@@ -233,14 +231,17 @@ public class PhotographerClientController implements Initializable {
                 }
 
             }
-        });
-
+        };
+        lvSavedPictures.getSelectionModel().selectedItemProperty().addListener(clSavedPictures);
+        lvSavedPictures.focusedProperty().addListener(clSavedPictures);
         lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
         lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
         initviews();
     }
 
     public void initviews() {
+        taGroupInfoDescription.setText("");
+        tfGroupInfoName.setText("");
         int selectedIndex = tvGroupsAndUIDs.getSelectionModel().getSelectedIndex();
         tvGroupsAndUIDs.getRoot().getChildren().clear();
         observablePictureGroups = FXCollections.observableArrayList(pictureGroups);
@@ -255,24 +256,19 @@ public class PhotographerClientController implements Initializable {
         lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
         lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
         tvGroupsAndUIDs.getSelectionModel().clearAndSelect(selectedIndex);
-        /*
-        final Task<Void> task = new Task<Void>() {
-            @Override
-            public Void call() throws Exception {
-                Platform.runLater(() -> {
-
-                });
-                return null;
-            }
-        };
-        new Thread(task).start();
-         */
+        tvGroupsAndUIDs.requestFocus();
+        tvGroupsAndUIDs.refresh();
+        tfModifyPictureInfoName.setText("");
+        tfModifyPictureInfoPrice.setText("");
+        tfModifyPictureInfoFileLocation.setText("");
+        tfModifyPictureInfoCreatedOn.setText("");
     }
 
     public void saveAllLocal() {
         final Task<Void> task = new Task<Void>() {
             @Override
             public Void call() throws Exception {
+                pbProgress.setVisible(true);
                 updateProgress(0, 3);
                 client.savePictureGroupIdList(groupIDS);
                 updateProgress(1, 3);
@@ -280,6 +276,7 @@ public class PhotographerClientController implements Initializable {
                 updateProgress(2, 3);
                 client.savePictureGroupList(pictureGroups);
                 updateProgress(3, 3);
+                pbProgress.setVisible(false);
                 return null;
             }
         };
@@ -289,17 +286,23 @@ public class PhotographerClientController implements Initializable {
     }
 
     public void loadLocalDatabaseInformation() {
-        pictureGroups = client.getPictureGroupList();
-        groupIDS = client.getAvailablGroupIDList();
-        personalIDS = client.getAvailablePersonalIDList();
-        lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
-        lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
+        if (PhotographerInfo.photographerID != null) {
+            lblToolBarEmail.setText(PhotographerInfo.photographerID);
+            pictureGroups = client.getPictureGroupList();
+            groupIDS = client.getAvailablGroupIDList();
+            personalIDS = client.getAvailablePersonalIDList();
+            lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
+            lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
+        } else {
+            btnSync.setDisable(true);
+        }
     }
 
     @FXML
     public void chooseDirectory() {
         client.chooseDirectory();
         if (client.localfilemanager != null) {
+            client.saveLocation(client.selectedDirectory.toString());
             picturesPath = client.localfilemanager.getPicture();
             this.lvImageSelect.setItems(this.picturesPath);
             tfImageSelectPathLocation.setText(client.selectedDirectory.toString());
@@ -472,7 +475,7 @@ public class PhotographerClientController implements Initializable {
             new Thread(() -> {
                 String location = client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString();
                 Picture p = new Picture(location, result.getKey(), Double.parseDouble(result.getValue()));
-                File path = new File("resources\\pictures\\" + selectedPG.getId() + "\\");
+                File path = new File("resources\\" + PhotographerInfo.photographerID + "\\" + selectedPG.getId() + "\\");
                 if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
                     path = new File(path + "\\" + Integer.toString(selectedPP.getId()) + "\\");
                     selectedPP.addPicture(p);
@@ -607,8 +610,15 @@ public class PhotographerClientController implements Initializable {
 
     @FXML
     public void logout() {
-        client.setSceneLogin();
-        lblToolBarEmail.setText(PhotographerInfo.photographerID);
+        new Thread(() -> {
+            btnSignOut.setDisable(true);
+            btnSync.setDisable(true);
+            client.showLogin();
+            btnSignOut.setDisable(false);
+            if (!groupIDS.isEmpty() || !personalIDS.isEmpty()) {
+                btnSync.setDisable(false);
+            }
+        }).start();
     }
 
     public boolean autoLogin() {
@@ -619,7 +629,7 @@ public class PhotographerClientController implements Initializable {
             return false;
         }
         if (PhotographerInfo.photographerID.isEmpty() || PhotographerInfo.photographerPass.isEmpty()) {
-            client.setSceneLogin();
+            client.showLogin();
             return false;
         }
         IClientRunnable clientRunnable = PhotographerClientRunnable.clientRunnable;
@@ -634,12 +644,16 @@ public class PhotographerClientController implements Initializable {
         final Task<Void> task = new Task<Void>() {
             @Override
             public Void call() throws Exception {
+                btnSignOut.setDisable(true);
                 btnSync.setDisable(true);
+                pbProgress.setVisible(true);
                 updateProgress(0, 4);
                 if (PhotographerClientRunnable.clientRunnable == null || PhotographerClientRunnable.clientRunnable.getSocket().isClosed()) {
                     System.out.println("autologin");
                     if (!autoLogin()) {
+                        btnSignOut.setDisable(false);
                         btnSync.setDisable(false);
+                        pbProgress.setVisible(false);
                         return null;
                     }
                 }
@@ -656,11 +670,14 @@ public class PhotographerClientController implements Initializable {
                 System.out.println("reload from local database");
                 Platform.runLater(() -> {
                     loadLocalDatabaseInformation();
+                    initviews();
                     lvSavedPictures.refresh();
                     tvGroupsAndUIDs.refresh();
                 });
                 updateProgress(0, 4);
+                btnSignOut.setDisable(false);
                 btnSync.setDisable(false);
+                pbProgress.setVisible(false);
                 return null;
             }
         };

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.text.NumberFormat;
 
 /**
  *
@@ -140,7 +141,7 @@ public class Picture implements Serializable {
     @Override
     public String toString() {
         String t = "";
-        String s = name + " - €" + price + "";
+        String s = name + " - " + NumberFormat.getCurrencyInstance().format(price) + "";
         if (id != 0) {
             if (uploaded && !updated) {
                 t = "[C] ";
