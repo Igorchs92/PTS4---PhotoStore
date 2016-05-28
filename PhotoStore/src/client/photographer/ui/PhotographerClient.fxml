@@ -102,7 +102,10 @@
                         <VBox GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <children>
                               <Label text="Description" textFill="#0000004d" />
-                              <TextArea fx:id="taGroupInfoDescription" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                              <TextArea fx:id="taGroupInfoDescription" editable="false" prefHeight="200.0" prefWidth="200.0">
+                                 <font>
+                                    <Font size="11.0" />
+                                 </font></TextArea>
                            </children>
                         </VBox>
                      </children>

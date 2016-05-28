@@ -88,35 +88,34 @@ public class PhotographerClient extends Application implements IClient {
     }
 
     public void setSceneLogin() {
-        try {
+        new Thread(() -> {
+
             if (connectToServer()) {
-                /*
-                 sceneLogin = new Scene(FXMLLoader.load(getClass().getResource("../ui/ClientLogin.fxml")));
-                 primaryStage.setScene(sceneLogin);
-                 primaryStage.setTitle(title + "Login");
-                 */
-                // Load the fxml file and create a new stage for the popup dialog.
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(PhotographerClient.class.getResource("../ui/ClientLogin.fxml"));
-                AnchorPane page = (AnchorPane) loader.load();
-                // Create the dialog Stage.
-                Stage stage = new Stage();
-                stage.initModality(Modality.WINDOW_MODAL);
-                stage.initOwner(primaryStage);
-                Scene scene = new Scene(page);
-                stage.setScene(scene);
-                stage.setTitle(title + " - Login");
-                ClientLoginController controller = loader.getController();
-                controller.setDialogStage(stage);
-                // Show the dialog and wait until the user closes it
-                controller.dialogMode();
-                stage.showAndWait();
+                Platform.runLater(() -> {
+                    try {
+                        FXMLLoader loader = new FXMLLoader();
+                        loader.setLocation(PhotographerClient.class.getResource("../ui/ClientLogin.fxml"));
+                        AnchorPane page = (AnchorPane) loader.load();
+                        // Create the dialog Stage.
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.WINDOW_MODAL);
+                        stage.initOwner(primaryStage);
+                        Scene scene = new Scene(page);
+                        stage.setScene(scene);
+                        stage.setTitle(title + " - Login");
+                        ClientLoginController controller = loader.getController();
+                        controller.setDialogStage(stage);
+                        // Show the dialog and wait until the user closes it
+                        controller.dialogMode();
+                        stage.showAndWait();
+                    } catch (IOException ex) {
+                        Logger.getLogger(PhotographerClient.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
             } else {
-                InterfaceCall.connectionFailed();
+                Platform.runLater(() ->(InterfaceCall.connectionFailed()));
             }
-        } catch (IOException ex) {
-            Logger.getLogger(PhotographerClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }).start();
     }
 
     public void setSceneMain() {
@@ -186,7 +185,7 @@ public class PhotographerClient extends Application implements IClient {
     public void removePersonalPictureId(int id) {
         ldb.removePersonalPictureId(id);
     }
-    
+
     public void removePersonalPictureIdList(List<Integer> idl) {
         ldb.removePersonalPictureIdList(idl);
     }

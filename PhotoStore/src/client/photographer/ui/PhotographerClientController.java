@@ -78,6 +78,7 @@ public class PhotographerClientController implements Initializable {
 
     ObservableList observablePersonalIDS;
     ObservableList observablePictureGroups;
+    Image defaultImage;
 
     @FXML
     private TextField tfGroupInfoName = new TextField();
@@ -149,6 +150,7 @@ public class PhotographerClientController implements Initializable {
         if (PhotographerInfo.photographerID != null) {
             lblToolBarEmail.setText(PhotographerInfo.photographerID);
         }
+        defaultImage = ivImagePreview.getImage();
         TreeItem ti = new TreeItem();
         tvGroupsAndUIDs.setRoot(ti);
         tvGroupsAndUIDs.setShowRoot(false);
@@ -157,7 +159,8 @@ public class PhotographerClientController implements Initializable {
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 System.out.println(client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
                 File file = new File(client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
-                Image img = new Image(file.toURI().toString());
+                // img = new Image(file.toURI().toString());
+                Image img = new Image(file.toURI().toString(), ivImagePreview.getFitWidth(), ivImagePreview.getFitHeight(), true, false, true);
                 ivImagePreview.setImage(img);
             }
         });
@@ -166,6 +169,7 @@ public class PhotographerClientController implements Initializable {
         tvGroupsAndUIDs.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                ivImagePreview.setImage(defaultImage);
                 if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null) {
                     if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
                         PictureGroup pg = (PictureGroup) tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue();
@@ -218,7 +222,7 @@ public class PhotographerClientController implements Initializable {
                     tfModifyPictureInfoName.setText(p.getName());
                     tfModifyPictureInfoPrice.setText(Double.toString(p.getPrice()));
                     File file = new File(lvSavedPictures.getSelectionModel().getSelectedItem().getLocation());
-                    Image img = new Image(file.toURI().toString());
+                    Image img = new Image(file.toURI().toString(), ivImagePreview.getFitWidth(), ivImagePreview.getFitHeight(), true, false, true);
                     ivImagePreview.setImage(img);
 
                 } else {
@@ -322,20 +326,22 @@ public class PhotographerClientController implements Initializable {
             InterfaceCall.showAlert("Sync with the server to retrieve more UID's.");
             return;
         }
-        int count = 0;
-        List<Integer> idl = new ArrayList<>();
-        while (count < i) {
-            PersonalPicture pp = new PersonalPicture(personalIDS.get(0));
-            if (pp != null) {
-                selectedPG.addPersonalPicture(pp);
-                idl.add(personalIDS.get(0));
-                personalIDS.remove(0);
+        new Thread(() -> {
+            int count = 0;
+            List<Integer> idl = new ArrayList<>();
+            while (count < i) {
+                PersonalPicture pp = new PersonalPicture(personalIDS.get(0));
+                if (pp != null) {
+                    selectedPG.addPersonalPicture(pp);
+                    idl.add(personalIDS.get(0));
+                    personalIDS.remove(0);
+                }
+                count++;
             }
-            count++;
-        }
-        client.removePersonalPictureIdList(idl);
-        client.savePictureGroup(selectedPG);
-        initviews();
+            client.removePersonalPictureIdList(idl);
+            client.savePictureGroup(selectedPG);
+            Platform.runLater(() -> (initviews()));
+        }).start();
     }
 
     public Pair<String, String> addGroupDialog() {
@@ -396,11 +402,14 @@ public class PhotographerClientController implements Initializable {
         pg = new PictureGroup(groupIDS.get(0));
         pg.setName(result.getKey());
         pg.setDescription(result.getValue());
-        client.removePictureGroupId(groupIDS.get(0));
-        groupIDS.remove(0);
-        pictureGroups.add(pg);
-        client.savePictureGroup(pg);
-        initviews();
+        final PictureGroup fpg = pg;
+        new Thread(() -> {
+            client.removePictureGroupId(groupIDS.get(0));
+            groupIDS.remove(0);
+            pictureGroups.add(fpg);
+            client.savePictureGroup(fpg);
+            Platform.runLater(() -> (initviews()));
+        }).start();
     }
 
     public Pair<String, String> addPictureDialog() {

@@ -440,12 +440,12 @@ public final class LocalDatabase {
         }
     }
 
-    public void removePersonalPictureIdList(List<Integer> idl) {  
+    public void removePersonalPictureIdList(List<Integer> idl) {
         try {
             getConn().setAutoCommit(false);
             String sql = "DELETE FROM personalid WHERE id = ?";
             PreparedStatement ps = getConn().prepareStatement(sql);
-            for(int id : idl){
+            for (int id : idl) {
                 ps.setInt(1, id);
                 ps.addBatch();
             }
