@@ -39,14 +39,9 @@ public class FileScanner implements Runnable {
             WatchService watcher = FileSystems.getDefault().newWatchService();
             Path dir = Paths.get(directoryPath);
             dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-
-            System.out.println("Watch Service registered for dir: " + dir.getFileName());
             for (File f : dir.toFile().listFiles()) {
                 addToList(f.toPath());
-                System.out.println("Found an initial file: " + f.getPath());
             }
-            System.out.println(filePaths.size());
-
             while (true) {
                 WatchKey key;
                 try {
@@ -66,25 +61,19 @@ public class FileScanner implements Runnable {
                     Platform.runLater(() -> {
                         if (kind == ENTRY_CREATE) {
                             addToList(fileName);
-                            System.out.println(filePaths.size());
                         } else if (kind == ENTRY_DELETE) {
                             DeleteFromList(fileName);
-                            System.out.println(filePaths.size());
                         } else if (kind == ENTRY_MODIFY) {
                             DeleteFromList(fileName);
                             addToList(new File(dir.toString() + "\\" + fileName.toString()).toPath());
-                            System.out.println("My source file has changed!!!");
-                            System.out.println(filePaths.size());
                         }
                     });
                 }
-
                 boolean valid = key.reset();
                 if (!valid) {
                     break;
                 }
             }
-
         } catch (IOException ex) {
             System.err.println(ex);
         }
@@ -93,12 +82,8 @@ public class FileScanner implements Runnable {
     private void addToList(Path p) {
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{BIN,TXT,JPG}");
         //TODO: change this to use the enum with supported path exstentions when it's available
-
-        if (matcher.matches(p)) {
-            if  (!filePaths.contains(p)){
-                filePaths.add(p.getFileName());
-            }
-            System.out.println("path added to list: " + p);
+        if (matcher.matches(p) && !filePaths.contains(p)) {
+            filePaths.add(p.getFileName());
         }
     }
 

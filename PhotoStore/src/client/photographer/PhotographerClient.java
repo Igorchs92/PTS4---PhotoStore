@@ -227,8 +227,9 @@ public class PhotographerClient extends Application implements IClient {
 
     public void chooseDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        selectedDirectory = directoryChooser.showDialog(primaryStage);
-        if (selectedDirectory != null) {
+        File dir = directoryChooser.showDialog(primaryStage);
+        if (dir != null) {
+            selectedDirectory = dir;
             localfilemanager = new LocalFileManager(selectedDirectory.toString());
         }
     }

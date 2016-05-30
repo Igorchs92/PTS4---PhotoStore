@@ -68,18 +68,11 @@ public class PhotographerClientController implements Initializable {
     PhotographerClient client;
     PersonalPicture selectedPP;
     PictureGroup selectedPG;
-
-    /*
-     private ListView<PersonalPicture> lvBoundUniqueIDs = new ListView();
-     private ListView<PictureGroup> lvGroups = new ListView();
-     */
     List<Integer> groupIDS = new ArrayList();
     List<Integer> personalIDS = new ArrayList();
     List<PictureGroup> pictureGroups = new ArrayList();
     List<PersonalPicture> selectedPersonalIDS = new ArrayList();
-
     ObservableList observablePersonalIDS;
-    ObservableList observablePictureGroups;
     Image defaultImage;
 
     @FXML
@@ -160,15 +153,18 @@ public class PhotographerClientController implements Initializable {
         TreeItem ti = new TreeItem();
         tvGroupsAndUIDs.setRoot(ti);
         tvGroupsAndUIDs.setShowRoot(false);
+        lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
+        lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
+        initviews();
 
         ChangeListener clImageSelect = new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-                System.out.println(client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
-                File file = new File(client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
-                // img = new Image(file.toURI().toString());
-                Image img = new Image(file.toURI().toString(), ivImagePreview.getFitWidth(), ivImagePreview.getFitHeight(), true, false, true);
-                ivImagePreview.setImage(img);
+                if (lvImageSelect.getSelectionModel().getSelectedItem() != null && lvImageSelect.isFocused()) {
+                    File file = new File(client.selectedDirectory.toString() + "\\" + lvImageSelect.getSelectionModel().getSelectedItem().toString());
+                    Image img = new Image(file.toURI().toString(), ivImagePreview.getFitWidth(), ivImagePreview.getFitHeight(), true, false, true);
+                    ivImagePreview.setImage(img);
+                }
             }
         };
         lvImageSelect.getSelectionModel().selectedItemProperty().addListener(clImageSelect);
@@ -179,7 +175,7 @@ public class PhotographerClientController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 ivImagePreview.setImage(defaultImage);
-                if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null) {
+                if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null && tvGroupsAndUIDs.isFocused()) {
                     if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
                         PictureGroup pg = (PictureGroup) tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue();
                         tfGroupInfoName.setText(pg.getName());
@@ -188,10 +184,7 @@ public class PhotographerClientController implements Initializable {
                         selectedPersonalIDS = selectedPG.getPersonalPictures();
                         ObservableList ob = FXCollections.observableArrayList(pg.getPictures());
                         lvSavedPictures.setItems(ob);
-                    }
-                }
-                if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem() != null) {
-                    if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+                    } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
                         PersonalPicture pp = (PersonalPicture) tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue();
                         ObservableList ob = FXCollections.observableArrayList(pp.getPictures());
                         lvSavedPictures.setItems(ob);
@@ -208,20 +201,21 @@ public class PhotographerClientController implements Initializable {
         };
         tvGroupsAndUIDs.getSelectionModel().selectedItemProperty().addListener(clGroupsAndUIDs);
         tvGroupsAndUIDs.focusedProperty().addListener(clGroupsAndUIDs);
-        
+
         ChangeListener clSavedPictures = new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
                 if (lvSavedPictures.getSelectionModel().getSelectedItem() != null) {
-
-                    Picture p = lvSavedPictures.getSelectionModel().getSelectedItem();
-                    tfModifyPictureInfoCreatedOn.setText(p.getCreatedString());
-                    tfModifyPictureInfoFileLocation.setText(p.getLocation());
-                    tfModifyPictureInfoName.setText(p.getName());
-                    tfModifyPictureInfoPrice.setText(new DecimalFormat("0.00").format(p.getPrice()));
-                    File file = new File(lvSavedPictures.getSelectionModel().getSelectedItem().getLocation());
-                    Image img = new Image(file.toURI().toString(), ivImagePreview.getFitWidth(), ivImagePreview.getFitHeight(), true, false, true);
-                    ivImagePreview.setImage(img);
+                    if (lvSavedPictures.isFocused()) {
+                        Picture p = lvSavedPictures.getSelectionModel().getSelectedItem();
+                        tfModifyPictureInfoCreatedOn.setText(p.getCreatedString());
+                        tfModifyPictureInfoFileLocation.setText(p.getLocation());
+                        tfModifyPictureInfoName.setText(p.getName());
+                        tfModifyPictureInfoPrice.setText(new DecimalFormat("0.00").format(p.getPrice()));
+                        File file = new File(lvSavedPictures.getSelectionModel().getSelectedItem().getLocation());
+                        Image img = new Image(file.toURI().toString(), ivImagePreview.getFitWidth(), ivImagePreview.getFitHeight(), true, false, true);
+                        ivImagePreview.setImage(img);
+                    }
 
                 } else {
                     tfModifyPictureInfoName.setText("");
@@ -229,22 +223,16 @@ public class PhotographerClientController implements Initializable {
                     tfModifyPictureInfoFileLocation.setText("");
                     tfModifyPictureInfoCreatedOn.setText("");
                 }
-
             }
         };
         lvSavedPictures.getSelectionModel().selectedItemProperty().addListener(clSavedPictures);
         lvSavedPictures.focusedProperty().addListener(clSavedPictures);
-        lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
-        lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
-        initviews();
     }
 
     public void initviews() {
         taGroupInfoDescription.setText("");
         tfGroupInfoName.setText("");
-        int selectedIndex = tvGroupsAndUIDs.getSelectionModel().getSelectedIndex();
         tvGroupsAndUIDs.getRoot().getChildren().clear();
-        observablePictureGroups = FXCollections.observableArrayList(pictureGroups);
         for (PictureGroup pg : pictureGroups) {
             TreeItem ti = new TreeItem(pg);
             for (PersonalPicture pp : pg.getPersonalPictures()) {
@@ -255,13 +243,16 @@ public class PhotographerClientController implements Initializable {
         }
         lblToolBarUIDRemaining.setText(Integer.toString(personalIDS.size()));
         lblToolBarGroupsRemaining.setText(Integer.toString(groupIDS.size()));
-        tvGroupsAndUIDs.getSelectionModel().clearAndSelect(selectedIndex);
-        tvGroupsAndUIDs.requestFocus();
-        tvGroupsAndUIDs.refresh();
+        tvGroupsAndUIDs.getSelectionModel().selectFirst();
+
         tfModifyPictureInfoName.setText("");
         tfModifyPictureInfoPrice.setText("");
         tfModifyPictureInfoFileLocation.setText("");
         tfModifyPictureInfoCreatedOn.setText("");
+        Platform.runLater(() -> {
+            tvGroupsAndUIDs.requestFocus();
+            tvGroupsAndUIDs.getFocusModel().focus(0);
+        });
     }
 
     public void saveAllLocal() {
@@ -338,12 +329,17 @@ public class PhotographerClientController implements Initializable {
                     selectedPG.addPersonalPicture(pp);
                     idl.add(personalIDS.get(0));
                     personalIDS.remove(0);
+                    TreeItem ti = new TreeItem<>(pp);
+                    if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PictureGroup) {
+                        tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getChildren().add(ti);
+                    } else if (tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getValue() instanceof PersonalPicture) {
+                        tvGroupsAndUIDs.getSelectionModel().getSelectedItem().getParent().getChildren().add(ti);
+                    }
                 }
                 count++;
             }
             client.removePersonalPictureIdList(idl);
             client.savePictureGroup(selectedPG);
-            Platform.runLater(() -> (initviews()));
         }).start();
     }
 
@@ -405,13 +401,14 @@ public class PhotographerClientController implements Initializable {
         pg = new PictureGroup(groupIDS.get(0));
         pg.setName(result.getKey());
         pg.setDescription(result.getValue());
+        TreeItem ti = new TreeItem(pg);
+        tvGroupsAndUIDs.getRoot().getChildren().add(ti);
         final PictureGroup fpg = pg;
         new Thread(() -> {
             client.removePictureGroupId(groupIDS.get(0));
             groupIDS.remove(0);
             pictureGroups.add(fpg);
             client.savePictureGroup(fpg);
-            Platform.runLater(() -> (initviews()));
         }).start();
     }
 
