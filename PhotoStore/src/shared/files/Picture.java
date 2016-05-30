@@ -40,6 +40,16 @@ public class Picture implements Serializable {
         this.uploaded = false;
         this.updated = true;
     }
+    
+   
+    public Picture(int id, String extension, String name, double price, Date created) {
+        this.id = id;
+        this.extension = extension;
+        this.name = name;
+        this.price = price;
+        this.created = created;
+        this.uploaded = true;
+    }    
 
     public int getId() {
         return id;
@@ -52,7 +62,7 @@ public class Picture implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
+    
     public String getExtension() {
         return extension;
     }

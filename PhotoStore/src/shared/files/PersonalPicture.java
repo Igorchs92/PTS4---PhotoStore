@@ -19,8 +19,8 @@ public class PersonalPicture implements Serializable {
     private List<Picture> pictures;
     private boolean uploaded;
 
-    public PersonalPicture(int idnumber) {
-        this.id = idnumber;
+    public PersonalPicture(int id) {
+        this.id = id;
         pictures = new ArrayList();
         uploaded = false;
     }
