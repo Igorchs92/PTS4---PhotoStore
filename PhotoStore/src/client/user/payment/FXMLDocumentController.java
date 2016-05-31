@@ -35,9 +35,7 @@ public class FXMLDocumentController implements Initializable, StoreGUI {
     private ListView CARTLIST = new ListView();
     
     @FXML
-    private Label CARTTOTAL;
-    
-    private StoreCart sc;
+    private Label CARTTOTAL;    
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -57,15 +55,15 @@ public class FXMLDocumentController implements Initializable, StoreGUI {
 
     } 
     
-    public void setStoreCart(StoreCart sc) {
-        this.sc = sc;
+    public void setStoreCart() {        
         //GUI:
         submit.setDisable(true);
-        CARTTOTAL.setText("Total $" + sc.getTotal());
-        CARTLIST.getItems().setAll(sc.getList());
-        pc = new PaymentController(this, sc);
+        CARTTOTAL.setText("Total $" + StoreCart.getTotal());
+        CARTLIST.getItems().setAll(StoreCart.getList());
+        pc = new PaymentController(this);
         setErrorMessage("Connecting to payment processor..", Color.ORANGE); //#LOC
     }
+    
     public void setErrorMessage(String text, Color col) {
         ERROR.setTextFill(col);
         ERROR.setText(text);

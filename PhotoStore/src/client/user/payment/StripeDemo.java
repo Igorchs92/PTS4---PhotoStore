@@ -19,24 +19,15 @@ import javafx.stage.Stage;
 public class StripeDemo extends Application {
     
     @Override
-    public void start(Stage stage) throws Exception {
-        //MOCK STORECART:
-        StoreCart sc = new StoreCart();
-        StoreItem i_0= new MockItem("ultra-rare pepe", 20f, 1);
-        StoreItem i_1= new MockItem("semi-rare pepe", 10f, 2);
-        StoreItem i_2= new MockItem("medium-rare pepe", 5f, 5);
-        StoreItem i_3= new MockItem("common-rare pepe", 2.5f, 13);
-        //MOCK STORECART:
-        sc.addToCart(i_0);
-        sc.addToCart(i_1);
-        sc.addToCart(i_2);
-        sc.addToCart(i_3);
+    public void start(Stage stage) throws Exception {       
     
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLDocument.fxml"));
         Parent root = (Parent) loader.load();
         FXMLDocumentController controller = loader.getController();
         
-        controller.setStoreCart(sc);
+        StoreCart.addToCart(new Item("test", 1.50f, 1));
+        
+        controller.setStoreCart();
         
         Scene scene = new Scene(root);
         stage.setScene(scene);

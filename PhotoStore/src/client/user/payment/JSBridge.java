@@ -22,11 +22,9 @@ import java.util.logging.Logger;
  */
 public class JSBridge {
     StoreGUI gui;
-    StoreCart sc;
  
-    public JSBridge(StoreGUI gui, StoreCart sc) {
+    public JSBridge(StoreGUI gui) {
         this.gui = gui;
-        this.sc = sc;
     }
     
     public void setupComplete() { //Call this to let the GUI know the bridge can be used
@@ -44,7 +42,7 @@ public class JSBridge {
             gui.showAttemptingCharge();
             try {
                 Map<String, Object> chargeParams = new HashMap<String, Object>();
-                int am = Math.round(sc.getTotal()*100);
+                int am = Math.round(StoreCart.getTotal()*100);
                 chargeParams.put("amount", am); // amount in cents, again
                 chargeParams.put("currency", "eur");
                 chargeParams.put("source", token);

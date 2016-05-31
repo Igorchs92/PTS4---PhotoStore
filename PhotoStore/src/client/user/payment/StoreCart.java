@@ -12,23 +12,24 @@ import java.util.List;
  *
  * @author Robin
  */
-public class StoreCart {
-    private List<StoreItem> items;
-    public StoreCart() {
-        items = new ArrayList<>();
-    }
+public final class StoreCart {
+    private static List<StoreItem> items = new ArrayList<>();    
     
-    public void addToCart(StoreItem item) {
+    public static void addToCart(StoreItem item) {
         if(!items.contains(item)) {
             items.add(item);
         }
     }
     
-    public void removeFromCart(StoreItem item) {
+    public static void removeFromCart(StoreItem item) {
         items.remove(item);
     }
     
-    public float getTotal() {
+    public static void clearCart() {
+        items.clear();
+    }
+    
+    public static float getTotal() {
         float total=0;
         for(StoreItem i : items) {
             total += (i.getQuantity()*i.getPrice());
@@ -36,11 +37,11 @@ public class StoreCart {
         return total;
     }
     
-    public int getNrOfItems() {
+    public static int getNrOfItems() {
         return items.size();
     }
     
-    public List getList() {
+    public static List getList() {
         return items;
     }
 }

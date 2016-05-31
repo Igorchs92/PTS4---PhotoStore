@@ -9,13 +9,13 @@ package client.user.payment;
  *
  * @author Robin
  */
-public class MockItem implements StoreItem{
+public class Item implements StoreItem{
 
     private String name;
     private float price;
     private int quantity;
     
-    public MockItem(String name, float price, int quantity) {
+    public Item(String name, float price, int quantity) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;

@@ -22,21 +22,19 @@ public class PaymentController {
     
     //GUI & StoreCart
     StoreGUI gui;
-    StoreCart storeCart;
     
     //JS:
     WebEngine webEngine;
     JSObject window;
     
-    public PaymentController(StoreGUI gui, StoreCart storeCart) {
+    public PaymentController(StoreGUI gui) {
         this.gui= gui;
-        this.storeCart = storeCart;
         
         //API key:
         Stripe.apiKey = "sk_test_TDfA9LcsPq3kYOhoND6PK4TZ";
         
         //JS:
-        JSBridge bridge = new JSBridge(gui, storeCart);
+        JSBridge bridge = new JSBridge(gui);
         WebView browser = new WebView();
         webEngine = browser.getEngine();
         webEngine.load(new File("src\\client\\processcard.html").toURI().toString());
