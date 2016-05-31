@@ -13,3 +13,7 @@ PhotoStore/build/built-jar.properties
 !/PhotoStore/lib/CopyLibs/org-netbeans-modules-java-j2seproject-copylibstask.jar
 PhotoStore/save.dat
 *.data
+!/PhotoStore/lib/gson-2.2.4.jar
+!/PhotoStore/lib/gson-2.2.4-sources.jar
+!/PhotoStore/lib/gson-2.2.4-javadoc.jar
+!/PhotoStore/lib/stripe-java-2.6.0.jar
