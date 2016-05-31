@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.image.Image;
 import javax.media.jai.JAI;
 import javax.media.jai.OpImage;
 import javax.media.jai.RenderedOp;
@@ -60,7 +61,10 @@ public class Filesystem {
             RenderedOp image = JAI.create("stream", ss);
             ((OpImage) image.getRendering()).setTileCache(null);
             RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            RenderedOp resizedImage = JAI.create("SubsampleAverage", image, 0.5, 0.5, qualityHints);
+            Image i = new Image(bis);
+            double height = i.getHeight();
+            double scaling = 100/height;
+            RenderedOp resizedImage = JAI.create("SubsampleAverage", image, scaling, scaling, qualityHints);
             JAI.create("encode", resizedImage, bos, "JPEG", null);
 
         } catch (FileNotFoundException ex) {
@@ -139,14 +143,14 @@ public class Filesystem {
             }
             socket.writeObject(pgl);
             for (PictureGroup pg : pgl) {
-                File root_group = new File(Integer.toString(pg.getId()) + "/");
+                File root_group = new File(root + "\\" + Integer.toString(pg.getId()) + "\\");
                 for (Picture p : pg.getPictures()) {
-                    File root_group_lowres = new File(root_group + this.lowres + p.toString());
+                    File root_group_lowres = new File(root_group + "\\" + this.lowres + p.getRelativePath());
                     socket.writeFile(root_group_lowres);
                 }
                 for (PersonalPicture pp : pg.getPersonalPictures()) {
                     for (Picture p : pp.getPictures()) {
-                        File root_group_lowres = new File(root_group + Integer.toString(pp.getId()) + this.lowres + p.toString());
+                        File root_group_lowres = new File(root_group + "\\" + Integer.toString(pp.getId()) + "\\" + this.lowres + p.getRelativePath());
                         socket.writeFile(root_group_lowres);
                     }
                 }
