@@ -25,14 +25,11 @@ public class StripeDemo extends Application {
         Parent root = (Parent) loader.load();
         FXMLDocumentController controller = loader.getController();
         
-        StoreCart.addToCart(new Item("test", 1.50f, 1));
-        
         controller.setStoreCart();
         
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.show();
-        
+        stage.show();        
     }
 
     /**
