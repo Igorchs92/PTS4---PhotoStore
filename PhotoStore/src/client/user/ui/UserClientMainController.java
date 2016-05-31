@@ -8,6 +8,7 @@ package client.user.ui;
 import client.user.ClientInfo;
 import client.user.UserClientRunnable;
 import client.user.editphoto.EditPicureApplication;
+import client.user.payment.StripeDemo;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -92,6 +93,14 @@ public class UserClientMainController implements Initializable {
         
         ObservableList<PictureGroup> obsPictureGroups = FXCollections.observableArrayList(pictureGroups);
         listViewAlbums.setItems(obsPictureGroups);
+    }
+    
+    @FXML
+    public void viewShoppingCart() throws Exception{
+        StripeDemo payment = new StripeDemo();
+                        Stage stage = new Stage();
+                        payment.start(stage);
+                        stage.show();
     }
     
     @FXML
