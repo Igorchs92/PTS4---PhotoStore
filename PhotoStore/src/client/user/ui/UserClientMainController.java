@@ -37,6 +37,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
 
@@ -103,30 +104,46 @@ public class UserClientMainController implements Initializable {
     }
     
     public void showPictures(PictureGroup pg) throws FileNotFoundException {
-        // then show the new pictures on the screen
-        // THIS IS A DUMMY CODEBLOCK
+              
         List<ImageView> images = new ArrayList<ImageView>();
 
-        for (int a = 0; a < 13; a++) {
-            Image i = new Image(new FileInputStream("C:\\Users\\martijn\\Desktop\\test.png"));
+        for (Picture p : pg.getPictures()) {
+            Image i = new Image(new FileInputStream(p.getLocation()));
                 ImageView view = new ImageView(i);
                 images.add(view);
-                //Picture p = new Picture("C:\\Users\\martijn\\Desktop\\test.png", "picture_name", 3.50d + a*2d);
                 view.setOnMouseClicked(new EventHandler<MouseEvent>(){
                     @Override
                     public void handle(MouseEvent arg0) {
-                        //UserClientRunnable.clientRunnable.pictureToEdit = listViewAlbums.getSelectionModel().getSelectedItem();
+                        UserClientRunnable.clientRunnable.pictureToEdit = p;
                         
                         EditPicureApplication edit = new EditPicureApplication();
                         Stage stage = new Stage();
                         edit.start(stage);
                         stage.show();
                     }
-            });           
+            });
         }
-                // END OF DUMMY CODEBLOCK
+         
+        for (PersonalPicture pp: pg.getPersonalPictures()) {
+            for (Picture p : pp.getPictures()) {
+                Image i = new Image(new FileInputStream(p.getLocation()));
+                ImageView view = new ImageView(i);
+                images.add(view);
+                view.setOnMouseClicked(new EventHandler<MouseEvent>(){
+                    @Override
+                    public void handle(MouseEvent arg0) {
+                        UserClientRunnable.clientRunnable.pictureToEdit = p;
+                        
+                        EditPicureApplication edit = new EditPicureApplication();
+                        Stage stage = new Stage();
+                        edit.start(stage);
+                        stage.show();
+                    }
+                });  
+            }
+        }
         
-        putPicturesOnScreen(13, images);
+        putPicturesOnScreen(images.size(), images);
     }
     
     /**
