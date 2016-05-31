@@ -80,6 +80,9 @@ public class EditPicureApplication extends Application {
         
         Image Sepia = new Image(getClass().getResourceAsStream("PreviewSepia.png"));
         Button btnSepia = new Button("", new ImageView(Sepia));
+        
+        Button btnAddToCart = new Button("Add to Cart");
+        Button btnBack = new Button("Back");
 
         //Combobox
         final ComboBox specialBox = new ComboBox();
@@ -117,6 +120,12 @@ public class EditPicureApplication extends Application {
         
         specialBox.setTranslateX(600);
         specialBox.setTranslateY(30);
+        
+        btnAddToCart.setTranslateX(630);
+        btnAddToCart.setTranslateY(30);
+        
+        btnBack.setTranslateX(700);
+        btnBack.setTranslateY(30);
 
         //Events
         btnOriginal.setOnAction(new EventHandler<ActionEvent>() {
@@ -132,8 +141,7 @@ public class EditPicureApplication extends Application {
                 ColorAdjust blackout = new ColorAdjust();
                 blackout.setSaturation(-1);
                 imagePreview.setEffect(null);
-                imagePreview.setEffect(blackout);
-                StoreCart.addToCart(new Item(p.getName(), (float)p.getPrice(), 1) );
+                imagePreview.setEffect(blackout);                
             }
         });
         
@@ -145,6 +153,20 @@ public class EditPicureApplication extends Application {
                 imagePreview.setEffect(null);
                 imagePreview.setEffect(sepiaTone);
             }
+        });
+        
+        btnAddToCart.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                StoreCart.addToCart(new Item(p.getName(), (float)p.getPrice(), 1));
+            }            
+        });
+        
+        btnBack.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+            }            
         });
 
         // load the image
@@ -161,8 +183,8 @@ public class EditPicureApplication extends Application {
         imageY = imageView.getBoundsInLocal().getMinY();
 
         //X and Y of the imageViews
-        imageView.setTranslateX(20);
-        imageView.setTranslateY(30);
+        imageView.setTranslateX(0);
+        imageView.setTranslateY(0);
         
         imagePreview.setTranslateX(640);
         imagePreview.setTranslateY(200);
@@ -179,6 +201,8 @@ public class EditPicureApplication extends Application {
         imageLayer.getChildren().add(btnGrayscale);
         imageLayer.getChildren().add(btnSepia);
         imageLayer.getChildren().add(specialBox);
+        imageLayer.getChildren().add(btnAddToCart);
+        imageLayer.getChildren().add(btnBack);
 
         // use scrollpane for image view in case the image is large
         scrollPane.setContent(imageLayer);
