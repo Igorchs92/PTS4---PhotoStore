@@ -461,6 +461,7 @@ public class Databasemanager {
                                 Picture p = new Picture(srs5.getInt("picture_id"), srs5.getString("extension"), srs5.getString("name"), srs5.getDouble("price"), srs5.getDate("created"));
                                 pp.addPicture(p);
                             }
+                            pg.addPersonalPicture(pp);
                         }
                     }
                     pgl.add(pg);

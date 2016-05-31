@@ -111,11 +111,11 @@ public class UserClientMainController implements Initializable {
             Image i = new Image(new FileInputStream("C:\\Users\\martijn\\Desktop\\test.png"));
                 ImageView view = new ImageView(i);
                 images.add(view);
-                Picture p = new Picture("C:\\Users\\martijn\\Desktop\\test.png", "picture_name", 3.50d + a*2d);
+                //Picture p = new Picture("C:\\Users\\martijn\\Desktop\\test.png", "picture_name", 3.50d + a*2d);
                 view.setOnMouseClicked(new EventHandler<MouseEvent>(){
                     @Override
                     public void handle(MouseEvent arg0) {
-                        UserClientRunnable.clientRunnable.pictureToEdit = p;
+                        //UserClientRunnable.clientRunnable.pictureToEdit = listViewAlbums.getSelectionModel().getSelectedItem();
                         
                         EditPicureApplication edit = new EditPicureApplication();
                         Stage stage = new Stage();

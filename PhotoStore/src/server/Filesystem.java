@@ -139,14 +139,14 @@ public class Filesystem {
             }
             socket.writeObject(pgl);
             for (PictureGroup pg : pgl) {
-                File root_group = new File(Integer.toString(pg.getId()) + "/");
+                File root_group = new File(root + "\\" + Integer.toString(pg.getId()) + "\\");
                 for (Picture p : pg.getPictures()) {
-                    File root_group_lowres = new File(root_group + this.lowres + p.toString());
+                    File root_group_lowres = new File(root_group + "\\" + this.lowres + p.getRelativePath());
                     socket.writeFile(root_group_lowres);
                 }
                 for (PersonalPicture pp : pg.getPersonalPictures()) {
                     for (Picture p : pp.getPictures()) {
-                        File root_group_lowres = new File(root_group + Integer.toString(pp.getId()) + this.lowres + p.toString());
+                        File root_group_lowres = new File(root_group + "\\" + Integer.toString(pp.getId()) + "\\" + this.lowres + p.getRelativePath());
                         socket.writeFile(root_group_lowres);
                     }
                 }
