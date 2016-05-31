@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+        <script>Stripe.setPublishableKey('pk_test_EXNP5bavTbXzOSnLSzGldNVs');</script>
+        <title>Payment page</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        
+        <!--
+        <script type="text/javascript" >
+            Stripe.setPublishableKey('pk_test_EXNP5bavTbXzOSnLSzGldNVs');
+            console.log("Key set");
+            Stripe.card.createToken({
+                number: "4242424242424242",
+                cvc: "123",
+                exp_month: 12,
+                exp_year: 2017,
+            }, stripeResponseHandler);
+            console.log("createToken called");
+
+            function stripeResponseHandler(status, response) {
+                console.log("Response handler called");
+                if(response.error) {
+                    document.getElementById("paymenterrors").innerHTML = response.error.message;
+                } else {
+                    document.getElementById("paymenterrors").innerHTML = response.id;
+                }
+            }
+        </script> -->
+        <div>
+            <h1><b>payment details</b></h1>
+            <p>TESTCARD: 4242424242424242 <p>
+            <p id="paymenterrors">PAYMENT ERRORS HERE</p>
+                Credit Card Number:<br>
+                <input id="CCN" type="text" name="CCN"><br>
+                CVC Number:<br>
+                <input id="CVC" type="text" name="CVC"><br>
+                Expiration month:
+                <input id="Exp_M" type="text" name="Exp_Month"><br>
+                Expiration year:
+                <input id="Exp_Y" type="text" name="Exp_Year"><br>
+                <button onclick="handlePayment()">Submit</button>
+        </div>
+        <script>
+            function handlePayment() {
+                //console.log("HOI");
+                var CCN = document.getElementById('CCN').value;
+                var CVC = document.getElementById('CVC').value;
+                var Exp_M = document.getElementById('Exp_M').value;
+                var Exp_Y = document.getElementById('Exp_Y').value;
+                if(!Stripe.card.validateCardNumber(CCN)) {
+                    console.log('invalid CCN');
+                    var errmsg = CCN + ' Is not a valid card number!'
+                    setErrorDisplay(errmsg);
+                } else if(!Stripe.card.validateExpiry(Exp_M, Exp_Y)) {
+                    console.log('invalid expiration');
+                    var errmsg = Exp_M + '/' + Exp_Y + ' Is not a valid expiration date!'
+                    setErrorDisplay(errmsg);
+                } else if(!Stripe.card.validateCVC(CVC)) {
+                    console.log('invalid CVC');
+                    var errmsg = CVC + ' Is not a valid CVC!'
+                    setErrorDisplay(errmsg);
+                }
+                /*
+                console.log(CCN);
+                console.log(CVC);
+                console.log(Exp_M);
+                console.log(Exp_Y);*/
+            }
+        </script>
+        <script>
+            function stripeResponseHandler(status, response) {
+                console.log("Response handler called");
+                if(response.error) {
+                    document.getElementById("paymenterrors").innerHTML = response.error.message;
+                } else {
+                    document.getElementById("paymenterrors").innerHTML = response.id;
+                }
+            }
+            function handlePayment(CCN, CVC, Exp_M, Exp_Y) {
+                Stripe.card.createToken({
+                    number: CCN,
+                    cvc: CVC,
+                    exp_month: Exp_M,
+                    exp_year: Exp_Y,
+                }, stripeResponseHandler);
+                console.log("createToken called");
+            }
+        </script>
+        <script>
+            function setErrorDisplay(errortext) {
+                console.log('ERR set');
+                document.getElementById("paymenterrors").innerHTML = errortext;
+            }
+        </script>
+        
+    </body>
+</html>

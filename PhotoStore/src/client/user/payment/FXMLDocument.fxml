@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="575.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.user.payment.FXMLDocumentController">
+    <children>
+        <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
+        <Button fx:id="submit" layoutX="430.0" layoutY="541.0" onAction="#handleButtonAction" text="Submit" />
+      <TitledPane layoutX="14.0" layoutY="14.0" prefHeight="313.0" prefWidth="470.0" text="Overview">
+         <content>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <ListView fx:id="CARTLIST" layoutX="24.0" layoutY="16.0" prefHeight="230.0" prefWidth="420.0" />
+                  <Label fx:id="CARTTOTAL" layoutX="24.0" layoutY="256.0" text="Total: " />
+               </children>
+            </AnchorPane>
+         </content></TitledPane>
+      <TitledPane layoutX="14.0" layoutY="327.0" prefHeight="200.0" prefWidth="470.0" text="Credit Card Details">
+         <content>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <TextField fx:id="CCN" layoutX="160.0" layoutY="10.0" promptText="CCN" />
+                  <Label layoutX="14.0" layoutY="14.0" text="Credit Card Number ####" />
+                  <Label layoutX="128.0" layoutY="44.0" text="CVC:" />
+                  <TextField fx:id="CVC" layoutX="160.0" layoutY="40.0" promptText="CVC" />
+                  <Label layoutX="70.0" layoutY="80.0" text="Expiration date:" />
+                  <TextField fx:id="EXPM" layoutX="160.0" layoutY="76.0" prefHeight="25.0" prefWidth="54.0" promptText="Month" />
+                  <TextField fx:id="EXPY" layoutX="222.0" layoutY="76.0" prefHeight="25.0" prefWidth="87.0" promptText="Year" />
+                  <Label fx:id="ERROR" layoutX="14.0" layoutY="143.0" text="Label" />
+               </children>
+            </AnchorPane>
+         </content>
+      </TitledPane>
+    </children>
+</AnchorPane>

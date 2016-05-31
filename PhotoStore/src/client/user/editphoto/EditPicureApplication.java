@@ -2,10 +2,13 @@ package client.user.editphoto;
 
 
 import client.user.UserClientRunnable;
+import client.user.payment.Item;
+import client.user.payment.StoreCart;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
@@ -49,6 +52,7 @@ public class EditPicureApplication extends Application {
     static double imageHeight;
     static double imageX;
     static double imageY;
+    static Picture p;
     
     Stage primaryStage;
     
@@ -129,6 +133,7 @@ public class EditPicureApplication extends Application {
                 blackout.setSaturation(-1);
                 imagePreview.setEffect(null);
                 imagePreview.setEffect(blackout);
+                StoreCart.addToCart(new Item(p.getName(), (float)p.getPrice(), 1) );
             }
         });
         
@@ -143,7 +148,7 @@ public class EditPicureApplication extends Application {
         });
 
         // load the image
-        Picture p = UserClientRunnable.clientRunnable.pictureToEdit;
+        p = UserClientRunnable.clientRunnable.pictureToEdit;
         Image image = new Image(p.getFile().toURI().toString()); 
 
         // the container for the image as a javafx node

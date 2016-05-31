@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+        <script>Stripe.setPublishableKey('pk_test_EXNP5bavTbXzOSnLSzGldNVs');</script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            function stripeResponseHandler(status, response) {
+                console.log("Response handler called");
+                if(response.error) {
+                    //document.getElementById("paymenterrors").innerHTML = response.error.message;
+                    javaApp.recieveError(response.error.message.toLocaleString());
+                } else {
+                    //document.getElementById("paymenterrors").innerHTML = response.id;
+                    javaApp.recieveToken(response.id);
+                }
+            }
+            function handlePayment(CCN, CVC, Exp_M, Exp_Y) {
+                /*
+                if(!Stripe.card.validateCardNumber(CCN)){
+                    javaApp.recieveValidationError(0);
+                    return;
+                } else if(!Stripe.card.validateCVC(CVC)) {
+                    javaApp.recieveValidationError(1);
+                    return;
+                } else if(!Stripe.card.validateExpiry(Exp_M, Exp_Y)) {
+                    javaApp.recieveValidationError(2);
+                    return;
+                }*/
+                Stripe.card.createToken({
+                    number: CCN,
+                    cvc: CVC,
+                    exp_month: Exp_M,
+                    exp_year: Exp_Y
+                }, stripeResponseHandler);
+                console.log("createToken called");
+            }
+        </script>
+    </head>
+    <body>
+        <div>TODO write content</div>
+    </body>
+</html>
