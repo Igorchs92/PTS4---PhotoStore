@@ -61,10 +61,10 @@ public class Filesystem {
             RenderedOp image = JAI.create("stream", ss);
             ((OpImage) image.getRendering()).setTileCache(null);
             RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            Image i = new Image(bis);
-            double height = i.getHeight();
-            double scaling = 100/height;
-            RenderedOp resizedImage = JAI.create("SubsampleAverage", image, scaling, scaling, qualityHints);
+            //Image i = new Image(bis);
+            //double height = i.getHeight();
+            //double scaling = 100/height;
+            RenderedOp resizedImage = JAI.create("SubsampleAverage", image, 0.5, 0.5, qualityHints);
             JAI.create("encode", resizedImage, bos, "JPEG", null);
 
         } catch (FileNotFoundException ex) {

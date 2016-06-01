@@ -21,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.SepiaTone;
@@ -82,7 +83,7 @@ public class EditPicureApplication extends Application {
         Button btnSepia = new Button("", new ImageView(Sepia));
         
         Button btnAddToCart = new Button("Add to Cart");
-        Button btnBack = new Button("Back");
+        Button btnBack = new Button("Back");        
 
         //Combobox
         final ComboBox specialBox = new ComboBox();
@@ -121,10 +122,10 @@ public class EditPicureApplication extends Application {
         specialBox.setTranslateX(600);
         specialBox.setTranslateY(30);
         
-        btnAddToCart.setTranslateX(630);
+        btnAddToCart.setTranslateX(720);
         btnAddToCart.setTranslateY(30);
         
-        btnBack.setTranslateX(700);
+        btnBack.setTranslateX(800);
         btnBack.setTranslateY(30);
 
         //Events
@@ -159,13 +160,14 @@ public class EditPicureApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 StoreCart.addToCart(new Item(p.getName(), (float)p.getPrice(), 1));
+                primaryStage.close();
             }            
         });
         
         btnBack.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                
+                primaryStage.close();
             }            
         });
 
@@ -191,6 +193,16 @@ public class EditPicureApplication extends Application {
         
         specialView.setTranslateX(500);
         specialView.setTranslateY(50);
+        
+        //Labels
+        Label lblName = new Label("Name: " + p.getName());
+        Label lblPrice = new Label("Price: " + Double.toString(p.getPrice()));
+        
+        lblName.setTranslateX(50);
+        lblName.setTranslateY(500);
+        
+        lblPrice.setTranslateX(50);
+        lblPrice.setTranslateY(520);
 
         // add image to layer
         imageLayer.getChildren().add(imageView);        
@@ -203,6 +215,8 @@ public class EditPicureApplication extends Application {
         imageLayer.getChildren().add(specialBox);
         imageLayer.getChildren().add(btnAddToCart);
         imageLayer.getChildren().add(btnBack);
+        imageLayer.getChildren().add(lblName);
+        imageLayer.getChildren().add(lblPrice);
 
         // use scrollpane for image view in case the image is large
         scrollPane.setContent(imageLayer);
