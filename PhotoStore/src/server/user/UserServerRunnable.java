@@ -7,6 +7,7 @@ package server.user;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -81,8 +82,7 @@ public class UserServerRunnable implements Observer, Runnable {
                     }
                     case upload: {
                         //TODO: uploaden
-                        PictureModifies pm = (PictureModifies) socket.readObject();
-                        System.err.println(pm.photoId);
+                        ArrayList<PictureModifies> pmList = (ArrayList<PictureModifies>) socket.readObject();
                         break;
                     }
                     

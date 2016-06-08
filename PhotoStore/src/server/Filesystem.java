@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +27,7 @@ import shared.SocketConnection;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
+import shared.user.PictureModifies;
 
 /**
  *
@@ -36,6 +38,7 @@ public class Filesystem {
     SocketConnection socket;
     Databasemanager dbsm;
     File root;
+    File orders;
     String highres;
     String lowres;
 
@@ -43,11 +46,13 @@ public class Filesystem {
         this.socket = socket;
         this.dbsm = dbsm;
         this.root = new File("resources\\FileSystem\\");
+        this.orders = new File("resources\\FileSystem\\Orders\\");
         this.highres = "high\\";
         this.lowres = "low\\";
         if (!root.exists()) {
             root.mkdirs();
         }
+        if (!orders.exists()) orders.mkdirs();
     }
 
     public void compressPicture(File fileInput, File fileOutput) {
@@ -132,6 +137,18 @@ public class Filesystem {
             }
         }
 
+    }
+    
+    public void uploadModifiedPicture(ArrayList<PictureModifies> pmList){
+            long time = System.currentTimeMillis();
+            File order = new File(this.orders + "\\" + Long.toString(time) + "\\");
+        for (PictureModifies pm : pmList) {
+            // get photopath from database with pm.id
+            //copy the photo and modify THE COPY
+            // place the copy in the filesystem
+            // put the information in the database
+            
+        }
     }
 
     public void download(String uid) {

@@ -116,10 +116,10 @@ public class UserClientRunnable implements IClientRunnable {
         }
     }
     
-    public void upload(PictureModifies pm){
+    public void upload(){
         try {
             socket.writeObject(UserCall.upload);
-            socket.writeObject(pm);
+            socket.writeObject(this.pictureModifiesList);
         } catch (IOException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }

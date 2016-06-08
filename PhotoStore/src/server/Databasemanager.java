@@ -473,4 +473,20 @@ public class Databasemanager {
             return null;
         }
     }
+    
+    public String getPicturePath(String pictureId){
+        //TODO: change this method to work
+        try {
+            String sql = "SELECT * FROM personalPictures where id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, "3");
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                // loop through results
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }
