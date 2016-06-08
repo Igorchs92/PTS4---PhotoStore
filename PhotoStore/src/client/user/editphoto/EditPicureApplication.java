@@ -36,6 +36,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.Stage;
 import shared.files.Picture;
+import shared.user.ModifyColors;
+import shared.user.PhotoItem;
+import shared.user.PictureModifies;
 
 
 /**
@@ -54,6 +57,9 @@ public class EditPicureApplication extends Application {
     static double imageX;
     static double imageY;
     static Picture p;
+    
+    static ModifyColors color = ModifyColors.normal;
+    static PhotoItem item = PhotoItem.photo;
     
     Stage primaryStage;
     
@@ -87,23 +93,23 @@ public class EditPicureApplication extends Application {
 
         //Combobox
         final ComboBox specialBox = new ComboBox();
-        specialBox.getItems().addAll(
-                "Foto",
-                "Mok",
-                "T-Shirt");
+        specialBox.getItems().addAll(PhotoItem.values());
         
         specialBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 switch(t1) {
-                    case "Foto":
+                    case "photo":
                         specialView.setImage(null);
+                        item = PhotoItem.photo;
                         break;
-                    case "T-Shirt":
+                    case "tshirt":
                         specialView.setImage(new Image(getClass().getResourceAsStream("T-Shirt.jpg")));
+                        item = PhotoItem.tshirt;
                         break;
-                    case "Mok":
+                    case "mug":
                         specialView.setImage(new Image(getClass().getResourceAsStream("Mok.jpg")));
+                        item = PhotoItem.mug;
                         break;
                 }
             }
@@ -133,6 +139,7 @@ public class EditPicureApplication extends Application {
             @Override
             public void handle(ActionEvent e) {
                 imagePreview.setEffect(null);
+                color = ModifyColors.normal;                
             }
         });
         
@@ -142,7 +149,8 @@ public class EditPicureApplication extends Application {
                 ColorAdjust blackout = new ColorAdjust();
                 blackout.setSaturation(-1);
                 imagePreview.setEffect(null);
-                imagePreview.setEffect(blackout);                
+                imagePreview.setEffect(blackout);
+                color = ModifyColors.blackwhite;
             }
         });
         
@@ -153,6 +161,7 @@ public class EditPicureApplication extends Application {
                 sepiaTone.setLevel(1);
                 imagePreview.setEffect(null);
                 imagePreview.setEffect(sepiaTone);
+                color = ModifyColors.sepia;
             }
         });
         
@@ -160,6 +169,7 @@ public class EditPicureApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 StoreCart.addToCart(new Item(p.getName(), (float)p.getPrice(), 1));
+                UserClientRunnable.clientRunnable.pictureModifiesList.add(new PictureModifies(p.getId(), rubberBandSelection.getBounds().getMinX(), rubberBandSelection.getBounds().getMinY(), rubberBandSelection.getBounds().getWidth(), rubberBandSelection.getBounds().getHeight(), color, item));
                 primaryStage.close();
             }            
         });
@@ -315,7 +325,7 @@ public class EditPicureApplication extends Application {
     public static class RubberBandSelection {
         
         final DragContext dragContext = new DragContext();
-        Rectangle rect = new Rectangle();
+        static Rectangle rect = new Rectangle();
         
         Group group;
         

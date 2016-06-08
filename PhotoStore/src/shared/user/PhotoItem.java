@@ -10,5 +10,5 @@ package shared.user;
  * @author martijn
  */
 public enum PhotoItem {
-    nothing, tshirt, mug
+    photo, tshirt, mug
 }

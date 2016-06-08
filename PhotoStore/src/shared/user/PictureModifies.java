@@ -14,14 +14,14 @@ import java.io.Serializable;
 public class PictureModifies implements Serializable{
     
     public int photoId;
-    public int x1;
-    public int y1;
-    public int x2;
-    public int y2;
+    public double x1;
+    public double y1;
+    public double x2;
+    public double y2;
     public ModifyColors color;
     public PhotoItem item;
     
-    public PictureModifies(int photoId, int x1, int y1, int x2, int y2, ModifyColors color, PhotoItem item){
+    public PictureModifies(int photoId, double x1, double y1, double x2, double y2, ModifyColors color, PhotoItem item){
         this.photoId = photoId;
         this.x1 = x1;
         this.y1 = y1;
