@@ -34,6 +34,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
+import javafx.scene.shape.Rectangle;
 import javax.media.jai.JAI;
 import javax.media.jai.OpImage;
 import javax.media.jai.RenderedOp;
@@ -161,6 +162,10 @@ public class Filesystem {
             //String pathExtra = dbsm.getPicturePath(Integer.toString(pm.photoId));
             String pathExtra = dbsm.getPicturePath(Integer.toString(109));
             File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
+            ImageView imageToCrop = new ImageView(new Image(photoFile.toURI().toString()));
+            double scaling = 100/imageToCrop.getBoundsInLocal().getHeight();
+            Rectangle rec = new Rectangle(pm.x/scaling, pm.y/scaling, pm.width/scaling, pm.height/scaling);
+            
             //copy the photo and modify THE COPY
             // place the copy in the filesystem
             ImageView returnFromCrop = new ImageView();
