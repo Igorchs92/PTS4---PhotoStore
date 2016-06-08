@@ -8,6 +8,7 @@ package client.user;
 import client.IClientRunnable;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,11 +28,13 @@ public class UserClientRunnable implements IClientRunnable {
     private SocketConnection socket;
     public static UserClientRunnable clientRunnable;
     public Picture pictureToEdit;
+    public ArrayList<PictureModifies> pictureModifiesList;
 
     public UserClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         this.socket = socket;
         //testConnection();
         clientRunnable = this;
+        pictureModifiesList = new ArrayList<>();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
