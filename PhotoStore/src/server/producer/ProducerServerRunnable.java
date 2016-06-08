@@ -65,7 +65,10 @@ public class ProducerServerRunnable implements Observer, Runnable {
                         break;
                     }
                     case getstats: {
-                        
+                        socket.writeObject(dbm.getStatistics());
+                        socket.writeObject(dbm.Income24h());
+                        socket.writeObject(dbm.Pictures7d());
+                        socket.writeObject(dbm.Photographers30d());
                     }
                     case logout: {
 

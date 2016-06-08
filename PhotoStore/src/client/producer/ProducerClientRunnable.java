@@ -8,6 +8,7 @@ package client.producer;
 import client.IClientRunnable;
 import client.photographer.PhotographerClientRunnable;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.SocketConnection;
@@ -21,6 +22,10 @@ public class ProducerClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
     public static ProducerClientRunnable clientRunnable;
+    private HashMap<String, Double> stats;
+    private HashMap<String, Double> income24h;
+    private HashMap<String, Integer> pictures7d;
+    private HashMap<String, Double> photographers30d;
 
     public ProducerClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         clientRunnable = this;
@@ -69,5 +74,33 @@ public class ProducerClientRunnable implements IClientRunnable {
             Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+
+    public void reloadStats() {
+        try {
+            socket.writeObject(ProducerCall.getstats);
+            stats = (HashMap<String, Double>) socket.readObject();
+            income24h = (HashMap<String, Double>) socket.readObject();
+            pictures7d = (HashMap<String, Integer>) socket.readObject();
+            photographers30d = (HashMap<String, Double>) socket.readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public HashMap<String, Double> getStats() {
+        return stats;
+    }
+
+    public HashMap<String, Double> getIncome24h() {
+        return income24h;
+    }
+
+    public HashMap<String, Integer> getPictures7d() {
+        return pictures7d;
+    }
+
+    public HashMap<String, Double> getPhotographers30d() {
+        return photographers30d;
     }
 }
