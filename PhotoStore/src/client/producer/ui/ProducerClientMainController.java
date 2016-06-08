@@ -6,9 +6,21 @@
 package client.producer.ui;
 
 import client.producer.ProducerClient;
+import client.producer.ProducerClientRunnable;
+import java.awt.Toolkit;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,6 +33,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.util.Pair;
 
 /**
  * FXML Controller class
@@ -56,7 +69,7 @@ public class ProducerClientMainController implements Initializable {
     @FXML
     private Button btRegisterPhotographer;
     @FXML
-    private StackedAreaChart<?, ?> cIncomeFreq;
+    private BarChart<String, Number> cIncomeFreq;
     @FXML
     private ProgressBar pbProgress1;
     @FXML
@@ -64,8 +77,10 @@ public class ProducerClientMainController implements Initializable {
     @FXML
     private ProgressBar pbProgress;
     @FXML
-    private BarChart<?, ?> cPhotographerBestEarning;
+    private BarChart<String, Number> cPhotographerBestEarning;
 
+    Toolkit toolkit;
+    Timer timer;
     CategoryAxis xAxis;
     NumberAxis yAxis;
 
@@ -76,7 +91,42 @@ public class ProducerClientMainController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         xAxis = new CategoryAxis();
         yAxis = new NumberAxis();
-        createIncomeChart();
+        ProducerClientRunnable.clientRunnable.reloadStats();
+        refreshOverview();
+        createcIncomeFrequency24H();
+        createPictureFrequency7D();
+        PhotographerTop30D();
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new refreshTask(), 0, 10000);
+    }
+
+    class refreshTask extends TimerTask {
+
+        public void run() {
+            ProducerClientRunnable.clientRunnable.reloadStats();
+            Platform.runLater(() -> {
+                refreshOverview();
+                createcIncomeFrequency24H();
+                createPictureFrequency7D();
+                PhotographerTop30D();
+            });
+
+        }
+    }
+
+    public void refreshOverview() {
+        HashMap<String, String> hmap = ProducerClientRunnable.clientRunnable.getStats();
+        lblUserAmount.setText(hmap.get("users"));
+        lblPhotographerAmount.setText(hmap.get("photographers"));
+        lblGroupAmount.setText(hmap.get("users"));
+        lblUIDAmount.setText(hmap.get("uids"));
+        lblPictureAmount.setText(hmap.get("pictures"));
+        lblOrderAmount.setText(hmap.get("orders"));
+        lblIncomeToday.setText(hmap.get("24h"));
+        lblIncomeWeek.setText(hmap.get("7d"));
+        lblIncomeMonth.setText(hmap.get("30d"));
+        lblIncomeYear.setText(hmap.get("365d"));
+        lblTotalIncome.setText(hmap.get("alltime"));
     }
 
     @FXML
@@ -84,36 +134,39 @@ public class ProducerClientMainController implements Initializable {
         ProducerClient.client.setSceneRegisterPhotographer();
     }
 
-    public void createIncomeChart() {
-        System.out.println("incomechart werkt");
-        String[] years = {"2014", "2015", "2016"};
-        yAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(yAxis, "$", null));
-        cPictureFreq.setTitle("Top 10 Fotografaen");
-        xAxis.setLabel("Year");
-        xAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList(years)));
-        yAxis.setLabel("Orders");
-        System.out.println("incomechart werkt2");
-        XYChart.Series<String, Number> series1 = new XYChart.Series<String, Number>();
-        series1.setName("Jeroen");
-        XYChart.Series<String, Number> series2 = new XYChart.Series<String, Number>();
-        series2.setName("Igor");
-        XYChart.Series<String, Number> series3 = new XYChart.Series<String, Number>();
-        series3.setName("Hovsep");
-        System.out.println("incomechart werkt3");
-        series1.getData().add(new XYChart.Data<String, Number>(years[0], 567));
-        series1.getData().add(new XYChart.Data<String, Number>(years[1], 1292));
-        series1.getData().add(new XYChart.Data<String, Number>(years[2], 2180));
-        series2.getData().add(new XYChart.Data<String, Number>(years[0], 956));
-        series2.getData().add(new XYChart.Data<String, Number>(years[1], 1665));
-        series2.getData().add(new XYChart.Data<String, Number>(years[2], 2450));
-        series3.getData().add(new XYChart.Data<String, Number>(years[0], 900));
-        series3.getData().add(new XYChart.Data<String, Number>(years[1], 1000));
-        series3.getData().add(new XYChart.Data<String, Number>(years[2], 5800));
-        System.out.println("incomechart werkt4");
-        cPictureFreq.getData().add(series1);
-        cPictureFreq.getData().add(series2);
-        cPictureFreq.getData().add(series3);
-        System.out.println("incomechart werkt5");
+    public void createcIncomeFrequency24H() {
+        cIncomeFreq.getData().clear();
+        if (ProducerClientRunnable.clientRunnable.getIncome24h() != null) {
+            XYChart.Series<String, Number> series1 = new XYChart.Series<String, Number>();
+            for (Pair<String, Double> p : ProducerClientRunnable.clientRunnable.getIncome24h()) {
+                series1.getData().add(new XYChart.Data<String, Number>(p.getKey(), p.getValue()));
+            }
+            cIncomeFreq.getData().add(series1);
+        }
     }
 
+    public void createPictureFrequency7D() {
+        cPictureFreq.getData().clear();
+
+        if (ProducerClientRunnable.clientRunnable.getPictures7d() != null) {
+            XYChart.Series<String, Number> series1 = new XYChart.Series<String, Number>();
+            for (Pair<String, Integer> p : ProducerClientRunnable.clientRunnable.getPictures7d()) {
+                series1.getData().add(new XYChart.Data<String, Number>(p.getKey(), p.getValue()));
+            }
+            cPictureFreq.getData().add(series1);
+        }
+    }
+
+    public void PhotographerTop30D() {
+        cPhotographerBestEarning.getData().clear();
+        if (ProducerClientRunnable.clientRunnable.getPhotographers30d() != null) {
+            for (Pair<String, Double> p : ProducerClientRunnable.clientRunnable.getPhotographers30d()) {
+                XYChart.Series<String, Number> series1 = new XYChart.Series<String, Number>();
+                series1.setName(p.getKey());
+                series1.getData().add(new XYChart.Data<String, Number>("", p.getValue()));
+                cPhotographerBestEarning.getData().add(series1);
+
+            }
+        }
+    }
 }

@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
 import shared.ClientType;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
@@ -476,9 +478,9 @@ public class Databasemanager {
         }
     }
 
-    public HashMap<String, Double> getStatistics() {
+    public HashMap<String, String> getStatistics() {
         try {
-            HashMap<String, Double> hm = new HashMap<>();
+            HashMap<String, String> hm = new HashMap<>();
             String sql = "SELECT \n"
                     + "(SELECT COUNT(*) FROM photographer) photographers,\n"
                     + "(SELECT COUNT(*) FROM user) users,\n"
@@ -495,17 +497,17 @@ public class Databasemanager {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet srs = ps.executeQuery();
             srs.next();
-            hm.put("photographers", srs.getDouble("photographers"));
-            hm.put("users", srs.getDouble("users"));
-            hm.put("groups", srs.getDouble("groups"));
-            hm.put("uids", srs.getDouble("uids"));
-            hm.put("pictures", srs.getDouble("pictures"));
-            hm.put("orders", srs.getDouble("orders"));
-            hm.put("alltime", srs.getDouble("alltime"));
-            hm.put("24h", srs.getDouble("24h"));
-            hm.put("7d", srs.getDouble("7d"));
-            hm.put("30d", srs.getDouble("30d"));
-            hm.put("365d", srs.getDouble("365d"));
+            hm.put("photographers", srs.getString("photographers"));
+            hm.put("users", srs.getString("users"));
+            hm.put("groups", srs.getString("groups"));
+            hm.put("uids", srs.getString("uids"));
+            hm.put("pictures", srs.getString("pictures"));
+            hm.put("orders", srs.getString("orders"));
+            hm.put("alltime", srs.getString("alltime"));
+            hm.put("24h", srs.getString("24h"));
+            hm.put("7d", srs.getString("7d"));
+            hm.put("30d", srs.getString("30d"));
+            hm.put("365d", srs.getString("365d"));
             return hm;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
@@ -513,9 +515,9 @@ public class Databasemanager {
         }
     }
 
-    public HashMap<String, Double> Income24h() {
+    public List<Pair<String, Double>> Income24h() {
         try {
-            HashMap<String, Double> hm = new HashMap<>();
+            List<Pair<String, Double>> pl = new ArrayList<>();
             String sql = "SELECT DATE_FORMAT(hours.hour, '%H') as hour, IFNULL(ROUND(SUM(item_price) + SUM(picture_price)), 0) as earned\n"
                     + "FROM\n"
                     + "  (SELECT NOW() AS hour\n"
@@ -549,18 +551,18 @@ public class Databasemanager {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet srs = ps.executeQuery();
             while (srs.next()) {
-                hm.put(srs.getString("hour"), srs.getDouble("earned"));
+                pl.add(new Pair(srs.getString("hour"), srs.getDouble("earned")));
             }
-            return hm;
+            return pl;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
 
-    public HashMap<String, Integer> Pictures7d() {
+    public List<Pair<String, Integer>> Pictures7d() {
         try {
-            HashMap<String, Integer> hm = new HashMap<>();
+            List<Pair<String, Integer>> pl = new ArrayList<>();
             String sql = "SELECT days.day, COUNT(op.id) as pictures\n"
                     + "FROM\n"
                     + "  (SELECT curdate() AS day\n"
@@ -575,18 +577,18 @@ public class Databasemanager {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet srs = ps.executeQuery();
             while (srs.next()) {
-                hm.put(srs.getString("day"), srs.getInt("pictures"));
+                pl.add(new Pair(srs.getString("day"), srs.getInt("pictures")));
             }
-            return hm;
+            return pl;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
 
-    public HashMap<String, Double> Photographers30d() {
+    public List<Pair<String, Double>> Photographers30d() {
         try {
-            HashMap<String, Double> hm = new HashMap<>();
+            List<Pair<String, Double>> pl = new ArrayList<>();
             String sql = "SELECT email, IFNULL(ROUND(SUM(earned), 2), 0) earned \n"
                     + "FROM(\n"
                     + "SELECT p.email, SUM(item_price) + SUM(picture_price) earned\n"
@@ -619,9 +621,9 @@ public class Databasemanager {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet srs = ps.executeQuery();
             while (srs.next()) {
-                hm.put(srs.getString("email"), srs.getDouble("earned"));
+                pl.add(new Pair(srs.getString("email"), srs.getDouble("earned")));
             }
-            return hm;
+            return pl;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
             return null;

@@ -3,16 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/payment/FXMLDocumentController.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/ui/UserClientMainController.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/payment/JSBridge.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/UserClient.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/server/Databasemanager.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/editphoto/EditPicureApplication.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/payment/StripeDemo.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/ui/UserClientRegisterController.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/client/user/payment/PaymentController.java</file>
-            <file>file:/C:/Users/Jeroen0606/Oracle/Documents/GitHub/PTS4-PhotoStore/PhotoStore/src/server/Filesystem.java</file>
+            <file>file:/D:/Project/PTS4-PhotoStore/PhotoStore/src/server/Databasemanager.java</file>
+            <file>file:/D:/Project/PTS4-PhotoStore/PhotoStore/src/client/producer/ui/ProducerClientMainController.java</file>
+            <file>file:/D:/Project/PTS4-PhotoStore/PhotoStore/src/client/producer/ProducerClientRunnable.java</file>
+            <file>file:/D:/Project/PTS4-PhotoStore/PhotoStore/src/server/producer/ProducerServerRunnable.java</file>
+            <file>file:/D:/Project/PTS4-PhotoStore/PhotoStore/src/client/producer/ProducerClient.java</file>
         </group>
     </open-files>
 </project-private>
