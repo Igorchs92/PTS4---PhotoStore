@@ -15,6 +15,7 @@ import shared.SocketConnection;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
+import shared.user.PictureModifies;
 import shared.user.UserCall;
 
 /**
@@ -109,6 +110,15 @@ public class UserClientRunnable implements IClientRunnable {
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+        }
+    }
+    
+    public void upload(PictureModifies pm){
+        try {
+            socket.writeObject(UserCall.upload);
+            socket.writeObject(pm);
+        } catch (IOException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
