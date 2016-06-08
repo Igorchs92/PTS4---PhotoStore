@@ -81,8 +81,8 @@ public class UserServerRunnable implements Observer, Runnable {
                         break;
                     }
                     case upload: {
-                        //TODO: uploaden
                         ArrayList<PictureModifies> pmList = (ArrayList<PictureModifies>) socket.readObject();
+                        fs.uploadModifiedPicture(pmList);
                         break;
                     }
                     

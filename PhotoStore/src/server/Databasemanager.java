@@ -475,14 +475,18 @@ public class Databasemanager {
     }
     
     public String getPicturePath(String pictureId){
-        //TODO: change this method to work
         try {
-            String sql = "SELECT * FROM personalPictures where id = ?";
+            String sql = "select pp.group_id, pp.id from personalPictures_picture ppp,\n" +
+                            "originalPicture op,\n" +
+                            "personalPictures pp\n" +
+                            "where ppp.picture_id = op.id\n" +
+                            "and pp.id = ppp.personal_id\n" +
+                            "and op.id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, "3");
+            ps.setString(1, pictureId);
             ResultSet srs = ps.executeQuery();
             while (srs.next()) {
-                // loop through results
+                return "\\" + Long.toString(srs.getLong(1)) + "\\" + Long.toString(srs.getLong(2)) + "\\";
             }
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);

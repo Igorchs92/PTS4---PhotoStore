@@ -81,6 +81,7 @@ public class UserClientMainController implements Initializable {
     @FXML
     public void attachCodeToAccount(){
         UserClientRunnable.clientRunnable.attachCode(ClientInfo.clientID, Integer.valueOf(tfPersonalCode.getText()));
+        UserClientRunnable.clientRunnable.upload();
     }
     
     @FXML

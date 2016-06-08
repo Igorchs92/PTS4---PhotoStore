@@ -155,7 +155,9 @@ public class Filesystem {
             long time = System.currentTimeMillis();
             File order = new File(this.orders + "\\" + Long.toString(time) + "\\");
         for (PictureModifies pm : pmList) {
-            // get photopath from database with pm.id
+            //String pathExtra = dbsm.getPicturePath(Integer.toString(pm.photoId));
+            String pathExtra = dbsm.getPicturePath(Integer.toString(109));
+            File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
             //copy the photo and modify THE COPY
             // place the copy in the filesystem
             // put the information in the database
