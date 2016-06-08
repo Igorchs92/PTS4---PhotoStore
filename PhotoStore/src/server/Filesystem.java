@@ -159,16 +159,12 @@ public class Filesystem {
             long time = System.currentTimeMillis();
             File order = new File(this.orders + "\\" + Long.toString(time) + "\\");
         for (PictureModifies pm : pmList) {
-            //String pathExtra = dbsm.getPicturePath(Integer.toString(pm.photoId));
-            String pathExtra = dbsm.getPicturePath(Integer.toString(109));
+            String pathExtra = dbsm.getPicturePath(Integer.toString(pm.photoId));
             File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
             ImageView imageToCrop = new ImageView(new Image(photoFile.toURI().toString()));
             double scaling = 100/imageToCrop.getBoundsInLocal().getHeight();
             Rectangle rec = new Rectangle(pm.x/scaling, pm.y/scaling, pm.width/scaling, pm.height/scaling);
-            
-            //copy the photo and modify THE COPY
-            // place the copy in the filesystem
-            ImageView returnFromCrop = new ImageView();
+            ImageView returnFromCrop = crop(rec.getBoundsInLocal(), pm.color, imageToCrop);
             Image i = returnFromCrop.getImage();
             File f = new File(order + Integer.toString(pm.photoId) + ".jpg"); // PLEASE NOTE! : this only allows one item per photo per order
             BufferedImage bImage = SwingFXUtils.fromFXImage(i, null);
