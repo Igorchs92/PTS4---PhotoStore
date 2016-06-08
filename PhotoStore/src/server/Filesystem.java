@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javax.media.jai.JAI;
 import javax.media.jai.OpImage;
 import javax.media.jai.RenderedOp;
@@ -60,11 +61,10 @@ public class Filesystem {
             SeekableStream ss = SeekableStream.wrapInputStream(bis, true);
             RenderedOp image = JAI.create("stream", ss);
             ((OpImage) image.getRendering()).setTileCache(null);
-            RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            //Image i = new Image(bis);
-            //double height = i.getHeight();
-            //double scaling = 100/height;
-            RenderedOp resizedImage = JAI.create("SubsampleAverage", image, 0.5, 0.5, qualityHints);
+            RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);            
+            double height = image.getHeight();
+            double scaling = 100/height;
+            RenderedOp resizedImage = JAI.create("SubsampleAverage", image, scaling, scaling, qualityHints);
             JAI.create("encode", resizedImage, bos, "JPEG", null);
 
         } catch (FileNotFoundException ex) {
