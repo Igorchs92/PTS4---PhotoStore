@@ -9,6 +9,7 @@ import com.sun.media.jai.codec.SeekableStream;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -31,6 +32,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.OpImage;
 import javax.media.jai.RenderedOp;
@@ -160,10 +163,20 @@ public class Filesystem {
             File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
             //copy the photo and modify THE COPY
             // place the copy in the filesystem
+            ImageView returnFromCrop = new ImageView();
+            Image i = returnFromCrop.getImage();
+            File f = new File(order + Integer.toString(pm.photoId) + ".jpg"); // PLEASE NOTE! : this only allows one item per photo per order
+            BufferedImage bImage = SwingFXUtils.fromFXImage(i, null);
+                try {
+                    ImageIO.write(bImage, "jpg", f);
+                } catch (IOException ex) {
+                    Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
+                }       
             // put the information in the database
             
         }
     }
+    
 
     public void download(String uid) {
         try {
