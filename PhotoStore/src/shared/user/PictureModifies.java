@@ -14,19 +14,19 @@ import java.io.Serializable;
 public class PictureModifies implements Serializable{
     
     public int photoId;
-    public double x1;
-    public double y1;
-    public double x2;
-    public double y2;
+    public double x;
+    public double y;
+    public double width;
+    public double height;
     public ModifyColors color;
     public PhotoItem item;
     
-    public PictureModifies(int photoId, double x1, double y1, double x2, double y2, ModifyColors color, PhotoItem item){
+    public PictureModifies(int photoId, double x, double y, double width, double height, ModifyColors color, PhotoItem item){
         this.photoId = photoId;
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
         this.color = color;
         this.item = item;
     }
