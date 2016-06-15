@@ -96,7 +96,7 @@ public class ProducerClientMainController implements Initializable {
         refreshOverview();
         createcIncomeFrequency24H();
         createPictureFrequency7D();
-        PhotographerTop30D();
+        PhotographerTopEarned30D();
         timer = new Timer();
         timer.scheduleAtFixedRate(new refreshTask(), 0, 10000);
     }
@@ -109,7 +109,7 @@ public class ProducerClientMainController implements Initializable {
                 refreshOverview();
                 createcIncomeFrequency24H();
                 createPictureFrequency7D();
-                PhotographerTop30D();
+                PhotographerTopEarned30D();
             });
 
         }
@@ -158,10 +158,23 @@ public class ProducerClientMainController implements Initializable {
         }
     }
 
-    public void PhotographerTop30D() {
+    public void PhotographerTopEarned30D() {
         cPhotographerBestEarning.getData().clear();
-        if (ProducerClientRunnable.clientRunnable.getPhotographers30d() != null) {
-            for (Pair<String, Double> p : ProducerClientRunnable.clientRunnable.getPhotographers30d()) {
+        if (ProducerClientRunnable.clientRunnable.getPhotographersEarned30d() != null) {
+            for (Pair<String, Double> p : ProducerClientRunnable.clientRunnable.getPhotographersEarned30d()) {
+                XYChart.Series<String, Number> series1 = new XYChart.Series<String, Number>();
+                series1.setName(p.getKey());
+                series1.getData().add(new XYChart.Data<String, Number>("", p.getValue()));
+                cPhotographerBestEarning.getData().add(series1);
+
+            }
+        }
+    }
+
+    public void PhotographerToSold30D() {
+        cPhotographerBestEarning.getData().clear();
+        if (ProducerClientRunnable.clientRunnable.getPhotographersEarned30d() != null) {
+            for (Pair<String, Double> p : ProducerClientRunnable.clientRunnable.getPhotographersEarned30d()) {
                 XYChart.Series<String, Number> series1 = new XYChart.Series<String, Number>();
                 series1.setName(p.getKey());
                 series1.getData().add(new XYChart.Data<String, Number>("", p.getValue()));
