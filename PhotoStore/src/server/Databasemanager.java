@@ -19,6 +19,7 @@ import shared.ClientType;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
+import shared.user.PictureModifies;
 
 /**
  *
@@ -492,5 +493,17 @@ public class Databasemanager {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+    
+    public void newOrder(PictureModifies picture) {
+        try {
+            Statement st = conn.createStatement();
+            String query = "INSERT INTO modifiedPicture (picture_id) VALUES (?)";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(2, picture.photoId);
+        } catch(SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+              
     }
 }
