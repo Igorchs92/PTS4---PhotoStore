@@ -392,6 +392,62 @@
                   </VBox>
                </content>
             </Tab>
+            <Tab text="Best selling photographers">
+               <content>
+                  <VBox>
+                     <children>
+                        <VBox spacing="10.0">
+                           <children>
+                              <Label text="Last 30 days" textFill="#00000099">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="15.0" />
+                                 </padding>
+                              </Label>
+                              <BarChart fx:id="cPhotographerBestSelling" animated="false">
+                                 <xAxis>
+                                    <CategoryAxis />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis side="LEFT" />
+                                 </yAxis>
+                              </BarChart>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </VBox>
+                        <ToolBar maxWidth="1050.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="0.0" prefWidth="615.0">
+                           <items>
+                              <GridPane hgap="5.0" prefHeight="25.0" prefWidth="600.0">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="656.0" spacing="20.0">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <GridPane.margin>
+                                          <Insets />
+                                       </GridPane.margin>
+                                    </HBox>
+                                 </children>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="949.0" minWidth="10.0" prefWidth="247.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                 </rowConstraints>
+                              </GridPane>
+                           </items>
+                        </ToolBar>
+                     </children>
+                  </VBox>
+               </content>
+            </Tab>
         </tabs>
       </TabPane>
     </children>

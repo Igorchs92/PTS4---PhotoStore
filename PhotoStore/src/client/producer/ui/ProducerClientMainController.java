@@ -78,7 +78,8 @@ public class ProducerClientMainController implements Initializable {
     private ProgressBar pbProgress;
     @FXML
     private BarChart<String, Number> cPhotographerBestEarning;
-
+    @FXML
+    private BarChart<?, ?> cPhotographerBestSelling;
     Toolkit toolkit;
     Timer timer;
     CategoryAxis xAxis;
