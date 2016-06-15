@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ import shared.ClientType;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
+import shared.user.PhotoItem;
 
 /**
  *
@@ -476,11 +478,11 @@ public class Databasemanager {
     
     public String getPicturePath(String pictureId){
         try {
-            String sql = "select pp.group_id, pp.id from personalPictures_picture ppp,\n" +
-                            "originalPicture op,\n" +
-                            "personalPictures pp\n" +
-                            "where ppp.picture_id = op.id\n" +
-                            "and pp.id = ppp.personal_id\n" +
+            String sql = "select pp.group_id, pp.id from personalPictures_picture ppp, " +
+                            "originalPicture opn " +
+                            "personalPictures pp " +
+                            "where ppp.picture_id = op.id " +
+                            "and pp.id = ppp.personal_id " +
                             "and op.id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, pictureId);
@@ -492,5 +494,116 @@ public class Databasemanager {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+    
+    public Integer getNewModifiedPictureId() {
+        try {
+            String sql = "select COALESCE(MAX(id), 0) from modifiedPicture";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                return srs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public void addModifiedPicture(int id, int pictureId){
+        try {
+            String sql = "insert into modifiedPicture(id, picture_id) values (?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.setInt(2, pictureId);
+            ps.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public Integer addPictureItemOrder(int modifiedPicture_id, PhotoItem item) {
+        try {
+            Double picPrice = null;
+            String sqlGetPicturePrice = "select op.price from originalPicture op, modifiedPicture mp " +
+                                        "where op.id = mp.picture_id " +
+                                        "and mp.id = ?";
+            PreparedStatement psGetPicturePrice = conn.prepareStatement(sqlGetPicturePrice);
+            psGetPicturePrice.setInt(1, modifiedPicture_id);
+            ResultSet srsPic = psGetPicturePrice.executeQuery();
+            while (srsPic.next()) {
+                picPrice = srsPic.getDouble(1);
+            }
+             
+            Double itemPrice = null;
+            Integer item_id = null;
+            String sqlGetItemPrice = "select id, price from item where name = ?";
+            PreparedStatement psGetItemPrice = conn.prepareStatement(sqlGetItemPrice);
+            psGetItemPrice.setString(1, item.toString());
+            ResultSet srsItem = psGetItemPrice.executeQuery();
+            while (srsItem.next()) {
+                item_id = srsItem.getInt(1);
+                itemPrice = srsItem.getDouble(2);
+            }
+            
+            String sql = "insert into pictureItemOrder(id, item_id, picture_id, item_price, picture_price) " +
+                        "values (?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setNull(1, java.sql.Types.BIGINT);
+            ps.setInt(2, item_id);
+            ps.setInt(3, modifiedPicture_id);
+            ps.setDouble(4, itemPrice);
+            ps.setDouble(5, picPrice);
+            ps.executeQuery();
+            
+            sql = "select last_insert_id()";
+            ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                return srs.getInt(1);
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public Integer addOrderInfo(int userId, int status) {
+        try {
+            String sql = "insert into orderInfo(id, user_id, ordered, shipped, status)\n" +
+                    "values (?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setNull(1, java.sql.Types.BIGINT);
+            ps.setInt(2, userId);
+            ps.setDate(3, convertJavaDateToSqlDate(new Date()));
+            ps.setNull(4, java.sql.Types.DATE);
+            ps.setInt(5, status);
+            
+            sql = "select last_insert_id()";
+            ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                return srs.getInt(1);
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public void addOrderInfoPictureItemOrder(int infoId, int pictureItemId) {
+        try {
+            String sql = "insert into orderInfo_pictureItemOrder(id, info_id, pictureitem_id) " +
+                    "values (?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setNull(1, java.sql.Types.BIGINT);
+            ps.setInt(2, infoId);
+            ps.setInt(3, pictureItemId);
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

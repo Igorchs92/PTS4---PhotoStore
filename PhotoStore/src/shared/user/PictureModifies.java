@@ -13,6 +13,7 @@ import java.io.Serializable;
  */
 public class PictureModifies implements Serializable{
     
+    public int userId;
     public int photoId;
     public double x;
     public double y;
@@ -21,7 +22,8 @@ public class PictureModifies implements Serializable{
     public ModifyColors color;
     public PhotoItem item;
     
-    public PictureModifies(int photoId, double x, double y, double width, double height, ModifyColors color, PhotoItem item){
+    public PictureModifies(int userId, int photoId, double x, double y, double width, double height, ModifyColors color, PhotoItem item){
+        this.userId = userId;
         this.photoId = photoId;
         this.x = x;
         this.y = y;

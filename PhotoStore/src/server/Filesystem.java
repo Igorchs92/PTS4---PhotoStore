@@ -43,6 +43,7 @@ import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
 import shared.user.ModifyColors;
+import shared.user.PhotoItem;
 import shared.user.PictureModifies;
 
 /**
@@ -161,20 +162,28 @@ public class Filesystem {
         for (PictureModifies pm : pmList) {
             String pathExtra = dbsm.getPicturePath(Integer.toString(pm.photoId));
             File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
+            // crop the image
             ImageView imageToCrop = new ImageView(new Image(photoFile.toURI().toString()));
             double scaling = 100/imageToCrop.getBoundsInLocal().getHeight();
             Rectangle rec = new Rectangle(pm.x/scaling, pm.y/scaling, pm.width/scaling, pm.height/scaling);
             ImageView returnFromCrop = crop(rec.getBoundsInLocal(), pm.color, imageToCrop);
             Image i = returnFromCrop.getImage();
-            File f = new File(order + Integer.toString(pm.photoId) + ".jpg"); // PLEASE NOTE! : this only allows one item per photo per order
+            // write the photo to the orders map
+            int id = dbsm.getNewModifiedPictureId();
+            File f = new File(order + Integer.toString(id) + ".jpg"); // PLEASE NOTE! : this only allows one item per photo per order
             BufferedImage bImage = SwingFXUtils.fromFXImage(i, null);
                 try {
                     ImageIO.write(bImage, "jpg", f);
                 } catch (IOException ex) {
                     Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
-                }       
+                }
+                
             // put the information in the database
-            
+            int newModPicId = dbsm.getNewModifiedPictureId();
+            dbsm.addModifiedPicture(newModPicId, pm.photoId);
+            int picItemOrderId = dbsm.addPictureItemOrder(newModPicId, pm.item);
+            int orderInfoId = dbsm.addOrderInfo(pm.userId, 1);
+            dbsm.addOrderInfoPictureItemOrder(orderInfoId, picItemOrderId);
         }
     }
     
