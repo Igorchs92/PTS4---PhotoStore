@@ -586,7 +586,7 @@ public class Databasemanager {
         }
     }
 
-    public List<Pair<String, Double>> Photographers30d() {
+    public List<Pair<String, Double>> PhotographersEarned30d() {
         try {
             List<Pair<String, Double>> pl = new ArrayList<>();
             String sql = "SELECT email, IFNULL(ROUND(SUM(earned), 2), 0) earned \n"
@@ -622,6 +622,50 @@ public class Databasemanager {
             ResultSet srs = ps.executeQuery();
             while (srs.next()) {
                 pl.add(new Pair(srs.getString("email"), srs.getDouble("earned")));
+            }
+            return pl;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public List<Pair<String, Double>> PhotographersSold30d() {
+        try {
+            List<Pair<String, Double>> pl = new ArrayList<>();
+            String sql = "SELECT email, SUM(earned) sold \n"
+                    + "FROM(\n"
+                    + "SELECT p.email, COUNT(op.id) earned\n"
+                    + "FROM photographer p\n"
+                    + "LEFT JOIN groupPictures gp ON gp.photographer_id = p.email\n"
+                    + "LEFT JOIN groupPictures_picture gpp ON gp.id = gpp.group_id\n"
+                    + "LEFT JOIN originalPicture op ON gpp.picture_id = op.id\n"
+                    + "LEFT JOIN modifiedPicture mp ON op.id = mp.picture_id\n"
+                    + "LEFT JOIN pictureItemOrder pio ON mp.id = pio.picture_id\n"
+                    + "LEFT JOIN orderInfo_pictureItemOrder oi_pio ON pio.id = oi_pio.pictureitem_id\n"
+                    + "LEFT JOIN orderInfo oi ON oi_pio.info_id = oi.id\n"
+                    + "WHERE ordered >= NOW() - INTERVAL 30 DAY\n"
+                    + "GROUP BY p.email\n"
+                    + "UNION ALL\n"
+                    + "SELECT p.email, COUNT(op.id) earned\n"
+                    + "FROM photographer p\n"
+                    + "LEFT JOIN personalPictures pp ON pp.photographer_id = p.email\n"
+                    + "LEFT JOIN personalPictures_picture ppp ON pp.id = ppp.personal_id\n"
+                    + "LEFT JOIN originalPicture op ON ppp.picture_id = op.id\n"
+                    + "LEFT JOIN modifiedPicture mp ON op.id = mp.picture_id\n"
+                    + "LEFT JOIN pictureItemOrder pio ON mp.id = pio.picture_id\n"
+                    + "LEFT JOIN orderInfo_pictureItemOrder oi_pio ON pio.id = oi_pio.pictureitem_id\n"
+                    + "LEFT JOIN orderInfo oi ON oi_pio.info_id = oi.id\n"
+                    + "WHERE ordered >= NOW() - INTERVAL 30 DAY\n"
+                    + "GROUP BY p.email\n"
+                    + ") AS x\n"
+                    + "GROUP BY email\n"
+                    + "ORDER BY sold DESC\n"
+                    + "LIMIT 10;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                pl.add(new Pair(srs.getString("email"), srs.getDouble("sold")));
             }
             return pl;
         } catch (SQLException ex) {

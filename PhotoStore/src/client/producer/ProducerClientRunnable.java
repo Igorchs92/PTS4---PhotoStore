@@ -27,7 +27,8 @@ public class ProducerClientRunnable implements IClientRunnable {
     private HashMap<String, String> stats;
     private List<Pair<String, Double>> income24h;
     private List<Pair<String, Integer>> pictures7d;
-    private List<Pair<String, Double>> photographers30d;
+    private List<Pair<String, Double>> photographersEarned30d;
+    private List<Pair<String, Double>> photographersSold30d;
 
     public ProducerClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         clientRunnable = this;
@@ -84,7 +85,8 @@ public class ProducerClientRunnable implements IClientRunnable {
             stats = (HashMap<String, String>) socket.readObject();
             income24h = (List<Pair<String, Double>>) socket.readObject();
             pictures7d = (List<Pair<String, Integer>>) socket.readObject();
-            photographers30d = (List<Pair<String, Double>>) socket.readObject();
+            photographersEarned30d = (List<Pair<String, Double>>) socket.readObject();
+            photographersSold30d = (List<Pair<String, Double>>) socket.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -102,7 +104,11 @@ public class ProducerClientRunnable implements IClientRunnable {
         return pictures7d;
     }
 
-    public List<Pair<String, Double>> getPhotographers30d() {
-        return photographers30d;
+    public List<Pair<String, Double>> getPhotographersEarned30d() {
+        return photographersEarned30d;
+    }
+
+    public List<Pair<String, Double>> getPhotographersSold30d() {
+        return photographersSold30d;
     }
 }
