@@ -8,8 +8,11 @@ package client.producer;
 import client.IClientRunnable;
 import client.photographer.PhotographerClientRunnable;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
 import shared.SocketConnection;
 import shared.producer.ProducerCall;
 
@@ -21,6 +24,11 @@ public class ProducerClientRunnable implements IClientRunnable {
 
     private SocketConnection socket;
     public static ProducerClientRunnable clientRunnable;
+    private HashMap<String, String> stats;
+    private List<Pair<String, Double>> income24h;
+    private List<Pair<String, Integer>> pictures7d;
+    private List<Pair<String, Double>> photographersEarned30d;
+    private List<Pair<String, Double>> photographersSold30d;
 
     public ProducerClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         clientRunnable = this;
@@ -69,5 +77,38 @@ public class ProducerClientRunnable implements IClientRunnable {
             Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+
+    public void reloadStats() {
+        try {
+            socket.writeObject(ProducerCall.getstats);
+            stats = (HashMap<String, String>) socket.readObject();
+            income24h = (List<Pair<String, Double>>) socket.readObject();
+            pictures7d = (List<Pair<String, Integer>>) socket.readObject();
+            photographersEarned30d = (List<Pair<String, Double>>) socket.readObject();
+            photographersSold30d = (List<Pair<String, Double>>) socket.readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(ProducerClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public HashMap<String, String> getStats() {
+        return stats;
+    }
+
+    public List<Pair<String, Double>> getIncome24h() {
+        return income24h;
+    }
+
+    public List<Pair<String, Integer>> getPictures7d() {
+        return pictures7d;
+    }
+
+    public List<Pair<String, Double>> getPhotographersEarned30d() {
+        return photographersEarned30d;
+    }
+
+    public List<Pair<String, Double>> getPhotographersSold30d() {
+        return photographersSold30d;
     }
 }

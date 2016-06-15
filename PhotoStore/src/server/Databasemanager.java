@@ -12,9 +12,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
 import shared.ClientType;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
@@ -468,6 +472,202 @@ public class Databasemanager {
                 }
             }
             return pgl;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public HashMap<String, String> getStatistics() {
+        try {
+            HashMap<String, String> hm = new HashMap<>();
+            String sql = "SELECT \n"
+                    + "(SELECT COUNT(*) FROM photographer) photographers,\n"
+                    + "(SELECT COUNT(*) FROM user) users,\n"
+                    + "(SELECT COUNT(id) from groupPictures gp WHERE (SELECT COUNT(*) FROM personalPictures WHERE group_id = gp.id ) > 0) groups,\n"
+                    + "(SELECT COUNT(id) from personalPictures pp WHERE (SELECT COUNT(*) FROM personalPictures_picture WHERE personal_id = pp.id ) > 0) uids,\n"
+                    + "(SELECT COUNT(*) FROM originalPicture) pictures,\n"
+                    + "(SELECT COUNT(*) FROM orderInfo) orders,\n"
+                    + "(SELECT IFNULL(ROUND(SUM(item_price) + SUM(picture_price), 2), 0) FROM pictureItemOrder pio, orderInfo_pictureItemOrder oi_pio, orderInfo oi WHERE pio.id = oi_pio.pictureitem_id AND oi.id = oi_pio.info_id) alltime,\n"
+                    + "(SELECT IFNULL(ROUND(SUM(item_price) + SUM(picture_price), 2), 0) FROM pictureItemOrder pio, orderInfo_pictureItemOrder oi_pio, orderInfo oi WHERE pio.id = oi_pio.pictureitem_id AND oi.id = oi_pio.info_id AND ordered > DATE_SUB(NOW(), INTERVAL 24 HOUR)) 24h,\n"
+                    + "(SELECT IFNULL(ROUND(SUM(item_price) + SUM(picture_price), 2), 0) FROM pictureItemOrder pio, orderInfo_pictureItemOrder oi_pio, orderInfo oi WHERE pio.id = oi_pio.pictureitem_id AND oi.id = oi_pio.info_id AND ordered >= NOW() - INTERVAL 7 DAY) 7d,\n"
+                    + "(SELECT IFNULL(ROUND(SUM(item_price) + SUM(picture_price), 2), 0) FROM pictureItemOrder pio, orderInfo_pictureItemOrder oi_pio, orderInfo oi WHERE pio.id = oi_pio.pictureitem_id AND oi.id = oi_pio.info_id AND ordered >= NOW() - INTERVAL 30 DAY) 30d,\n"
+                    + "(SELECT IFNULL(ROUND(SUM(item_price) + SUM(picture_price), 2), 0) FROM pictureItemOrder pio, orderInfo_pictureItemOrder oi_pio, orderInfo oi WHERE pio.id = oi_pio.pictureitem_id AND oi.id = oi_pio.info_id AND ordered >= NOW() - INTERVAL 365 DAY) 365d\n"
+                    + ";";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            srs.next();
+            hm.put("photographers", srs.getString("photographers"));
+            hm.put("users", srs.getString("users"));
+            hm.put("groups", srs.getString("groups"));
+            hm.put("uids", srs.getString("uids"));
+            hm.put("pictures", srs.getString("pictures"));
+            hm.put("orders", srs.getString("orders"));
+            hm.put("alltime", srs.getString("alltime"));
+            hm.put("24h", srs.getString("24h"));
+            hm.put("7d", srs.getString("7d"));
+            hm.put("30d", srs.getString("30d"));
+            hm.put("365d", srs.getString("365d"));
+            return hm;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public List<Pair<String, Double>> Income24h() {
+        try {
+            List<Pair<String, Double>> pl = new ArrayList<>();
+            String sql = "SELECT DATE_FORMAT(hours.hour, '%H') as hour, IFNULL(ROUND(SUM(item_price) + SUM(picture_price)), 0) as earned\n"
+                    + "FROM\n"
+                    + "  (SELECT NOW() AS hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 1 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 2 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 3 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 4 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 5 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 6 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 7 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 8 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 9 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 10 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 11 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 12 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 13 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 14 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 15 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 16 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 17 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 18 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 19 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 20 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 21 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 22 hour\n"
+                    + "   UNION SELECT NOW() - INTERVAL 23 hour) hours\n"
+                    + "LEFT JOIN orderInfo oi ON DATE_FORMAT(hours.hour, '%Y-%m-%d %H:') = DATE_FORMAT(oi.ordered, '%Y-%m-%d %H:')\n"
+                    + "LEFT JOIN orderInfo_pictureItemOrder oi_pio ON oi.id = oi_pio.info_id\n"
+                    + "LEFT JOIN pictureItemOrder pio ON pio.id = oi_pio.pictureitem_id\n"
+                    + "GROUP BY hours.hour;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                pl.add(new Pair(srs.getString("hour"), srs.getDouble("earned")));
+            }
+            return pl;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public List<Pair<String, Integer>> Pictures7d() {
+        try {
+            List<Pair<String, Integer>> pl = new ArrayList<>();
+            String sql = "SELECT days.day, COUNT(op.id) as pictures\n"
+                    + "FROM\n"
+                    + "  (SELECT curdate() AS day\n"
+                    + "   UNION SELECT CURDATE() - INTERVAL 1 day\n"
+                    + "   UNION SELECT CURDATE() - INTERVAL 2 day\n"
+                    + "   UNION SELECT CURDATE() - INTERVAL 3 day\n"
+                    + "   UNION SELECT CURDATE() - INTERVAL 4 day\n"
+                    + "   UNION SELECT CURDATE() - INTERVAL 5 day\n"
+                    + "   UNION SELECT CURDATE() - INTERVAL 6 day) days\n"
+                    + "LEFT JOIN originalPicture op ON days.day = op.created\n"
+                    + "GROUP BY days.day;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                pl.add(new Pair(srs.getString("day"), srs.getInt("pictures")));
+            }
+            return pl;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public List<Pair<String, Double>> PhotographersEarned30d() {
+        try {
+            List<Pair<String, Double>> pl = new ArrayList<>();
+            String sql = "SELECT email, IFNULL(ROUND(SUM(earned), 2), 0) earned \n"
+                    + "FROM(\n"
+                    + "SELECT p.email, SUM(item_price) + SUM(picture_price) earned\n"
+                    + "FROM photographer p\n"
+                    + "LEFT JOIN groupPictures gp ON gp.photographer_id = p.email\n"
+                    + "LEFT JOIN groupPictures_picture gpp ON gp.id = gpp.group_id\n"
+                    + "LEFT JOIN originalPicture op ON gpp.picture_id = op.id\n"
+                    + "LEFT JOIN modifiedPicture mp ON op.id = mp.picture_id\n"
+                    + "LEFT JOIN pictureItemOrder pio ON mp.id = pio.picture_id\n"
+                    + "LEFT JOIN orderInfo_pictureItemOrder oi_pio ON pio.id = oi_pio.pictureitem_id\n"
+                    + "LEFT JOIN orderInfo oi ON oi_pio.info_id = oi.id\n"
+                    + "WHERE ordered >= NOW() - INTERVAL 30 DAY\n"
+                    + "GROUP BY p.email\n"
+                    + "UNION ALL\n"
+                    + "SELECT p.email, SUM(item_price) + SUM(picture_price) earned\n"
+                    + "FROM photographer p\n"
+                    + "LEFT JOIN personalPictures pp ON pp.photographer_id = p.email\n"
+                    + "LEFT JOIN personalPictures_picture ppp ON pp.id = ppp.personal_id\n"
+                    + "LEFT JOIN originalPicture op ON ppp.picture_id = op.id\n"
+                    + "LEFT JOIN modifiedPicture mp ON op.id = mp.picture_id\n"
+                    + "LEFT JOIN pictureItemOrder pio ON mp.id = pio.picture_id\n"
+                    + "LEFT JOIN orderInfo_pictureItemOrder oi_pio ON pio.id = oi_pio.pictureitem_id\n"
+                    + "LEFT JOIN orderInfo oi ON oi_pio.info_id = oi.id\n"
+                    + "WHERE ordered >= NOW() - INTERVAL 30 DAY\n"
+                    + "GROUP BY p.email\n"
+                    + ") AS x\n"
+                    + "GROUP BY email\n"
+                    + "ORDER BY earned DESC\n"
+                    + "LIMIT 10;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                pl.add(new Pair(srs.getString("email"), srs.getDouble("earned")));
+            }
+            return pl;
+        } catch (SQLException ex) {
+            Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public List<Pair<String, Double>> PhotographersSold30d() {
+        try {
+            List<Pair<String, Double>> pl = new ArrayList<>();
+            String sql = "SELECT email, SUM(earned) sold \n"
+                    + "FROM(\n"
+                    + "SELECT p.email, COUNT(op.id) earned\n"
+                    + "FROM photographer p\n"
+                    + "LEFT JOIN groupPictures gp ON gp.photographer_id = p.email\n"
+                    + "LEFT JOIN groupPictures_picture gpp ON gp.id = gpp.group_id\n"
+                    + "LEFT JOIN originalPicture op ON gpp.picture_id = op.id\n"
+                    + "LEFT JOIN modifiedPicture mp ON op.id = mp.picture_id\n"
+                    + "LEFT JOIN pictureItemOrder pio ON mp.id = pio.picture_id\n"
+                    + "LEFT JOIN orderInfo_pictureItemOrder oi_pio ON pio.id = oi_pio.pictureitem_id\n"
+                    + "LEFT JOIN orderInfo oi ON oi_pio.info_id = oi.id\n"
+                    + "WHERE ordered >= NOW() - INTERVAL 30 DAY\n"
+                    + "GROUP BY p.email\n"
+                    + "UNION ALL\n"
+                    + "SELECT p.email, COUNT(op.id) earned\n"
+                    + "FROM photographer p\n"
+                    + "LEFT JOIN personalPictures pp ON pp.photographer_id = p.email\n"
+                    + "LEFT JOIN personalPictures_picture ppp ON pp.id = ppp.personal_id\n"
+                    + "LEFT JOIN originalPicture op ON ppp.picture_id = op.id\n"
+                    + "LEFT JOIN modifiedPicture mp ON op.id = mp.picture_id\n"
+                    + "LEFT JOIN pictureItemOrder pio ON mp.id = pio.picture_id\n"
+                    + "LEFT JOIN orderInfo_pictureItemOrder oi_pio ON pio.id = oi_pio.pictureitem_id\n"
+                    + "LEFT JOIN orderInfo oi ON oi_pio.info_id = oi.id\n"
+                    + "WHERE ordered >= NOW() - INTERVAL 30 DAY\n"
+                    + "GROUP BY p.email\n"
+                    + ") AS x\n"
+                    + "GROUP BY email\n"
+                    + "ORDER BY sold DESC\n"
+                    + "LIMIT 10;";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet srs = ps.executeQuery();
+            while (srs.next()) {
+                pl.add(new Pair(srs.getString("email"), srs.getDouble("sold")));
+            }
+            return pl;
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
