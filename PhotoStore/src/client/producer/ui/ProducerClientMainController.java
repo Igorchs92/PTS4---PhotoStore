@@ -79,7 +79,7 @@ public class ProducerClientMainController implements Initializable {
     @FXML
     private BarChart<String, Number> cPhotographerBestEarning;
     @FXML
-    private BarChart<?, ?> cPhotographerBestSelling;
+    private BarChart<String, Number> cPhotographerBestSelling;
     Toolkit toolkit;
     Timer timer;
     CategoryAxis xAxis;
@@ -97,6 +97,7 @@ public class ProducerClientMainController implements Initializable {
         createcIncomeFrequency24H();
         createPictureFrequency7D();
         PhotographerTopEarned30D();
+        PhotographerToSold30D();
         timer = new Timer();
         timer.scheduleAtFixedRate(new refreshTask(), 0, 10000);
     }
@@ -110,6 +111,7 @@ public class ProducerClientMainController implements Initializable {
                 createcIncomeFrequency24H();
                 createPictureFrequency7D();
                 PhotographerTopEarned30D();
+                PhotographerToSold30D();
             });
 
         }
@@ -172,13 +174,13 @@ public class ProducerClientMainController implements Initializable {
     }
 
     public void PhotographerToSold30D() {
-        cPhotographerBestEarning.getData().clear();
-        if (ProducerClientRunnable.clientRunnable.getPhotographersEarned30d() != null) {
-            for (Pair<String, Double> p : ProducerClientRunnable.clientRunnable.getPhotographersEarned30d()) {
+        cPhotographerBestSelling.getData().clear();
+        if (ProducerClientRunnable.clientRunnable.getPhotographersSold30d() != null) {
+            for (Pair<String, Double> p : ProducerClientRunnable.clientRunnable.getPhotographersSold30d()) {
                 XYChart.Series<String, Number> series1 = new XYChart.Series<String, Number>();
                 series1.setName(p.getKey());
                 series1.getData().add(new XYChart.Data<String, Number>("", p.getValue()));
-                cPhotographerBestEarning.getData().add(series1);
+                cPhotographerBestSelling.getData().add(series1);
 
             }
         }
