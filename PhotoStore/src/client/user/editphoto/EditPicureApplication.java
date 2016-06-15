@@ -29,6 +29,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -145,6 +146,7 @@ public class EditPicureApplication extends Application {
             }
         });
 
+        //Button Grayscale
         btnGrayscale.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -156,6 +158,7 @@ public class EditPicureApplication extends Application {
             }
         });
 
+        //Button Sepia
         btnSepia.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -167,6 +170,7 @@ public class EditPicureApplication extends Application {
             }
         });
 
+        //Button Add to Cart
         btnAddToCart.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -181,7 +185,7 @@ public class EditPicureApplication extends Application {
             public void handle(ActionEvent event) {
                 primaryStage.close();
             }
-        });
+        });        
 
         // load the image
         p = UserClientRunnable.clientRunnable.pictureToEdit;
@@ -238,20 +242,13 @@ public class EditPicureApplication extends Application {
 
         // rubberband selection
         rubberBandSelection = new RubberBandSelection(imageLayer);
-
-        primaryStage.setScene(new Scene(root, 1024, 600));
+        Scene scene = new Scene(root, 1024, 600);        
+        
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 
     private static void crop(Bounds bounds) {
-
-//        FileChooser fileChooser = new FileChooser();
-//        fileChooser.setTitle("Save Image");
-//
-//        File file = fileChooser.showSaveDialog(primaryStage);
-//        if (file == null) {
-//            return;
-//        }
         int width = (int) bounds.getWidth();
         int height = (int) bounds.getHeight();
 
@@ -261,23 +258,14 @@ public class EditPicureApplication extends Application {
 
         WritableImage wi = new WritableImage(width, height);
         imageView.snapshot(parameters, wi);
-
-        // save image 
-        // !!! has bug because of transparency (use approach below) !!!
-        // --------------------------------
-//        try {
-//          ImageIO.write(SwingFXUtils.fromFXImage( wi, null), "jpg", file);
-//      } catch (IOException e) {
-//          e.printStackTrace();
-//      }
-        // save image (without alpha)
-        // --------------------------------
+        
         BufferedImage bufImageARGB = SwingFXUtils.fromFXImage(wi, null);
         BufferedImage bufImageRGB = new BufferedImage(bufImageARGB.getWidth(), bufImageARGB.getHeight(), BufferedImage.OPAQUE);
 
         Graphics2D graphics = bufImageRGB.createGraphics();
         graphics.drawImage(bufImageARGB, 0, 0, null);
-
+        
+        //Convert bufImageRGB to normal Image
         WritableImage writeImage = null;
         if (bufImageRGB != null) {
             writeImage = new WritableImage(bufImageRGB.getWidth(), bufImageRGB.getHeight());
@@ -288,35 +276,9 @@ public class EditPicureApplication extends Application {
                 }
             }
         }
-
-//        switch (effect) {
-//            case "Original":
-//                imagePreview.setEffect(null);
-//                break;
-//            case "Grayscale":
-//                ColorAdjust blackout = new ColorAdjust();
-//                blackout.setSaturation(-1);
-//                imagePreview.setEffect(null);
-//                imagePreview.setEffect(blackout);
-//                break;
-//            case "Sepia":
-//                SepiaTone sepiaTone = new SepiaTone();
-//                sepiaTone.setLevel(1);
-//                imagePreview.setEffect(null);
-//                imagePreview.setEffect(sepiaTone);
-//                break;
-//        }
+        
         imagePreview.setImage(writeImage);
-
-//        try {
-//
-//            ImageIO.write(bufImageRGB, "jpg", file);
-//
-//            System.out.println("Image saved to " + file.getAbsolutePath());
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        
         graphics.dispose();
 
     }
@@ -434,17 +396,6 @@ public class EditPicureApplication extends Application {
                 if (event.isSecondaryButtonDown()) {
                     return;
                 }
-
-                // remove rectangle
-                // note: we want to keep the ruuberband selection for the cropping => code is just commented out
-                /*
-                 rect.setX(0);
-                 rect.setY(0);
-                 rect.setWidth(0);
-                 rect.setHeight(0);
-
-                 group.getChildren().remove( rect);
-                 */
             }
         };
 
@@ -454,8 +405,5 @@ public class EditPicureApplication extends Application {
             public double mouseAnchorY;
 
         }
-        public static void main(String[] args) throws IOException, ClassNotFoundException {
-        launch(args);
-    }
     }
 }
