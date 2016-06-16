@@ -39,5 +39,10 @@ public class Item implements StoreItem{
     public String toString() {
         return name + "\t\t" + quantity + "x $" + price;
     }
+
+    @Override
+    public void setQuantity(int quantity) {
+        this.quantity=quantity;
+    }
     
 }

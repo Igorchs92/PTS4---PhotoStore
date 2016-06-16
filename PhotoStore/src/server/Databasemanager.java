@@ -21,6 +21,7 @@ import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
 import shared.user.PhotoItem;
+import shared.user.PictureModifies;
 
 /**
  *
