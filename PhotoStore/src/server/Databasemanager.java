@@ -480,7 +480,7 @@ public class Databasemanager {
     public String getPicturePath(String pictureId){
         try {
             String sql = "select pp.group_id, pp.id from personalPictures_picture ppp, " +
-                            "originalPicture opn " +
+                            "originalPicture op, " +
                             "personalPictures pp " +
                             "where ppp.picture_id = op.id " +
                             "and pp.id = ppp.personal_id " +
@@ -571,13 +571,13 @@ public class Databasemanager {
         return null;
     }
     
-    public Integer addOrderInfo(int userId, int status) {
+    public Integer addOrderInfo(String userId, int status) {
         try {
             String sql = "insert into orderInfo(id, user_id, ordered, shipped, status)\n" +
                     "values (?, ?, ?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setNull(1, java.sql.Types.BIGINT);
-            ps.setInt(2, userId);
+            ps.setString(2, userId);
             ps.setDate(3, convertJavaDateToSqlDate(new Date()));
             ps.setNull(4, java.sql.Types.DATE);
             ps.setInt(5, status);

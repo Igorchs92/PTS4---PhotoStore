@@ -1,5 +1,6 @@
 package client.user.editphoto;
 
+import client.user.ClientInfo;
 import client.user.UserClientRunnable;
 import client.user.payment.Item;
 import client.user.payment.StoreCart;
@@ -175,7 +176,7 @@ public class EditPicureApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 StoreCart.addToCart(new Item(p.getName(), (float) p.getPrice(), 1));
-                UserClientRunnable.clientRunnable.pictureModifiesList.add(new PictureModifies(p.getId(), rubberBandSelection.getBounds().getMinX(), rubberBandSelection.getBounds().getMinY(), rubberBandSelection.getBounds().getWidth(), rubberBandSelection.getBounds().getHeight(), color, item));
+                UserClientRunnable.clientRunnable.pictureModifiesList.add(new PictureModifies(ClientInfo.clientID, p.getId(), rubberBandSelection.getBounds().getMinX(), rubberBandSelection.getBounds().getMinY(), rubberBandSelection.getBounds().getWidth(), rubberBandSelection.getBounds().getHeight(), color, item));
                 primaryStage.close();
             }
         });
