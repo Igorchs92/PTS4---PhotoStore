@@ -503,7 +503,7 @@ public class Databasemanager {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet srs = ps.executeQuery();
             while (srs.next()) {
-                return srs.getInt(1);
+                return srs.getInt(1) + 1;
             }
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
@@ -517,7 +517,7 @@ public class Databasemanager {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             ps.setInt(2, pictureId);
-            ps.executeQuery();
+            ps.execute();
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -555,7 +555,7 @@ public class Databasemanager {
             ps.setInt(3, modifiedPicture_id);
             ps.setDouble(4, itemPrice);
             ps.setDouble(5, picPrice);
-            ps.executeQuery();
+            ps.execute();
             
             sql = "select last_insert_id()";
             ps = conn.prepareStatement(sql);
@@ -581,6 +581,7 @@ public class Databasemanager {
             ps.setDate(3, convertJavaDateToSqlDate(new Date()));
             ps.setNull(4, java.sql.Types.DATE);
             ps.setInt(5, status);
+            ps.execute();
             
             sql = "select last_insert_id()";
             ps = conn.prepareStatement(sql);
@@ -603,6 +604,7 @@ public class Databasemanager {
             ps.setNull(1, java.sql.Types.BIGINT);
             ps.setInt(2, infoId);
             ps.setInt(3, pictureItemId);
+            ps.execute();
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
         }
