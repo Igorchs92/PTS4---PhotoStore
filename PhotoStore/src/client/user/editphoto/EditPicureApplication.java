@@ -175,9 +175,20 @@ public class EditPicureApplication extends Application {
         btnAddToCart.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                StoreCart.addToCart(new Item(p.getName(), (float) p.getPrice(), 1));
-                UserClientRunnable.clientRunnable.pictureModifiesList.add(new PictureModifies(ClientInfo.clientID, p.getId(), rubberBandSelection.getBounds().getMinX(), rubberBandSelection.getBounds().getMinY(), rubberBandSelection.getBounds().getWidth(), rubberBandSelection.getBounds().getHeight(), color, item));
-                primaryStage.close();
+                if (item == PhotoItem.photo) {
+                    StoreCart.addToCart(new Item(p.getName(), (float) p.getPrice(), 1));
+                    UserClientRunnable.clientRunnable.pictureModifiesList.add(new PictureModifies(ClientInfo.clientID, p.getId(), rubberBandSelection.getBounds().getMinX(), rubberBandSelection.getBounds().getMinY(), rubberBandSelection.getBounds().getWidth(), rubberBandSelection.getBounds().getHeight(), color, item));
+                    primaryStage.close();
+                } else if (item == PhotoItem.tshirt) {
+                    StoreCart.addToCart(new Item(p.getName(), (float) p.getPrice() + 20, 1));
+                    UserClientRunnable.clientRunnable.pictureModifiesList.add(new PictureModifies(ClientInfo.clientID, p.getId(), rubberBandSelection.getBounds().getMinX(), rubberBandSelection.getBounds().getMinY(), rubberBandSelection.getBounds().getWidth(), rubberBandSelection.getBounds().getHeight(), color, item));
+                    primaryStage.close();
+                } else if (item == PhotoItem.mug) {
+                    StoreCart.addToCart(new Item(p.getName(), (float) p.getPrice() + 10, 1));
+                    UserClientRunnable.clientRunnable.pictureModifiesList.add(new PictureModifies(ClientInfo.clientID, p.getId(), rubberBandSelection.getBounds().getMinX(), rubberBandSelection.getBounds().getMinY(), rubberBandSelection.getBounds().getWidth(), rubberBandSelection.getBounds().getHeight(), color, item));
+                    primaryStage.close();
+                }
+                
             }
         });
 
@@ -186,7 +197,7 @@ public class EditPicureApplication extends Application {
             public void handle(ActionEvent event) {
                 primaryStage.close();
             }
-        });        
+        });
 
         // load the image
         p = UserClientRunnable.clientRunnable.pictureToEdit;
@@ -243,8 +254,8 @@ public class EditPicureApplication extends Application {
 
         // rubberband selection
         rubberBandSelection = new RubberBandSelection(imageLayer);
-        Scene scene = new Scene(root, 1024, 600);        
-        
+        Scene scene = new Scene(root, 1024, 600);
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -259,13 +270,13 @@ public class EditPicureApplication extends Application {
 
         WritableImage wi = new WritableImage(width, height);
         imageView.snapshot(parameters, wi);
-        
+
         BufferedImage bufImageARGB = SwingFXUtils.fromFXImage(wi, null);
         BufferedImage bufImageRGB = new BufferedImage(bufImageARGB.getWidth(), bufImageARGB.getHeight(), BufferedImage.OPAQUE);
 
         Graphics2D graphics = bufImageRGB.createGraphics();
         graphics.drawImage(bufImageARGB, 0, 0, null);
-        
+
         //Convert bufImageRGB to normal Image
         WritableImage writeImage = null;
         if (bufImageRGB != null) {
@@ -277,9 +288,9 @@ public class EditPicureApplication extends Application {
                 }
             }
         }
-        
+
         imagePreview.setImage(writeImage);
-        
+
         graphics.dispose();
 
     }
