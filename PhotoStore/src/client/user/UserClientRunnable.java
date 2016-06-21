@@ -8,6 +8,7 @@ package client.user;
 import client.IClientRunnable;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +16,7 @@ import shared.SocketConnection;
 import shared.files.PersonalPicture;
 import shared.files.Picture;
 import shared.files.PictureGroup;
+import shared.user.PictureModifies;
 import shared.user.UserCall;
 
 /**
@@ -26,11 +28,13 @@ public class UserClientRunnable implements IClientRunnable {
     private SocketConnection socket;
     public static UserClientRunnable clientRunnable;
     public Picture pictureToEdit;
+    public ArrayList<PictureModifies> pictureModifiesList;
 
     public UserClientRunnable(SocketConnection socket) throws IOException, ClassNotFoundException {
         this.socket = socket;
         //testConnection();
         clientRunnable = this;
+        pictureModifiesList = new ArrayList<>();
     }
 
     public void testConnection() throws IOException, ClassNotFoundException {
@@ -109,6 +113,15 @@ public class UserClientRunnable implements IClientRunnable {
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+        }
+    }
+    
+    public void upload(){
+        try {
+            socket.writeObject(UserCall.upload);
+            socket.writeObject(this.pictureModifiesList);
+        } catch (IOException ex) {
+            Logger.getLogger(UserClientRunnable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

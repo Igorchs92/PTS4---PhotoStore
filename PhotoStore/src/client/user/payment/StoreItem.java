@@ -12,5 +12,6 @@ package client.user.payment;
 public interface StoreItem {
     public String getName();
     public int getQuantity();
+    public void setQuantity(int quantity);
     public float getPrice();
 }

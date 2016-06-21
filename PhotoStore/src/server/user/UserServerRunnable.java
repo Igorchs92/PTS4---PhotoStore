@@ -7,6 +7,7 @@ package server.user;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -15,6 +16,7 @@ import server.Databasemanager;
 import server.Filesystem;
 import shared.ClientType;
 import shared.SocketConnection;
+import shared.user.PictureModifies;
 import shared.user.UserCall;
 
 /**
@@ -65,7 +67,8 @@ public class UserServerRunnable implements Observer, Runnable {
                         break;
                     }
                     case logout: {
-
+                        //TODO: logout statements
+                        break;
                     }
                     case attachCodeToAccount: {
                         String s = (String) socket.readObject();
@@ -75,6 +78,12 @@ public class UserServerRunnable implements Observer, Runnable {
                     }
                     case download: {
                         fs.download(uid);
+                        break;
+                    }
+                    case upload: {
+                        ArrayList<PictureModifies> pmList = (ArrayList<PictureModifies>) socket.readObject();
+                        fs.uploadModifiedPicture(pmList);
+                        break;
                     }
                     
                 }

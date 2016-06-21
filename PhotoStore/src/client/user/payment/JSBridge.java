@@ -12,7 +12,9 @@ import com.stripe.exception.CardException;
 import com.stripe.exception.InvalidRequestException;
 import com.stripe.model.Charge;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,12 +25,34 @@ import java.util.logging.Logger;
 public class JSBridge {
     StoreGUI gui;
  
+    String lang;
+    String country;
+    
+    Locale curLoc;
+    ResourceBundle msgs;
+    
     public JSBridge(StoreGUI gui) {
         this.gui = gui;
+        this.lang= "en";
+        this.country = "EN";
+        
+        curLoc = new Locale(lang, country);
+        msgs = ResourceBundle.getBundle("client/ErrorBundle", curLoc);
+    }
+    
+    public void attemptingProcessing() {
+        gui.showAttemptingProcessing(msgs.getString("attemptingProcessing"));
+    }
+    
+    public void setLanguage(String lang, String country) {
+        this.lang = lang;
+        this.country= country;
+        curLoc = new Locale(lang, country);
+        msgs = ResourceBundle.getBundle("client/ErrorBundle", curLoc);
     }
     
     public void setupComplete() { //Call this to let the GUI know the bridge can be used
-        gui.bridgeSetupComplete();
+        gui.bridgeSetupComplete(msgs.getString("setupComplete"));
     }
     
     public void recieveError(String error) { //Errors while contacting stripe.js to format token
@@ -36,10 +60,24 @@ public class JSBridge {
         gui.showTokenError(error);
     }
     
+    public void recieveValidationError(int err) {
+        switch(err) {
+            case 0://Card number
+                gui.showValidationError(msgs.getString("validationCard"),"validationCard");
+                break;
+            case 1://CVC
+                gui.showValidationError(msgs.getString("validationCVC"), "validationCVC");
+                break;
+            case 2://Expiry
+                gui.showValidationError(msgs.getString("validationExp"), "validationExp");
+                break;
+        }
+    }
+    
     public void recieveToken(String token) { //Called when formatted token is recieved
+            gui.showAttemptingCharge(msgs.getString("attemptingCharge"));
             System.out.println("Token recieved: " + token);
             System.out.println("Attempting charge");
-            gui.showAttemptingCharge();
             try {
                 Map<String, Object> chargeParams = new HashMap<String, Object>();
                 int am = Math.round(StoreCart.getTotal()*100);
@@ -49,7 +87,7 @@ public class JSBridge {
                 chargeParams.put("description", "Example charge");
 
                 Charge charge = Charge.create(chargeParams);
-                gui.showChargeSuccess();
+                gui.showChargeSuccess(msgs.getString("chargeSuccess"));
             } catch (CardException e) {
                 System.out.println("Charge failed");
                 Logger.getLogger(PaymentController.class.getName()).log(Level.SEVERE, null, e);

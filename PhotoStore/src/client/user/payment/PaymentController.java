@@ -26,6 +26,7 @@ public class PaymentController {
     //JS:
     WebEngine webEngine;
     JSObject window;
+    JSBridge bridge;
     
     public PaymentController(StoreGUI gui) {
         this.gui= gui;
@@ -34,7 +35,7 @@ public class PaymentController {
         Stripe.apiKey = "sk_test_TDfA9LcsPq3kYOhoND6PK4TZ";
         
         //JS:
-        JSBridge bridge = new JSBridge(gui);
+        bridge = new JSBridge(gui);
         WebView browser = new WebView();
         webEngine = browser.getEngine();
         webEngine.load(new File("src\\client\\processcard.html").toURI().toString());
@@ -54,6 +55,11 @@ public class PaymentController {
         
         
     }
+    
+    public void setLanguage(String lang, String country) {
+        bridge.setLanguage(lang, country);
+    }
+    
     
     public void processPayment(String CCN, String CVC, String exp_M, String exp_Y) {
         String exec = "handlePayment('"+CCN+"','" + CVC + "','" + exp_M + "','" + exp_Y + "')";
