@@ -611,6 +611,8 @@ public class Databasemanager {
             ps.execute();
         } catch (SQLException ex) {
             Logger.getLogger(Databasemanager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public HashMap<String, String> getStatistics() {
         try {
