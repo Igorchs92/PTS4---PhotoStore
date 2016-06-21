@@ -91,7 +91,7 @@ public class Filesystem {
             ((OpImage) image.getRendering()).setTileCache(null);
             RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             double height = image.getHeight();
-            double scaling = 200 / height;
+            double scaling = 150 / height;
             RenderedOp resizedImage = JAI.create("SubsampleAverage", image, scaling, scaling, qualityHints);
             JAI.create("encode", resizedImage, bos, "JPEG", null);
 

@@ -78,6 +78,8 @@ public class EditPicureApplication extends Application {
 
         // image layer: a group of images
         Group imageLayer = new Group();
+        
+        p = UserClientRunnable.clientRunnable.pictureToEdit;
 
         //Buttons
         Image Original = new Image(getClass().getResourceAsStream("PreviewOriginal.png"));
@@ -91,6 +93,11 @@ public class EditPicureApplication extends Application {
 
         Button btnAddToCart = new Button("Add to Cart");
         Button btnBack = new Button("Back");
+        
+        //Labels
+        
+        Label lblName = new Label("Name: " + p.getName());
+        Label lblPrice = new Label("Price: €" + Double.toString(p.getPrice()));
 
         //Combobox
         final ComboBox specialBox = new ComboBox();
@@ -106,14 +113,17 @@ public class EditPicureApplication extends Application {
                     case "photo":
                         specialView.setImage(null);
                         item = PhotoItem.photo;
+                        lblPrice.setText("Price: €" + Double.toString(p.getPrice()));
                         break;
                     case "tshirt":
                         specialView.setImage(new Image(getClass().getResourceAsStream("T-Shirt.jpg")));
                         item = PhotoItem.tshirt;
+                        lblPrice.setText("Price: €" + Double.toString(p.getPrice() + 20));
                         break;
                     case "mug":
                         specialView.setImage(new Image(getClass().getResourceAsStream("Mok.jpg")));
                         item = PhotoItem.mug;
+                        lblPrice.setText("Price: €" + Double.toString(p.getPrice() + 10));
                         break;
                 }
             }
@@ -199,8 +209,7 @@ public class EditPicureApplication extends Application {
             }
         });
 
-        // load the image
-        p = UserClientRunnable.clientRunnable.pictureToEdit;
+        // load the image        
         Image image = new Image(p.getFile().toURI().toString());
 
         // the container for the image as a javafx node
@@ -216,16 +225,13 @@ public class EditPicureApplication extends Application {
         imageView.setTranslateX(0);
         imageView.setTranslateY(0);
 
-        imagePreview.setTranslateX(640);
-        imagePreview.setTranslateY(200);
+        imagePreview.setTranslateX(630);
+        imagePreview.setTranslateY(230);
 
         specialView.setTranslateX(500);
-        specialView.setTranslateY(50);
+        specialView.setTranslateY(100);
 
         //Labels
-        Label lblName = new Label("Name: " + p.getName());
-        Label lblPrice = new Label("Price: " + Double.toString(p.getPrice()));
-
         lblName.setTranslateX(50);
         lblName.setTranslateY(500);
 
