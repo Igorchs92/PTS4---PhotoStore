@@ -69,7 +69,9 @@ public class Filesystem {
         if (!root.exists()) {
             root.mkdirs();
         }
-        if (!orders.exists()) orders.mkdirs();
+        if (!orders.exists()) {
+            orders.mkdirs();
+        }
     }
 
     public void compressPicture(File fileInput, File fileOutput) {
@@ -83,9 +85,9 @@ public class Filesystem {
             SeekableStream ss = SeekableStream.wrapInputStream(bis, true);
             RenderedOp image = JAI.create("stream", ss);
             ((OpImage) image.getRendering()).setTileCache(null);
-            RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);            
+            RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             double height = image.getHeight();
-            double scaling = 100/height;
+            double scaling = 100 / height;
             RenderedOp resizedImage = JAI.create("SubsampleAverage", image, scaling, scaling, qualityHints);
             JAI.create("encode", resizedImage, bos, "JPEG", null);
 
@@ -155,29 +157,29 @@ public class Filesystem {
         }
 
     }
-    
-    public void uploadModifiedPicture(ArrayList<PictureModifies> pmList){
-            long time = System.currentTimeMillis();
-            File order = new File(this.orders + "\\" + Long.toString(time) + "\\");
+
+    public void uploadModifiedPicture(ArrayList<PictureModifies> pmList) {
+        long time = System.currentTimeMillis();
+        File order = new File(this.orders + "\\" + Long.toString(time) + "\\");
         for (PictureModifies pm : pmList) {
             String pathExtra = dbsm.getPicturePath(Integer.toString(pm.photoId));
-            File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
+            //File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
             // crop the image
-            ImageView imageToCrop = new ImageView(new Image(photoFile.toURI().toString()));
-            double scaling = 100/imageToCrop.getBoundsInLocal().getHeight();
-            Rectangle rec = new Rectangle(pm.x/scaling, pm.y/scaling, pm.width/scaling, pm.height/scaling);
-            ImageView returnFromCrop = crop(rec.getBoundsInLocal(), pm.color, imageToCrop);
-            Image i = returnFromCrop.getImage();
+            //ImageView imageToCrop = new ImageView(new Image(photoFile.toURI().toString()));
+            //double scaling = 100 / imageToCrop.getBoundsInLocal().getHeight();
+            //Rectangle rec = new Rectangle(pm.x / scaling, pm.y / scaling, pm.width / scaling, pm.height / scaling);
+            //ImageView returnFromCrop = crop(rec.getBoundsInLocal(), pm.color, imageToCrop);
+            //Image i = returnFromCrop.getImage();
             // write the photo to the orders map
             int id = dbsm.getNewModifiedPictureId();
-            File f = new File(order + Integer.toString(id) + ".jpg"); // PLEASE NOTE! : this only allows one item per photo per order
-            BufferedImage bImage = SwingFXUtils.fromFXImage(i, null);
-                try {
-                    ImageIO.write(bImage, "jpg", f);
-                } catch (IOException ex) {
-                    Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
+            //File f = new File(order + Integer.toString(id) + ".jpg"); // PLEASE NOTE! : this only allows one item per photo per order
+            //BufferedImage bImage = SwingFXUtils.fromFXImage(i, null);
+            //try {
+                //ImageIO.write(bImage, "jpg", f);
+            //} catch (IOException ex) {
+               // Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
+            //}
+
             // put the information in the database
             int newModPicId = dbsm.getNewModifiedPictureId();
             dbsm.addModifiedPicture(newModPicId, pm.photoId);
@@ -186,7 +188,6 @@ public class Filesystem {
             dbsm.addOrderInfoPictureItemOrder(orderInfoId, picItemOrderId);
         }
     }
-    
 
     public void download(String uid) {
         try {
@@ -214,17 +215,17 @@ public class Filesystem {
         }
 
     }
-    
+
     public ImageView crop(Bounds bounds, ModifyColors color, ImageView imageView) {
         int width = (int) bounds.getWidth();
         int height = (int) bounds.getHeight();
-        
+
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Color.TRANSPARENT);
         parameters.setViewport(new Rectangle2D(bounds.getMinX(), bounds.getMinY(), width, height));
-        
+
         WritableImage wi = new WritableImage(width, height);
-        switch(color) {
+        switch (color) {
             case normal:
                 imageView.setEffect(null);
                 break;
@@ -240,15 +241,15 @@ public class Filesystem {
                 imageView.setEffect(null);
                 imageView.setEffect(sepiaTone);
         }
-        
+
         imageView.snapshot(parameters, wi);
 
         BufferedImage bufImageARGB = SwingFXUtils.fromFXImage(wi, null);
         BufferedImage bufImageRGB = new BufferedImage(bufImageARGB.getWidth(), bufImageARGB.getHeight(), BufferedImage.OPAQUE);
-        
+
         Graphics2D graphics = bufImageRGB.createGraphics();
         graphics.drawImage(bufImageARGB, 0, 0, null);
-        
+
         WritableImage writeImage = null;
         if (bufImageRGB != null) {
             writeImage = new WritableImage(bufImageRGB.getWidth(), bufImageRGB.getHeight());
@@ -259,7 +260,7 @@ public class Filesystem {
                 }
             }
         }
-        
+
         ImageView croppedImage = new ImageView();
         imageView.setImage(writeImage);
         graphics.dispose();
