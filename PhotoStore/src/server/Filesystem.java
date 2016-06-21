@@ -172,7 +172,7 @@ public class Filesystem {
             //Image i = returnFromCrop.getImage();
             // write the photo to the orders map
             int id = dbsm.getNewModifiedPictureId();
-            //File f = new File(order + Integer.toString(id) + ".jpg"); // PLEASE NOTE! : this only allows one item per photo per order
+            //File f = new File(order + Integer.toString(id) + ".jpg");
             //BufferedImage bImage = SwingFXUtils.fromFXImage(i, null);
             //try {
                 //ImageIO.write(bImage, "jpg", f);

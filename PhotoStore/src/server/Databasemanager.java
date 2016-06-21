@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -582,7 +583,7 @@ public class Databasemanager {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setNull(1, java.sql.Types.BIGINT);
             ps.setString(2, userId);
-            ps.setDate(3, convertJavaDateToSqlDate(new Date()));
+            ps.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             ps.setNull(4, java.sql.Types.DATE);
             ps.setInt(5, status);
             ps.execute();
