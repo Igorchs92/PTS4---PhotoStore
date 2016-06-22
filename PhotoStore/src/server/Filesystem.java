@@ -193,7 +193,6 @@ public class Filesystem {
                 int orderInfoId = dbsm.addOrderInfo(pm.userId, 1);
                 dbsm.addOrderInfoPictureItemOrder(orderInfoId, picItemOrderId);
             });
-
         }
     }
 

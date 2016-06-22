@@ -5,6 +5,7 @@
  */
 package client.user.ui;
 
+import client.ui.InterfaceCall;
 import client.user.ClientInfo;
 import client.user.UserClientRunnable;
 import client.user.editphoto.EditPicureApplication;
@@ -71,8 +72,13 @@ public class UserClientMainController implements Initializable {
 
     @FXML
     public void attachCodeToAccount() {
-        UserClientRunnable.clientRunnable.attachCode(ClientInfo.clientID, Integer.valueOf(tfPersonalCode.getText()));
-        UserClientRunnable.clientRunnable.upload();
+        if (tfPersonalCode.getText() != "") {
+            UserClientRunnable.clientRunnable.attachCode(ClientInfo.clientID, Integer.valueOf(tfPersonalCode.getText()));
+            tfPersonalCode.setText("");
+            InterfaceCall.showAlert("ID has been succesfully added");
+        } else {
+            InterfaceCall.showAlert("Please fill in ur ID that you got from the photographer");
+        }
     }
 
     @FXML
@@ -104,7 +110,6 @@ public class UserClientMainController implements Initializable {
             return;
         }
         showPictures(pg);
-
     }
 
     public void showPictures(PictureGroup pg) throws FileNotFoundException {
