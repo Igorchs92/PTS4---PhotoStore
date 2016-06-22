@@ -37,7 +37,7 @@ public class Item implements StoreItem{
     
     @Override
     public String toString() {
-        return name + "\t\t" + quantity + "x $" + price;
+        return name + "\t\t" + quantity + "x €" + price;
     }
 
     @Override

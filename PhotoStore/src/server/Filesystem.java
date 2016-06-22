@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
@@ -35,6 +38,7 @@ import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import javax.media.jai.JAI;
 import javax.media.jai.OpImage;
 import javax.media.jai.RenderedOp;
@@ -87,7 +91,7 @@ public class Filesystem {
             ((OpImage) image.getRendering()).setTileCache(null);
             RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             double height = image.getHeight();
-            double scaling = 100 / height;
+            double scaling = 150 / height;
             RenderedOp resizedImage = JAI.create("SubsampleAverage", image, scaling, scaling, qualityHints);
             JAI.create("encode", resizedImage, bos, "JPEG", null);
 
@@ -163,29 +167,32 @@ public class Filesystem {
         File order = new File(this.orders + "\\" + Long.toString(time) + "\\");
         for (PictureModifies pm : pmList) {
             String pathExtra = dbsm.getPicturePath(Integer.toString(pm.photoId));
-            //File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
+            File photoFile = new File(this.root + pathExtra + "\\high\\" + Integer.toString(pm.photoId) + ".jpg"); // should work, not 100% tested yet
             // crop the image
-            //ImageView imageToCrop = new ImageView(new Image(photoFile.toURI().toString()));
-            //double scaling = 100 / imageToCrop.getBoundsInLocal().getHeight();
-            //Rectangle rec = new Rectangle(pm.x / scaling, pm.y / scaling, pm.width / scaling, pm.height / scaling);
-            //ImageView returnFromCrop = crop(rec.getBoundsInLocal(), pm.color, imageToCrop);
-            //Image i = returnFromCrop.getImage();
-            // write the photo to the orders map
-            int id = dbsm.getNewModifiedPictureId();
-            //File f = new File(order + Integer.toString(id) + ".jpg");
-            //BufferedImage bImage = SwingFXUtils.fromFXImage(i, null);
-            //try {
-                //ImageIO.write(bImage, "jpg", f);
-            //} catch (IOException ex) {
-               // Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
-            //}
-
-            // put the information in the database
-            int newModPicId = dbsm.getNewModifiedPictureId();
-            dbsm.addModifiedPicture(newModPicId, pm.photoId);
-            int picItemOrderId = dbsm.addPictureItemOrder(newModPicId, pm.item);
-            int orderInfoId = dbsm.addOrderInfo(pm.userId, 1);
-            dbsm.addOrderInfoPictureItemOrder(orderInfoId, picItemOrderId);
+            new JFXPanel();
+            Platform.runLater(() -> {
+                System.out.println("app");
+                ImageView imageToCrop = new ImageView(new Image(photoFile.toURI().toString()));
+                double scaling = 100 / imageToCrop.getBoundsInLocal().getHeight();
+                Rectangle rec = new Rectangle(pm.x / scaling, pm.y / scaling, pm.width / scaling, pm.height / scaling);
+                ImageView returnFromCrop = crop(rec.getBoundsInLocal(), pm.color, imageToCrop);
+                Image i = returnFromCrop.getImage();
+                // write the photo to the orders map
+                int id = dbsm.getNewModifiedPictureId();
+                File f = new File(order + Integer.toString(id) + ".jpg"); // PLEASE NOTE! : this only allows one item per photo per order
+                BufferedImage bImage = SwingFXUtils.fromFXImage(i, null);
+                try {
+                    ImageIO.write(bImage, "jpg", f);
+                } catch (IOException ex) {
+                    Logger.getLogger(Filesystem.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                // put the information in the database
+                int newModPicId = dbsm.getNewModifiedPictureId();
+                dbsm.addModifiedPicture(newModPicId, pm.photoId);
+                int picItemOrderId = dbsm.addPictureItemOrder(newModPicId, pm.item);
+                int orderInfoId = dbsm.addOrderInfo(pm.userId, 1);
+                dbsm.addOrderInfoPictureItemOrder(orderInfoId, picItemOrderId);
+            });
         }
     }
 
@@ -225,23 +232,6 @@ public class Filesystem {
         parameters.setViewport(new Rectangle2D(bounds.getMinX(), bounds.getMinY(), width, height));
 
         WritableImage wi = new WritableImage(width, height);
-        switch (color) {
-            case normal:
-                imageView.setEffect(null);
-                break;
-            case blackwhite:
-                ColorAdjust blackout = new ColorAdjust();
-                blackout.setSaturation(-1);
-                imageView.setEffect(null);
-                imageView.setEffect(blackout);
-                break;
-            case sepia:
-                SepiaTone sepiaTone = new SepiaTone();
-                sepiaTone.setLevel(1);
-                imageView.setEffect(null);
-                imageView.setEffect(sepiaTone);
-        }
-
         imageView.snapshot(parameters, wi);
 
         BufferedImage bufImageARGB = SwingFXUtils.fromFXImage(wi, null);
@@ -263,7 +253,23 @@ public class Filesystem {
 
         ImageView croppedImage = new ImageView();
         imageView.setImage(writeImage);
-        graphics.dispose();
+        switch (color) {
+            case normal:
+                imageView.setEffect(null);
+                break;
+            case blackwhite:
+                ColorAdjust blackout = new ColorAdjust();
+                blackout.setSaturation(-1);
+                imageView.setEffect(null);
+                imageView.setEffect(blackout);
+                break;
+            case sepia:
+                SepiaTone sepiaTone = new SepiaTone();
+                sepiaTone.setLevel(1);
+                imageView.setEffect(null);
+                imageView.setEffect(sepiaTone);
+                break;
+        }
         return imageView;
     }
 
