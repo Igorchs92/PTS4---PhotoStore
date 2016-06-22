@@ -33,6 +33,7 @@ public class ClientConnector {
     public boolean connectToServer(ClientType client) {
         clientType = client;
         try {
+            socket = new SocketConnection( new Socket ("localhost", 8189));
             socket.writeObject(client);
             return true;
         } catch (IOException ex) {

@@ -16,6 +16,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -73,9 +75,14 @@ public class UserClientMainController implements Initializable {
     @FXML
     public void attachCodeToAccount() {
         if (tfPersonalCode.getText() != "") {
-            UserClientRunnable.clientRunnable.attachCode(ClientInfo.clientID, Integer.valueOf(tfPersonalCode.getText()));
-            tfPersonalCode.setText("");
-            InterfaceCall.showAlert("ID has been succesfully added");
+            try {
+                UserClientRunnable.clientRunnable.attachCode(ClientInfo.clientID, Integer.valueOf(tfPersonalCode.getText()));
+                tfPersonalCode.setText("");
+                InterfaceCall.showAlert("ID has been succesfully added");
+                redownloadPictures();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(UserClientMainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             InterfaceCall.showAlert("Please fill in ur ID that you got from the photographer");
         }

@@ -9,8 +9,8 @@
 
 <AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.user.ui.UserClientMainController">
     <children>
-        <Button fx:id="btAdd" layoutX="84.0" layoutY="91.0" onAction="#attachCodeToAccount" text="Add" />
-      <TextField fx:id="tfPersonalCode" layoutX="28.0" layoutY="60.0" promptText="personal code" />
+        <Button fx:id="btAdd" layoutX="28.0" layoutY="94.0" onAction="#attachCodeToAccount" prefHeight="25.0" prefWidth="78.0" text="Add Code" />
+      <TextField fx:id="tfPersonalCode" layoutX="28.0" layoutY="60.0" prefHeight="25.0" prefWidth="200.0" promptText="personal code" />
       <Label layoutX="28.0" layoutY="32.0" text="Add Unique Number:" />
       <ListView fx:id="listViewAlbums" layoutX="28.0" layoutY="149.0" onMouseClicked="#listViewPictureGroupClicked" prefHeight="450.0" prefWidth="200.0" />
       <Button fx:id="btnShoppingCart" layoutX="1008.0" layoutY="14.0" mnemonicParsing="false" onAction="#viewShoppingCart" text="View Shoppig Cart" />
@@ -23,6 +23,8 @@
          </padding>
       </ScrollPane>
       <Button fx:id="btnLogOut" layoutX="1131.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="114.0" text="Log Out" />
-      <Button fx:id="btnDownload" layoutX="113.0" layoutY="119.0" mnemonicParsing="false" onAction="#redownloadPictures" text="Download Pictures" />
+      <Button fx:id="btnDownload" layoutX="113.0" layoutY="94.0" mnemonicParsing="false" onAction="#redownloadPictures" text="Download Pictures" />
+      <Label layoutX="28.0" layoutY="129.0" prefHeight="17.0" prefWidth="200.0" text="Your Albums:" />
+      <Label layoutX="245.0" layoutY="24.0" text="Photos in this album:" />
     </children>
 </AnchorPane>
